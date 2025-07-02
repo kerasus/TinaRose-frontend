@@ -1,0 +1,406 @@
+<template>
+  <div class="q-mb-md">
+    <q-btn v-if="userManager.isFabricCutter" color="primary" label="ثبت برش کاری جدید" :to="{ name: 'Panel.Production.Create', params: { worker_role: 'fabric-cutter' }}" />
+    <q-btn v-if="userManager.isColoringWorker" color="primary" label="ثبت رنگ کاری جدید" :to="{ name: 'Panel.Production.Create', params: { worker_role: 'coloring' }}" />
+    <q-btn v-if="userManager.isMoldingWorker" color="primary" label="ثبت اتوکاری جدید" :to="{ name: 'Panel.Production.Create', params: { worker_role: 'molding' }}" />
+  </div>
+  <entity-index
+    ref="entityIndexRef"
+    :value="inputs"
+    :title="label"
+    :api="api"
+    :table="table"
+    :table-keys="tableKeys"
+    :show-route-name="showRouteName"
+    :show-close-button="false"
+    :show-expand-button="false"
+    :show-reload-button="false"
+    :show-search-button="true"
+    :row-key="itemIdentifyKey"
+  >
+    <template #entity-index-table-cell="{ inputData }">
+      <template v-if="inputData.col.name === 'actions'">
+        <div class="action-column-entity-index">
+          <delete-btn :row="inputData.props.row"
+                      :api="productionAPI"
+                      :use-flag="false"
+                      @change="afterRemove"
+          />
+          <q-btn
+            color="primary"
+            flat
+            icon="visibility"
+            :to="{ name: showRouteName, params: { id: inputData.props.row.id } }"
+          />
+        </div>
+      </template>
+      <template v-else>
+        {{ inputData.col.value }}
+      </template>
+    </template>
+  </entity-index>
+</template>
+
+<script setup lang="ts">
+import { useQuasar } from 'quasar';
+import { ref, shallowRef } from 'vue';
+import { useUser } from 'src/stores/user';
+import { EntityIndex } from 'quasar-crud';
+import { useDate } from 'src/composables/Date';
+import { userRoleOptions } from 'src/repositories/user';
+import DeleteBtn from 'src/components/controls/deleteBtn.vue';
+import ProductionAPI, { type ProductionType } from 'src/repositories/production';
+import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue';
+import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue';
+import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue';
+import FormBuilderSelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue';
+
+const $q = useQuasar();
+const dateManager = useDate();
+const userManager = useUser();
+const productionAPI = new ProductionAPI();
+
+const formBuilderSelectUserComponent = shallowRef(FormBuilderSelectUser);
+const formBuilderSelectColorComponent = shallowRef(FormBuilderSelectColor);
+const formBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric);
+const formBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProductPart);
+
+const api = ref(productionAPI.endpoints.base);
+const label = ref('تولید ها');
+const showRouteName = ref('Panel.Production.Show');
+const itemIdentifyKey = ref('id');
+
+const tableKeys = ref({
+  data: 'data',
+  total: 'total',
+  currentPage: 'current_page',
+  perPage: 'per_page',
+  pageKey: 'page',
+});
+
+const managerInputs = [
+  {
+    type: formBuilderSelectUserComponent,
+    name: 'user_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: formBuilderSelectProductPartComponent,
+    name: 'product_part_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: formBuilderSelectFabricComponent,
+    name: 'fabric_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: formBuilderSelectColorComponent,
+    name: 'color_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: 'select',
+    name: 'role',
+    label: 'نقش',
+    placeholder: ' ',
+    options: userRoleOptions.filter(item=>item.value !== 'Manager' && item.value !== 'Accountant'),
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: 'date',
+    name: 'production_date',
+    outsideLabel: 'تاریخ تولید',
+    clearable: true,
+    col: 'col-md-4 col-12'
+  }
+]
+const moldingWorkerInputs = [
+  {
+    type: 'hidden',
+    name: 'user_id',
+    value: userManager.me?.id
+  },
+  {
+    type: formBuilderSelectProductPartComponent,
+    name: 'product_part_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: 'date',
+    name: 'production_date',
+    outsideLabel: 'تاریخ تولید',
+    clearable: true,
+    col: 'col-md-4 col-12'
+  }
+]
+const fabricCutterWorkerInputs = [
+  {
+    type: 'hidden',
+    name: 'user_id',
+    value: userManager.me?.id
+  },
+  {
+    type: formBuilderSelectProductPartComponent,
+    name: 'product_part_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: formBuilderSelectFabricComponent,
+    name: 'fabric_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: 'date',
+    name: 'production_date',
+    outsideLabel: 'تاریخ تولید',
+    clearable: true,
+    col: 'col-md-4 col-12'
+  }
+]
+const coloringWorkerInputs = [
+  {
+    type: 'hidden',
+    name: 'user_id',
+    value: userManager.me?.id
+  },
+  {
+    type: formBuilderSelectProductPartComponent,
+    name: 'product_part_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: formBuilderSelectColorComponent,
+    name: 'color_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: 'date',
+    name: 'production_date',
+    outsideLabel: 'تاریخ تولید',
+    clearable: true,
+    col: 'col-md-4 col-12'
+  }
+]
+
+const managerColumns = {
+  columns: [
+    {
+      name: 'user',
+      required: true,
+      label: 'کارگر',
+      align: 'left',
+      field: (row: ProductionType) => row.user?.firstname + ' ' + row.user?.lastname,
+    },
+    {
+      name: 'product_part',
+      required: true,
+      label: 'زیر محصول',
+      align: 'left',
+      field: (row: ProductionType) => row.product_part?.name,
+    },
+    {
+      name: 'fabric_id',
+      required: true,
+      label: 'پارچه',
+      align: 'left',
+      field: (row: ProductionType) => row.fabric?.name,
+    },
+    {
+      name: 'color',
+      required: true,
+      label: 'رنگ',
+      align: 'left',
+      field: (row: ProductionType) => row.color?.name,
+    },
+    {
+      name: 'bunch_count',
+      required: true,
+      label: 'تعداد',
+      align: 'left',
+      field: (row: ProductionType) => row.bunch_count,
+    },
+    {
+      name: 'production_date',
+      required: true,
+      label: 'تاریخ تولید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+    },
+    {
+      name: 'created_at',
+      required: true,
+      label: 'زمان ایجاد',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+    },
+    {
+      name: 'actions',
+      required: true,
+      label: 'عملیات',
+      align: 'left',
+      field: () => '',
+    },
+  ],
+}
+const moldingWorkerColumns = {
+  columns: [
+    {
+      name: 'product_part',
+      required: true,
+      label: 'زیر محصول',
+      align: 'left',
+      field: (row: ProductionType) => row.product_part?.name,
+    },
+    {
+      name: 'bunch_count',
+      required: true,
+      label: 'تعداد',
+      align: 'left',
+      field: (row: ProductionType) => row.bunch_count,
+    },
+    {
+      name: 'production_date',
+      required: true,
+      label: 'تاریخ تولید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+    },
+    {
+      name: 'created_at',
+      required: true,
+      label: 'زمان ایجاد',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+    }
+  ],
+}
+const fabricCutterWorkerColumns = {
+  columns: [
+    {
+      name: 'product_part',
+      required: true,
+      label: 'زیر محصول',
+      align: 'left',
+      field: (row: ProductionType) => row.product_part?.name,
+    },
+    {
+      name: 'fabric_id',
+      required: true,
+      label: 'پارچه',
+      align: 'left',
+      field: (row: ProductionType) => row.fabric?.name,
+    },
+    {
+      name: 'bunch_count',
+      required: true,
+      label: 'تعداد',
+      align: 'left',
+      field: (row: ProductionType) => row.bunch_count,
+    },
+    {
+      name: 'production_date',
+      required: true,
+      label: 'تاریخ تولید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+    },
+    {
+      name: 'created_at',
+      required: true,
+      label: 'زمان ایجاد',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+    }
+  ],
+}
+const coloringWorkerColumns = {
+  columns: [
+    {
+      name: 'product_part',
+      required: true,
+      label: 'زیر محصول',
+      align: 'left',
+      field: (row: ProductionType) => row.product_part?.name,
+    },
+    {
+      name: 'color',
+      required: true,
+      label: 'رنگ',
+      align: 'left',
+      field: (row: ProductionType) => row.color?.name,
+    },
+    {
+      name: 'bunch_count',
+      required: true,
+      label: 'تعداد',
+      align: 'left',
+      field: (row: ProductionType) => row.bunch_count,
+    },
+    {
+      name: 'production_date',
+      required: true,
+      label: 'تاریخ تولید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+    },
+    {
+      name: 'created_at',
+      required: true,
+      label: 'زمان ایجاد',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+    }
+  ],
+}
+
+const table = ref(getTableColumns());
+const inputs = ref(getFilterInputs());
+const entityIndexRef = ref();
+
+function getFilterInputs () {
+  if (userManager.isManager || userManager.isAccountant) {
+    return managerInputs
+  }
+  if (userManager.isMoldingWorker) {
+    return moldingWorkerInputs
+  }
+  if (userManager.isFabricCutter) {
+    return fabricCutterWorkerInputs
+  }
+  if (userManager.isColoringWorker) {
+    return coloringWorkerInputs
+  }
+}
+
+function getTableColumns () {
+  if (userManager.isManager || userManager.isAccountant) {
+    return managerColumns
+  }
+  if (userManager.isMoldingWorker) {
+    return moldingWorkerColumns
+  }
+  if (userManager.isFabricCutter) {
+    return fabricCutterWorkerColumns
+  }
+  if (userManager.isColoringWorker) {
+    return coloringWorkerColumns
+  }
+}
+
+function afterRemove () {
+  entityIndexRef.value.reload()
+  $q.notify({
+    message: 'حذف با موفقیت انجام شد.',
+    type: 'positive'
+  })
+}
+</script>
