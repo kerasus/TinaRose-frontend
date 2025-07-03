@@ -73,6 +73,13 @@ const table = ref({
       field: (row: any) => row.color_name ? row.color_name : '-',
     },
     {
+      name: 'fabric_name',
+      required: true,
+      label: 'پارچه',
+      align: 'left',
+      field: (row: any) => row.fabric_name ? row.fabric_name : '-',
+    },
+    {
       name: 'total_bunch',
       required: true,
       label: 'تعداد دسته',
