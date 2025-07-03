@@ -31,7 +31,9 @@
               @filter="filterFn"
               @click="onClick">
       <template #selected-item="{opt}">
-        {{ getUserRoleLabel(opt.roles[0].name) }} -
+        <template v-if="opt.roles && opt.roles[0]">
+          {{ getUserRoleLabel(opt.roles[0].name) }} -
+        </template>
         {{ opt.firstname }}
         {{ opt.lastname }}
       </template>
