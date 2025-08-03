@@ -95,12 +95,12 @@ function logout() {
                 :key="breadCrumbIndex"
                 :to="breadCrumb.to ? breadCrumb.to : undefined"
               >
-                {{ $t(breadCrumb.label) }}
+                {{ (breadCrumb.label) }}
               </q-breadcrumbs-el>
             </q-breadcrumbs>
           </div>
           <div class="pageCategory">
-            {{ $t(headerBreadCrumbsStore.pageCategory) }}
+            {{ (headerBreadCrumbsStore.pageCategory) }}
           </div>
         </div>
         <div class="main-dashboard__center-section" />

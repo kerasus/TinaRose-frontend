@@ -36,7 +36,7 @@ const filterLinks = computed(() => {
           return { ...link, child: filteredChildren };
         }
       }
-      if (i18nManager.t(link.title).includes(searchValue.value)) {
+      if ((link.title).includes(searchValue.value)) {
         return link;
       }
       return null;
@@ -180,7 +180,7 @@ watch(currentRouteName, () => {
               <q-icon :name="link.icon" :color="link.iconColor" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ $t(link.title) }}</q-item-label>
+              <q-item-label>{{ (link.title) }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -188,9 +188,9 @@ watch(currentRouteName, () => {
       <div class="left-drawer__copyright-section">
 
         <!-- <span class="app-version">
-          {{ $t('app.version') }}: {{ appConfig.version }}
+          {{ ('app.version') }}: {{ appConfig.version }}
         </span> -->
-        <span> Copyright GitiSam co. </span>
+        <span> Copyright TinaRose co. </span>
         <span class="copy-right"> &copy; {{ new Date().getFullYear() }} </span>
       </div>
     </div>

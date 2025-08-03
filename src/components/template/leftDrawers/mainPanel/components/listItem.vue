@@ -79,7 +79,7 @@ watch(
     <q-expansion-item
       v-if="hasChild(item)"
       :model-value="item.expanded"
-      :label="$t(item.title)"
+      :label="(item.title)"
       :icon="item.icon"
       class="menu-item"
     >
@@ -98,7 +98,7 @@ watch(
         <q-icon :name="item.icon" :color="item.iconColor" />
       </q-item-section>
       <q-item-section>
-        <q-item-label>{{ $t(item.title) }}</q-item-label>
+        <q-item-label>{{ (item.title) }}</q-item-label>
       </q-item-section>
     </q-item>
   </template>

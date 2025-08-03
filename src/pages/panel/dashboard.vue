@@ -87,7 +87,7 @@ const table = ref({
       field: (row: any) => row.total_bunch,
     },
     {
-      name: 'total_bunch',
+      name: 'total_petals',
       required: true,
       label: 'تعداد کل',
       align: 'left',

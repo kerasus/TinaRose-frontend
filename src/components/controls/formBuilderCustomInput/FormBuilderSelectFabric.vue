@@ -28,8 +28,7 @@
               :dropdown-icon="dropdownIcon"
               map-options
               :clearable="clearable"
-              @filter="filterFn"
-              @click="onClick">
+              @filter="filterFn">
       <template #option="{opt, toggleOption}">
         <q-item clickable @click="toggleOption(opt)">
           <q-item-section avatar>

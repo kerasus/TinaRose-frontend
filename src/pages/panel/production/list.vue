@@ -23,15 +23,18 @@
         <div class="action-column-entity-index">
           <delete-btn :row="inputData.props.row"
                       :api="productionAPI"
-                      :use-flag="false"
                       @change="afterRemove"
           />
           <q-btn
+            v-if="inputData.props.row.description"
             color="primary"
             flat
-            icon="visibility"
-            :to="{ name: showRouteName, params: { id: inputData.props.row.id } }"
-          />
+          >
+            توضیحات
+            <q-tooltip>
+              {{ inputData.props.row.description }}
+            </q-tooltip>
+          </q-btn>
         </div>
       </template>
       <template v-else>
@@ -188,7 +191,7 @@ const managerColumns = {
     {
       name: 'user',
       required: true,
-      label: 'کارگر',
+      label: 'پرسنل',
       align: 'left',
       field: (row: ProductionType) => row.user?.firstname + ' ' + row.user?.lastname,
     },
@@ -216,9 +219,16 @@ const managerColumns = {
     {
       name: 'bunch_count',
       required: true,
-      label: 'تعداد',
+      label: 'تعداد دسته',
       align: 'left',
-      field: (row: ProductionType) => row.bunch_count,
+      field: (row: ProductionType) => (row.bunch_count ?? 0).toLocaleString('fa'),
+    },
+    {
+      name: 'total_bunchss',
+      required: true,
+      label: 'تعداد کل',
+      align: 'left',
+      field: (row: ProductionType) => ((row.product_part?.count_per_bunch ?? 0) * (row.bunch_count ?? 0)).toLocaleString('fa'),
     },
     {
       name: 'production_date',

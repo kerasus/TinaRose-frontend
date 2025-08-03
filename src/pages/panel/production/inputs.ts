@@ -77,6 +77,7 @@ export default (workerType: WorkerRoleType) => {
       responseKey: 'bunch_count',
       label: 'تعداد',
       placeholder: ' ',
+      inputType: 'number',
       col: 'col-md-6 col-12',
     },
     {

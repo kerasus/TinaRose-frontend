@@ -28,8 +28,7 @@
               :hide-dropdown-icon="hideDropdownIcon"
               :dropdown-icon="dropdownIcon"
               :clearable="clearable"
-              @filter="filterFn"
-              @click="onClick">
+              @filter="filterFn">
       <template #selected-item="{opt}">
         <template v-if="opt.roles && opt.roles[0]">
           {{ getUserRoleLabel(opt.roles[0].name) }} -
