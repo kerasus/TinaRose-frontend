@@ -23,8 +23,8 @@ const route = useRoute();
 const fabricAPI = new FabricAPI();
 
 const entityEditKey = ref(Date.now());
-const unitId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0));
-const api = ref(fabricAPI.endpoints.byId(unitId.value));
+const entityId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0));
+const api = ref(fabricAPI.endpoints.byId(entityId.value));
 const label = ref('ویرایش پارچه');
 const indexRouteName = ref('Panel.Fabric.List');
 const showRouteName = ref('Panel.Fabric.Show');

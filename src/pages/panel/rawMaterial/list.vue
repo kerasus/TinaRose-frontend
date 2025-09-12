@@ -47,16 +47,16 @@ import { useQuasar } from 'quasar';
 import { EntityIndex } from 'quasar-crud';
 import { useDate } from 'src/composables/Date';
 import DeleteBtn from 'src/components/controls/deleteBtn.vue';
-import ColorAPI, { type ColorType } from 'src/repositories/color';
+import RawMaterialAPI , { type RawMaterialType } from 'src/repositories/rawMaterial';
 
 const $q = useQuasar();
 const dateManager = useDate();
-const colorAPI = new ColorAPI();
+const colorAPI = new RawMaterialAPI();
 
 const api = ref(colorAPI.endpoints.base);
-const label = ref('رنگ ها');
-const createRouteName = ref('Panel.Color.Create');
-const showRouteName = ref('Panel.Color.Show');
+const label = ref('مواد اولیه');
+const createRouteName = ref('Panel.RawMaterial.Create');
+const showRouteName = ref('Panel.RawMaterial.Show');
 const itemIdentifyKey = ref('id');
 
 const tableKeys = ref({
@@ -74,14 +74,14 @@ const table = ref({
       required: true,
       label: 'نام',
       align: 'left',
-      field: (row: ColorType) => row.name,
+      field: (row: RawMaterialType) => row.name,
     },
     {
       name: 'created_at',
       required: true,
       label: 'زمان ایجاد',
       align: 'left',
-      field: (row: ColorType) =>
+      field: (row: RawMaterialType) =>
         row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
     },
     {

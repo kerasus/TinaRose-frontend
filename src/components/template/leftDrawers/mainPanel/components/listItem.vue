@@ -105,29 +105,35 @@ watch(
 </template>
 
 <style scoped lang="scss">
-.menu-item {
-  //color: $neutral-100;
-  position: relative;
-  padding-top: 0.675rem;
-  padding-bottom: 0.675rem;
-  color: #67748e;
-  @include radius-2;
-  .q-item__section--avatar {
-    background-color: #fff !important;
-    box-shadow:
-      0 0.25rem 0.375rem -0.0625rem rgba(20, 20, 20, 0.12),
-      0 0.125rem 0.25rem -0.0625rem rgba(20, 20, 20, 0.07) !important;
-    padding: 10px;
-    border-radius: 0.5rem;
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    margin-right: $space-2 !important;
-    .q-icon {
-      font-size: 12px;
-      color: #67748e;
+@mixin menu-item(){
+  & {
+    //color: $neutral-100;
+    position: relative;
+    padding-top: 0.675rem;
+    padding-bottom: 0.675rem;
+    color: #67748e;
+    @include radius-2;
+    .q-item__section--avatar {
+      background-color: #fff !important;
+      box-shadow:
+        0 0.25rem 0.375rem -0.0625rem rgba(20, 20, 20, 0.12),
+        0 0.125rem 0.25rem -0.0625rem rgba(20, 20, 20, 0.07) !important;
+      padding: 10px;
+      border-radius: 0.5rem;
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      margin-right: $space-2 !important;
+      .q-icon {
+        font-size: 12px;
+        color: #67748e;
+      }
     }
   }
+}
+
+.menu-item {
+  @include menu-item;
   &.q-item--active,
   &.q-router-link--active {
     color: #344767;
@@ -143,15 +149,21 @@ watch(
     }
     .q-icon {
       font-size: 12px;
-      color: white;
+      color: white !important;
     }
   }
   &:last-child {
     margin-bottom: 0;
   }
   &.q-expansion-item {
-    :deep(.q-expansion-item__content) {
-      padding-left: $space-2;
+    padding: 0;
+    :deep(.q-expansion-item__container) {
+      & > .q-item {
+        @include menu-item;
+      }
+      .q-expansion-item__content {
+        padding-left: $space-2;
+      }
     }
   }
   &.mini {

@@ -100,21 +100,40 @@ const topLinks: Ref<Array<ListItemType>> = ref([
   },
   {
     icon: 'receipt_long',
-    title: 'زیر محصولات',
+    title: 'تعاریف اولیه',
     forRoles: [ 'Manager', 'Accountant' ],
-    route: { name: 'Panel.ProductPart.List' },
-  },
-  {
-    icon: 'receipt',
-    title: 'پارچه ها',
-    forRoles: [ 'Manager', 'Accountant' ],
-    route: { name: 'Panel.Fabric.List' },
-  },
-  {
-    icon: 'receipt',
-    title: 'رنگ ها',
-    forRoles: [ 'Manager', 'Accountant' ],
-    route: { name: 'Panel.Color.List' },
+    child: [
+      {
+        icon: 'receipt_long',
+        title: 'زیر محصولات',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.ProductPart.List' },
+      },
+      {
+        icon: 'receipt',
+        title: 'پارچه ها',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.Fabric.List' },
+      },
+      {
+        icon: 'receipt',
+        title: 'رنگ ها',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.Color.List' },
+      },
+      {
+        icon: 'receipt',
+        title: 'مواد اولیه',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.RawMaterial.List' },
+      },
+      {
+        icon: 'receipt',
+        title: 'محصولات',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.Product.List' },
+      }
+    ],
   }
 ]);
 

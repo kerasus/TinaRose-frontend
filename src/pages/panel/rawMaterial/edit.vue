@@ -17,17 +17,17 @@ import getInputs from './inputs';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { EntityEdit } from 'quasar-crud';
-import ProductPartAPI from 'src/repositories/productPart';
+import RawMaterialAPI from 'src/repositories/rawMaterial';
 
 const route = useRoute();
-const productPartAPI = new ProductPartAPI();
+const colorAPI = new RawMaterialAPI();
 
 const entityEditKey = ref(Date.now());
 const entityId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0));
-const api = ref(productPartAPI.endpoints.byId(entityId.value));
-const label = ref('ویرایش زیرمحصول');
-const indexRouteName = ref('Panel.ProductPart.List');
-const showRouteName = ref('Panel.ProductPart.Show');
+const api = ref(colorAPI.endpoints.byId(entityId.value));
+const label = ref('ویرایش ماده اولیه');
+const indexRouteName = ref('Panel.RawMaterial.List');
+const showRouteName = ref('Panel.RawMaterial.Show');
 const entityIdKey = ref('id');
 const entityParamKey = ref('id');
 

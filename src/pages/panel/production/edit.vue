@@ -21,8 +21,8 @@ import getInputs, { type WorkerRoleType } from './inputs';
 const route = useRoute();
 const productionAPI = new ProductionAPI();
 
-const unitId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0));
-const api = ref(productionAPI.endpoints.byId(unitId.value));
+const entityId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0));
+const api = ref(productionAPI.endpoints.byId(entityId.value));
 const label = ref('ویرایش تولید');
 const indexRouteName = ref('Panel.Production.List');
 const showRouteName = ref('Panel.Production.Show');

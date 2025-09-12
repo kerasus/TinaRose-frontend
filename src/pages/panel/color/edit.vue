@@ -23,8 +23,8 @@ const route = useRoute();
 const colorAPI = new ColorAPI();
 
 const entityEditKey = ref(Date.now());
-const unitId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0));
-const api = ref(colorAPI.endpoints.byId(unitId.value));
+const entityId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0));
+const api = ref(colorAPI.endpoints.byId(entityId.value));
 const label = ref('ویرایش رنگ');
 const indexRouteName = ref('Panel.Color.List');
 const showRouteName = ref('Panel.Color.Show');

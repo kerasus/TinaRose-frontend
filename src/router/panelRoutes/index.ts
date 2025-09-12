@@ -1,7 +1,9 @@
 import userRoutes from './user';
 import colorRoutes from './color';
 import fabricRoutes from './fabric';
+import productRoutes from './product';
 import productionRoutes from './production';
+import rawMaterialRoutes from './rawMaterial';
 import productPartRoutes from './productPart';
 import type { RouteRecordRaw } from 'vue-router';
 import Authenticated from 'src/router/middleware/Authenticated';
@@ -32,7 +34,9 @@ export const index: RouteRecordRaw[] = [
       ...userRoutes,
       ...colorRoutes,
       ...fabricRoutes,
+      ...productRoutes,
       ...productionRoutes,
+      ...rawMaterialRoutes,
       ...productPartRoutes,
     ],
   },
