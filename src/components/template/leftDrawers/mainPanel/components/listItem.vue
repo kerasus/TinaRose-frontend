@@ -126,7 +126,7 @@ watch(
       margin-right: $space-2 !important;
       .q-icon {
         font-size: 12px;
-        color: #67748e;
+        color: #67748e !important;
       }
     }
   }
