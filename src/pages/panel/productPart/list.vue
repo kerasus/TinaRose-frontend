@@ -74,6 +74,20 @@ const table = ref({
       field: (row: ProductPartType) => row.name,
     },
     {
+      name: 'code',
+      required: true,
+      label: 'کد',
+      align: 'left',
+      field: (row: ProductPartType) => row.code,
+    },
+    {
+      name: 'initial_stock',
+      required: true,
+      label: 'موجودی اولیه',
+      align: 'left',
+      field: (row: ProductPartType) => row.initial_stock,
+    },
+    {
       name: 'count_per_bunch',
       required: true,
       label: 'تعداد در دسته',
@@ -108,7 +122,21 @@ const inputs = ref([
     type: 'hidden',
     name: 'sortation_order',
     value: 'asc'
-  }
+  },
+  {
+    type: 'input',
+    name: 'name',
+    label: 'نام',
+    placeholder: ' ',
+    col: 'col-md-3 col-12',
+  },
+  {
+    type: 'input',
+    name: 'code',
+    label: 'کد',
+    placeholder: ' ',
+    col: 'col-md-3 col-12',
+  },
 ]);
 const entityIndexRef = ref();
 

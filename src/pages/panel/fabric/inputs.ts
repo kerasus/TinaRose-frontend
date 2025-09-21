@@ -10,7 +10,15 @@ export default () => [
     responseKey: 'name',
     label: 'نام',
     placeholder: ' ',
-    col: 'col-md-6 col-12',
+    col: 'col-md-4 col-12',
+  },
+  {
+    type: 'input',
+    name: 'code',
+    responseKey: 'code',
+    label: 'کد',
+    placeholder: ' ',
+    col: 'col-md-4 col-12',
   },
   {
     type: 'color',
@@ -18,6 +26,6 @@ export default () => [
     responseKey: 'color_hex',
     outsideLabel: 'رنگ',
     placeholder: ' ',
-    col: 'col-md-6 col-12',
+    col: 'col-md-4 col-12',
   }
 ]

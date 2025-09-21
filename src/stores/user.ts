@@ -33,6 +33,9 @@ export const useUser = defineStore('user', () => {
   const isMoldingWorker = computed(() => hasRole(state.user, 'MoldingWorker'));
   const isColoringWorker = computed(() => hasRole(state.user, 'ColoringWorker'));
   const isFabricCutter = computed(() => hasRole(state.user, 'FabricCutter'));
+  const isAssembler = computed(() => hasRole(state.user, 'Assembler'));
+  const isMiddleWorker = computed(() => hasRole(state.user, 'MiddleWorker'));
+  const isWarehouseKeeper = computed(() => hasRole(state.user, 'WarehouseKeeper'));
 
   function hasRole(user: UserType | null, role: string): boolean {
     if (!user) {
@@ -78,10 +81,13 @@ export const useUser = defineStore('user', () => {
     token,
     hasRole,
     isManager,
+    isAssembler,
     isAccountant,
+    isMiddleWorker,
+    isFabricCutter,
     isMoldingWorker,
     isColoringWorker,
-    isFabricCutter,
+    isWarehouseKeeper,
     refreshTokenValue,
 
     // Mutations

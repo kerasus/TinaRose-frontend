@@ -19,11 +19,11 @@ export type ProductRequirementType = {
 export type ProductType = {
   id: number | null;
   name: string | null;
+  code: string | null;
   unit_large: string | null;
   unit_small: string | null;
   conversion_rate: number | null;
   initial_stock: number | null;
-  current_stock: number | null;
   requirements: ProductRequirementType[];
   created_at: string | null;
   updated_at: string | null;
@@ -42,11 +42,11 @@ export default class ProductAPI extends BaseAPI<ProductType> {
     this.defaultObject = {
       id: null,
       name: null,
+      code: null,
       unit_large: null,
       unit_small: null,
       conversion_rate: null,
       initial_stock: null,
-      current_stock: null,
       requirements: [],
       created_at: null,
       updated_at: null

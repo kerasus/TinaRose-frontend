@@ -29,16 +29,6 @@
               :dropdown-icon="dropdownIcon"
               :clearable="clearable"
               @filter="filterFn">
-      <template #option="{opt, toggleOption}">
-        <q-item clickable @click="toggleOption(opt)">
-          <q-item-section avatar>
-            <span :style="{ backgroundColor: opt.color_hex, width: '10px', height:'10px', display: 'inline-block', marginLeft: '5px' }" />
-          </q-item-section>
-          <q-item-section>
-            {{ opt.name }}
-          </q-item-section>
-        </q-item>
-      </template>
       <template #no-option>
         <q-item v-show="showNoOption">
           <q-item-section class="text-grey"> موردی یافت نشد </q-item-section>
@@ -50,15 +40,15 @@
 
 <script setup lang="ts">
 import { computed, defineProps, defineEmits, ref } from 'vue';
-import ProductPartAPI, { type ProductPartType } from 'src/repositories/productPart';
+import ProductAPI, { type ProductType } from 'src/repositories/product';
 
 defineOptions({
-  name: 'FormBuilderSelectProductPart',
+  name: 'FormBuilderSelectProduct',
 });
 
 const props = defineProps({
   label: {
-    default: 'زیرمحصول',
+    default: 'محصول',
     type: String
   },
   name: {
@@ -71,6 +61,14 @@ const props = defineProps({
   },
   useChips: {
     default: false,
+    type: Boolean
+  },
+  emitValue: {
+    default: true,
+    type: Boolean
+  },
+  mapOptions: {
+    default: true,
     type: Boolean
   },
   options: {
@@ -121,14 +119,6 @@ const props = defineProps({
     default: false,
     type: Boolean
   },
-  emitValue: {
-    default: true,
-    type: Boolean
-  },
-  mapOptions: {
-    default: true,
-    type: Boolean
-  },
   readonly: {
     default: false,
     type: Boolean
@@ -137,7 +127,7 @@ const props = defineProps({
 
 const emits = defineEmits(['update:value', 'input', 'click', 'keydown', 'keypress', 'submit']);
 
-const productPartAPI = new ProductPartAPI()
+const productAPI = new ProductAPI()
 
 const localValue = computed({
   get() {
@@ -169,12 +159,12 @@ const placeholderSetter = computed(() => {
 })
 
 const errorMessage = ref<string | undefined>(undefined)
-const filteredOptions = ref<ProductPartType[]>([])
+const filteredOptions = ref<ProductType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('name')
 
 async function getProductParts (name: string | null) {
-  const productPartsList = await productPartAPI.index({name})
+  const productPartsList = await productAPI.index({name})
   return productPartsList.data
 }
 

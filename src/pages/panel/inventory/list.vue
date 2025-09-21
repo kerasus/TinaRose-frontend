@@ -15,17 +15,8 @@
     :row-key="itemIdentifyKey"
   >
     <template #entity-index-table-cell="{ inputData }">
-      <template v-if="inputData.col.name === 'name'">
-        <span :style="{ backgroundColor: inputData.props.row.color_hex, width: '10px', height:'10px', display: 'inline-block', marginLeft: '5px' }" />
-        {{ inputData.props.row.name }}
-      </template>
-      <template v-else-if="inputData.col.name === 'actions'">
+      <template v-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
-          <delete-btn :row="inputData.props.row"
-                      :api="fabricAPI"
-                      :use-flag="false"
-                      @change="afterRemove"
-          />
           <q-btn
             color="primary"
             flat
@@ -43,21 +34,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useQuasar } from 'quasar';
 import { EntityIndex } from 'quasar-crud';
 import { useDate } from 'src/composables/Date';
-import DeleteBtn from 'src/components/controls/deleteBtn.vue';
-import FabricAPI, { type FabricType } from 'src/repositories/fabric';
-import type { ProductPartType } from 'src/repositories/productPart';
+import InventoryAPI, { type InventoryType, inventoryTypeOptions } from 'src/repositories/inventory';
 
-const $q = useQuasar();
 const dateManager = useDate();
-const fabricAPI = new FabricAPI();
+const inventoryAPI = new InventoryAPI();
 
-const api = ref(fabricAPI.endpoints.base);
-const label = ref('پارچه ها');
-const createRouteName = ref('Panel.Fabric.Create');
-const showRouteName = ref('Panel.Fabric.Show');
+const api = ref(inventoryAPI.endpoints.base);
+const label = ref('انبار ها');
+const createRouteName = ref('Panel.Inventory.Create');
+const showRouteName = ref('Panel.Inventory.Show');
 const itemIdentifyKey = ref('id');
 
 const tableKeys = ref({
@@ -75,21 +62,29 @@ const table = ref({
       required: true,
       label: 'نام',
       align: 'left',
-      field: (row: FabricType) => row.name,
+      field: (row: InventoryType) => row.name,
     },
     {
-      name: 'code',
+      name: 'type',
       required: true,
-      label: 'کد',
+      label: 'نوع',
       align: 'left',
-      field: (row: ProductPartType) => row.code,
+      field: (row: InventoryType) => {
+        if (!row.type) {
+          return '-'
+        }
+
+        const target = inventoryTypeOptions.find(item=>item.value===row.type)
+
+        return target?.label
+      },
     },
     {
       name: 'created_at',
       required: true,
       label: 'زمان ایجاد',
       align: 'left',
-      field: (row: FabricType) =>
+      field: (row: InventoryType) =>
         row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
     },
     {
@@ -116,25 +111,20 @@ const inputs = ref([
   {
     type: 'input',
     name: 'name',
+    responseKey: 'name',
     label: 'نام',
     placeholder: ' ',
     col: 'col-md-3 col-12',
   },
   {
-    type: 'input',
-    name: 'code',
-    label: 'کد',
+    type: 'select',
+    name: 'type',
+    label: 'نوع انبار',
     placeholder: ' ',
-    col: 'col-md-3 col-12',
+    options: inventoryTypeOptions,
+    col: 'col-md-3 col-12'
   },
 ]);
 const entityIndexRef = ref();
 
-function afterRemove () {
-  entityIndexRef.value.reload()
-  $q.notify({
-    message: 'حذف با موفقیت انجام شد.',
-    type: 'positive'
-  })
-}
 </script>

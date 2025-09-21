@@ -1,13 +1,15 @@
 import { shallowRef } from 'vue';
 import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue';
 import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue';
+import FormBuilderSelectProduct from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProduct.vue';
 import FormBuilderSelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue';
 
 const FormBuilderSelectColorComponent = shallowRef(FormBuilderSelectColor);
 const FormBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric);
+const FormBuilderSelectProductComponent = shallowRef(FormBuilderSelectProduct);
 const FormBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProductPart);
 
-export type WorkerRoleType = 'molding' | 'coloring' | 'fabric-cutter'
+export type WorkerRoleType = 'molding' | 'coloring' | 'fabric-cutter' | 'assembler'
 
 export default (workerType: WorkerRoleType) => {
 
@@ -47,18 +49,29 @@ export default (workerType: WorkerRoleType) => {
     responseKey: 'color_id',
     col: 'col-md-6 col-12',
   }
+  const assemblerInput = {
+    type: FormBuilderSelectProductComponent,
+    name: 'product_id',
+    responseKey: 'product_id',
+    col: 'col-md-6 col-12',
+  }
 
   const finalInputs = hiddenInputs
-  finalInputs.push(productPartInput)
 
   if (workerType === 'fabric-cutter') {
+    finalInputs.push(productPartInput)
     finalInputs.push(fabricCutterInput)
   }
   if (workerType === 'coloring') {
+    finalInputs.push(productPartInput)
     finalInputs.push(coloringWorkerInput)
   }
   if (workerType === 'molding') {
+    finalInputs.push(productPartInput)
     finalInputs.push(moldingWorkerInput)
+  }
+  if (workerType === 'assembler') {
+    finalInputs.push(assemblerInput)
   }
 
     return [

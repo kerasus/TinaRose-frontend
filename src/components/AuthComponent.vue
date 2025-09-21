@@ -105,12 +105,18 @@ async function redirectAfterLogin() {
   let defaultRoute = { name: 'Panel.Dashboard', params: {} }
   if (userManager.isManager || userManager.isAccountant) {
     defaultRoute = { name: 'Panel.Dashboard', params: {} }
-  } else if (userManager.isMoldingWorker) {
-    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'molding' }}
-  } else if (userManager.isColoringWorker) {
-    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'coloring' }}
+  } else if (userManager.isMiddleWorker) {
+    defaultRoute = { name: 'Panel.Transfer.Create', params: {} }
+  } else if (userManager.isWarehouseKeeper) {
+    defaultRoute = { name: 'Panel.Transfer.Create', params: {} }
   } else if (userManager.isFabricCutter) {
     defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'fabric-cutter' }}
+  } else if (userManager.isColoringWorker) {
+    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'coloring' }}
+  } else if (userManager.isMoldingWorker) {
+    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'molding' }}
+  } else if (userManager.isAssembler) {
+    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'assembler' }}
   }
 
   const redirectLocation = appConfigManager.redirectAfterLogin || defaultRoute;

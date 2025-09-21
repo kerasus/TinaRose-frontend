@@ -1,6 +1,6 @@
 <template>
   <div class="form-builder-select-productPart">
-    <div class="outsideLabel">ماده اولیه</div>
+    <div class="outsideLabel">{{ label }}</div>
     <q-select ref="input"
               v-model="localValue"
               transition-show="jump-down"
@@ -23,10 +23,10 @@
               input-debounce="500"
               :disable="disable"
               :readonly="readonly"
-              emit-value
+              :emit-value="emitValue"
+              :map-options="mapOptions"
               :hide-dropdown-icon="hideDropdownIcon"
               :dropdown-icon="dropdownIcon"
-              map-options
               :clearable="clearable"
               @filter="filterFn">
       <template #no-option>
@@ -47,6 +47,10 @@ defineOptions({
 });
 
 const props = defineProps({
+  label: {
+    default: 'ماده اولیه',
+    type: String
+  },
   name: {
     default: '',
     type: String
@@ -105,6 +109,14 @@ const props = defineProps({
   },
   disable: {
     default: false,
+    type: Boolean
+  },
+  emitValue: {
+    default: true,
+    type: Boolean
+  },
+  mapOptions: {
+    default: true,
     type: Boolean
   },
   readonly: {

@@ -1,7 +1,10 @@
 import userRoutes from './user';
 import colorRoutes from './color';
 import fabricRoutes from './fabric';
+import reportRoutes from './report';
 import productRoutes from './product';
+import TransferRoutes from './transfer';
+import inventoryRoutes from './inventory';
 import productionRoutes from './production';
 import rawMaterialRoutes from './rawMaterial';
 import productPartRoutes from './productPart';
@@ -34,7 +37,10 @@ export const index: RouteRecordRaw[] = [
       ...userRoutes,
       ...colorRoutes,
       ...fabricRoutes,
+      ...reportRoutes,
       ...productRoutes,
+      ...TransferRoutes,
+      ...inventoryRoutes,
       ...productionRoutes,
       ...rawMaterialRoutes,
       ...productPartRoutes,

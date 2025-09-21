@@ -1,17 +1,24 @@
 import BaseAPI from './BaseAPI';
 import type { AxiosResponse } from 'axios';
 
+export type WorkerRoleType = 'molding' | 'coloring' | 'fabric-cutter' | 'assembler'
+export type UserRolesType = 'Manager' | 'Accountant' | 'MoldingWorker' | 'ColoringWorker' | 'FabricCutter' | 'MiddleWorker' | 'Assembler' | 'WarehouseKeeper'
+
 export const userRoleOptions = [
   { label: 'مدیر', value: 'Manager' },
   { label: 'حسابدار', value: 'Accountant' },
-  { label: 'اتو کار', value: 'MoldingWorker' },
+  { label: 'وسط کار', value: 'MiddleWorker' },
+  { label: 'انباردار', value: 'WarehouseKeeper' },
+  { label: 'برش کار', value: 'FabricCutter' },
   { label: 'رنگ کار', value: 'ColoringWorker' },
-  { label: 'برش کار', value: 'FabricCutter' }
+  { label: 'اتو کار', value: 'MoldingWorker' },
+  { label: 'مونتاژ کار', value: 'Assembler' },
 ]
 
 export type RoleType = {
   id: number | null;
   name: string | null;
+  label: string | null;
   guard_name: string | null;
   created_at: string | null;
   updated_at: string | null;

@@ -43,8 +43,8 @@ import { useQuasar } from 'quasar';
 import { EntityIndex } from 'quasar-crud';
 import UserAPI from 'src/repositories/user';
 import { useDate } from 'src/composables/Date';
-import type { UserType } from 'src/repositories/user';
 import DeleteBtn from 'src/components/controls/deleteBtn.vue';
+import { type UserType, getUserRoleLabel, userRoleOptions } from 'src/repositories/user';
 
 const $q = useQuasar();
 const userAPI = new UserAPI();
@@ -68,7 +68,7 @@ const table = ref({
       required: true,
       label: 'نقش',
       align: 'left',
-      field: (row: UserType) => row.roles[0]?.name,
+      field: (row: UserType) => getUserRoleLabel(row.roles[0]?.name ?? ''),
     },
     {
       name: 'firstname',
@@ -143,21 +143,29 @@ const inputs = ref([
     name: 'mobile',
     label: 'موبایل',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-3 col-12',
   },
   {
     type: 'input',
     name: 'firstname',
     label: 'نام',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-3 col-12',
   },
   {
     type: 'input',
     name: 'lastname',
     label: 'نام خانوادگی',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-3 col-12',
+  },
+  {
+    type: 'select',
+    name: 'role',
+    label: 'نقش',
+    placeholder: ' ',
+    options: userRoleOptions,
+    col: 'col-md-3 col-12',
   },
 ]);
 const entityIndexRef = ref();

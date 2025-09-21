@@ -9,7 +9,7 @@
           <div class="value">
             <currency-number :number="number"
                              :show-status-color="showStatusColor"/>
-            {{ appConfigManager.currencyUnit }}
+            {{ suffix }}
           </div>
         </div>
         <div class="col-4 flex justify-end">
@@ -23,17 +23,15 @@
 </template>
 
 <script setup lang="ts">
-import { useAppConfig } from 'src/stores/appConfig';
-import CurrencyNumber from 'components/CurrencyNumber.vue';
+import CurrencyNumber from 'src/components/CurrencyNumber.vue';
 
 defineProps<{
   icon: string,
   title: string,
   number: number,
+  suffix?: string,
   showStatusColor?: boolean
 }>()
-
-const appConfigManager = useAppConfig();
 </script>
 
 

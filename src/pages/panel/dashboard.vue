@@ -1,152 +1,215 @@
 <template>
-  <div class="q-mb-md">
-    <q-btn v-if="userManager.isFabricCutter" color="primary" label="ثبت برش کاری جدید" :to="{ name: 'Panel.Production.Create', params: { worker_role: 'fabric-cutter' }}" />
-    <q-btn v-if="userManager.isColoringWorker" color="primary" label="ثبت رنگ کاری جدید" :to="{ name: 'Panel.Production.Create', params: { worker_role: 'coloring' }}" />
-    <q-btn v-if="userManager.isMoldingWorker" color="primary" label="ثبت اتوکاری جدید" :to="{ name: 'Panel.Production.Create', params: { worker_role: 'molding' }}" />
+  <div class="row q-col-gutter-md">
+    <div class="col-md-3">
+      <dash-board-card title="تعداد کاربران" icon="add" :number="12" />
+    </div>
+    <div class="col-md-3">
+      <dash-board-card title="تعداد محصولات" icon="add" :number="12" />
+    </div>
+    <div class="col-md-3">
+      <dash-board-card title="تعداد زیر محصولات" icon="add" :number="12" />
+    </div>
+    <div class="col-md-3">
+      <dash-board-card title="تعداد انبارها" icon="add" :number="12" />
+    </div>
   </div>
-  <entity-index
-    :value="inputs"
-    :title="label"
-    :api="api"
-    :table="table"
-    :table-keys="tableKeys"
-    :show-close-button="false"
-    :show-expand-button="false"
-    :show-reload-button="false"
-    :show-search-button="true"
-    :row-key="itemIdentifyKey"
-  />
-  <q-separator class="q-my-md" />
-
-  <div class="flex justify-center items-center">
-    <q-btn color="primary" label="backup" :loading="exportCSVLoading" @click="exportCSV" />
+  <div class="row q-col-gutter-md q-mt-md">
+    <div class="col-md-5">
+      <q-card>
+        <q-card-section>
+          <v-chart class="chart" :option="option1" autoresize />
+        </q-card-section>
+      </q-card>
+    </div>
+    <div class="col-md-7">
+      <q-card>
+        <q-card-section>
+          <v-chart class="chart" :option="option2" autoresize />
+        </q-card-section>
+      </q-card>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue';
-import { useUser } from 'src/stores/user';
-import { EntityIndex } from 'quasar-crud';
-import { userRoleOptions } from 'src/repositories/user';
-import ProductionAPI from 'src/repositories/production';
-import { FormBuilderAssist } from 'quasar-form-builder';
-import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue';
-import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue';
-import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue';
-import FormBuilderSelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue';
+// https://vue-echarts.dev/?renderer=canvas
+// https://echarts.apache.org/examples/en/index.html
+// https://echarts.apache.org/examples/en/editor.html?c=bump-chart
+// https://stackblitz.com/edit/vue-echarts-vue-3?file=src%2FApp.vue
+import DashBoardCard from 'src/components/DashBoardCard.vue'
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { PieChart, LineChart } from 'echarts/charts';
+import {
+  TitleComponent,
+  GridComponent,
+  ToolboxComponent,
+  TooltipComponent,
+  LegendComponent,
+} from 'echarts/components';
+// import VChart, { THEME_KEY } from 'vue-echarts';
+import VChart from 'vue-echarts';
+// import { ref, provide } from 'vue';
+import { ref } from 'vue';
 
-const userManager = useUser();
-const productionAPI = new ProductionAPI();
-
-const formBuilderSelectUserComponent = shallowRef(FormBuilderSelectUser);
-const formBuilderSelectColorComponent = shallowRef(FormBuilderSelectColor);
-const formBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric);
-const formBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProductPart);
-
-const exportCSVLoading = ref(false);
-const api = ref(productionAPI.endpoints.summary);
-const label = ref('گزارش تولیدات');
-const itemIdentifyKey = ref('id');
-
-const tableKeys = ref({
-  data: '',
-  total: 'total',
-  currentPage: 'current_page',
-  perPage: 'per_page',
-  pageKey: 'page',
-});
-
-const table = ref({
-  columns: [
-    {
-      name: 'product_part',
-      required: true,
-      label: 'زیر محصول',
-      align: 'left',
-      field: (row: any) => row.product_part_name,
-    },
-    {
-      name: 'color_name',
-      required: true,
-      label: 'رنگ',
-      align: 'left',
-      field: (row: any) => row.color_name ? row.color_name : '-',
-    },
-    {
-      name: 'fabric_name',
-      required: true,
-      label: 'پارچه',
-      align: 'left',
-      field: (row: any) => row.fabric_name ? row.fabric_name : '-',
-    },
-    {
-      name: 'total_bunch',
-      required: true,
-      label: 'تعداد دسته',
-      align: 'left',
-      field: (row: any) => row.total_bunch,
-    },
-    {
-      name: 'total_petals',
-      required: true,
-      label: 'تعداد کل',
-      align: 'left',
-      field: (row: any) => row.total_petals,
-    }
-  ],
-});
-const inputs = ref([
-  {
-    type: 'select',
-    name: 'role',
-    label: 'نقش',
-    placeholder: ' ',
-    options: userRoleOptions.filter(item=>item.value !== 'Manager' && item.value !== 'Accountant'),
-    col: 'col-md-4 col-12'
-  },
-  {
-    type: 'date',
-    name: 'production_date',
-    outsideLabel: 'تاریخ تولید',
-    clearable: true,
-    col: 'col-md-4 col-12'
-  },
-  {
-    type: formBuilderSelectProductPartComponent,
-    name: 'product_part_id',
-    col: 'col-md-4 col-12'
-  },
-  {
-    type: formBuilderSelectUserComponent,
-    name: 'user_id',
-    col: 'col-md-4 col-12'
-  },
-  {
-    type: formBuilderSelectFabricComponent,
-    name: 'fabric_id',
-    col: 'col-md-4 col-12'
-  },
-  {
-    type: formBuilderSelectColorComponent,
-    name: 'color_id',
-    col: 'col-md-4 col-12'
-  }
+use([
+  CanvasRenderer,
+  PieChart,
+  LineChart,
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  ToolboxComponent,
+  LegendComponent,
 ]);
 
-async function exportCSV() {
-  exportCSVLoading.value = true;
-  const filter = FormBuilderAssist.getFormData(inputs.value)
-  try {
-    const exportResult = await productionAPI.summaryExport(filter)
-    const url = window.URL.createObjectURL(exportResult.blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', exportResult.filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  } finally {
-    exportCSVLoading.value = false;
+// provide(THEME_KEY, 'dark');
+const names = [
+  'Orange',
+  'Tomato',
+  'Lemon',
+  'Pasta'
+];
+const years = ['2001', '2002', '2003', '2004', '2005', '2006'];
+
+const option1 = ref({
+  title: {
+    text: 'Traffic Sources',
+    left: 'center',
+  },
+  tooltip: {
+    trigger: 'item',
+    formatter: '{a} <br/>{b} : {c} ({d}%)',
+  },
+  legend: {
+    orient: 'vertical',
+    left: 'left',
+    data: ['Direct', 'Email', 'Ad Networks', 'Video Ads', 'Search Engines'],
+  },
+  series: [
+    {
+      name: 'Traffic Sources',
+      type: 'pie',
+      radius: '55%',
+      center: ['50%', '60%'],
+      data: [
+        { value: 335, name: 'Direct' },
+        { value: 310, name: 'Email' },
+        { value: 234, name: 'Ad Networks' },
+        { value: 135, name: 'Video Ads' },
+        { value: 1548, name: 'Search Engines' },
+      ],
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)',
+        },
+      },
+    },
+  ],
+});
+
+function generateSeriesList () {
+  const seriesList: any[] = [];
+  const rankingMap = generateRankingData();
+  rankingMap.forEach((data, name) => {
+    const series = {
+      name,
+      symbolSize: 20,
+      type: 'line',
+      smooth: true,
+      emphasis: {
+        focus: 'series'
+      },
+      endLabel: {
+        show: true,
+        formatter: '{a}',
+        distance: 20
+      },
+      lineStyle: {
+        width: 4
+      },
+      data
+    };
+    seriesList.push(series);
+  });
+  return seriesList;
+};
+function generateRankingData () {
+  const map = new Map();
+  const defaultRanking = Array.from({ length: names.length }, (_, i) => i + 1);
+  years.forEach(()=> {
+    const shuffleArray = shuffle(defaultRanking);
+    names.forEach((name, i) => {
+      map.set(name, (map.get(name) || []).concat(shuffleArray[i]));
+    });
+  })
+  return map;
+};
+function shuffle (array: any[]) {
+  let currentIndex = array.length;
+  let randomIndex = 0;
+  while (currentIndex > 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex]
+    ];
   }
-}
+  return array;
+};
+
+
+const option2 = ref({
+  title: {
+    text: 'Bump Chart (Ranking)'
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  grid: {
+    left: 30,
+    right: 110,
+    bottom: 30,
+    containLabel: true
+  },
+  toolbox: {
+    feature: {
+      saveAsImage: {}
+    }
+  },
+  xAxis: {
+    type: 'category',
+    splitLine: {
+      show: true
+    },
+    axisLabel: {
+      margin: 30,
+      fontSize: 16
+    },
+    boundaryGap: false,
+    data: years
+  },
+  yAxis: {
+    type: 'value',
+    axisLabel: {
+      margin: 30,
+      fontSize: 16,
+      formatter: '#{value}'
+    },
+    inverse: true,
+    interval: 1,
+    min: 1,
+    max: names.length
+  },
+  series: generateSeriesList()
+});
 </script>
+
+<style lang="scss" scoped>
+.chart {
+  height: 500px;
+}
+</style>

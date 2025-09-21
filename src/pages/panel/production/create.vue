@@ -2,7 +2,7 @@
   <entity-create
     ref="entityCreateRef"
     v-model:value="inputs"
-    :title="label"
+    :title="createFormlabel"
     :api="api"
     :entity-id-key="entityIdKey"
     :entity-param-key="entityParamKey"
@@ -26,7 +26,7 @@
   <entity-index
     ref="entityIndexRef"
     :value="listInputs"
-    :title="label"
+    :title="listLabel"
     :api="api"
     :table="table"
     :table-keys="tableKeys"
@@ -72,6 +72,7 @@ import getInputs, { type WorkerRoleType } from './inputs';
 import ProductionAPI, { type ProductionType } from 'src/repositories/production';
 import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue';
 import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue';
+import FormBuilderSelectProduct from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProduct.vue';
 import FormBuilderSelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue';
 
 const $q = useQuasar();
@@ -82,6 +83,7 @@ const productionAPI = new ProductionAPI();
 
 const formBuilderSelectColorComponent = shallowRef(FormBuilderSelectColor);
 const formBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric);
+const FormBuilderSelectProductComponent = shallowRef(FormBuilderSelectProduct);
 const formBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProductPart);
 
 const entityIndexRef = ref();
@@ -285,6 +287,47 @@ const coloringWorkerColumns = {
     },
   ],
 }
+const assemblerColumns = {
+  columns: [
+    {
+      name: 'product',
+      required: true,
+      label: 'محصول',
+      align: 'left',
+      field: (row: ProductionType) => row.product?.name,
+    },
+    {
+      name: 'bunch_count',
+      required: true,
+      label: 'تعداد',
+      align: 'left',
+      field: (row: ProductionType) => row.bunch_count,
+    },
+    {
+      name: 'production_date',
+      required: true,
+      label: 'تاریخ تولید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+    },
+    {
+      name: 'created_at',
+      required: true,
+      label: 'زمان ایجاد',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+    },
+    {
+      name: 'actions',
+      required: true,
+      label: 'عملیات',
+      align: 'left',
+      field: () => '',
+    },
+  ],
+}
 const moldingWorkerInputs = [
   {
     type: 'hidden',
@@ -352,6 +395,25 @@ const coloringWorkerInputs = [
     col: 'col-md-4 col-12'
   }
 ]
+const assemblerInputs = [
+  {
+    type: 'hidden',
+    name: 'user_id',
+    value: userManager.me?.id
+  },
+  {
+    type: FormBuilderSelectProductComponent,
+    name: 'product_id',
+    col: 'col-md-4 col-12'
+  },
+  {
+    type: 'date',
+    name: 'production_date',
+    outsideLabel: 'تاریخ تولید',
+    clearable: true,
+    col: 'col-md-4 col-12'
+  }
+]
 
 const itemIdentifyKey = ref('id');
 const tableKeys = ref({
@@ -363,7 +425,8 @@ const tableKeys = ref({
 });
 const table = ref(getTableColumns());
 const api = ref(productionAPI.endpoints.base);
-const label = ref('تولید جدید');
+const createFormlabel = ref('تولید جدید');
+const listLabel = ref('تولیدات');
 const indexRouteName = ref('Panel.Production.List');
 const showRouteName = ref('Panel.Production.Show');
 const entityIdKey = ref('id');
@@ -388,6 +451,9 @@ function getFilterInputs () {
   if (userManager.isColoringWorker) {
     return coloringWorkerInputs
   }
+  if (userManager.isAssembler) {
+    return assemblerInputs
+  }
 }
 
 function getTableColumns () {
@@ -403,16 +469,21 @@ function getTableColumns () {
   if (userManager.isColoringWorker) {
     return coloringWorkerColumns
   }
+  if (userManager.isAssembler) {
+    return assemblerColumns
+  }
 }
 
 function onCreateEntity () {
   entityCreateRef.value.createEntity(false)
-    .finally(()=>{
-      entityIndexRef.value.reload()
+    .then(()=>{
       $q.notify({
         message: 'ثبت با موفقیت انجام شد.',
         type: 'positive'
       })
+    })
+    .finally(()=>{
+      entityIndexRef.value.reload()
     })
 }
 

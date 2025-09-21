@@ -99,15 +99,40 @@ const topLinks: Ref<Array<ListItemType>> = ref([
     route: { name: 'Panel.Production.List' },
   },
   {
+    icon: 'maps_home_work',
+    title: 'حواله ها',
+    forRoles: [ 'Manager', 'Accountant' ],
+    route: { name: 'Panel.Transfer.Create' },
+  },
+  {
+    icon: 'maps_home_work',
+    title: 'انبار ها',
+    forRoles: [ 'Manager', 'Accountant' ],
+    route: { name: 'Panel.Inventory.List' },
+  },
+  {
+    icon: 'receipt_long',
+    title: 'گزارشات',
+    forRoles: [ 'Manager', 'Accountant' ],
+    child: [
+      {
+        icon: 'receipt_long',
+        title: 'تولیدات',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.Report.Productions' },
+      }
+    ],
+  },
+  {
     icon: 'receipt_long',
     title: 'تعاریف اولیه',
     forRoles: [ 'Manager', 'Accountant' ],
     child: [
       {
-        icon: 'receipt_long',
-        title: 'زیر محصولات',
+        icon: 'receipt',
+        title: 'رنگ ها',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.ProductPart.List' },
+        route: { name: 'Panel.Color.List' },
       },
       {
         icon: 'receipt',
@@ -116,10 +141,10 @@ const topLinks: Ref<Array<ListItemType>> = ref([
         route: { name: 'Panel.Fabric.List' },
       },
       {
-        icon: 'receipt',
-        title: 'رنگ ها',
+        icon: 'receipt_long',
+        title: 'زیر محصولات',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.Color.List' },
+        route: { name: 'Panel.ProductPart.List' },
       },
       {
         icon: 'receipt',

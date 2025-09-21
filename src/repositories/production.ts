@@ -2,6 +2,7 @@ import BaseAPI from './BaseAPI';
 import { type UserType } from './user';
 import { type ColorType } from './color';
 import { type FabricType } from './fabric';
+import { type ProductType } from './product';
 import { type ProductPartType } from './productPart';
 import type { AxiosResponse } from 'axios';
 
@@ -9,6 +10,7 @@ export type ProductionType = {
   id: number | null;
   user: UserType | null;
   user_id: number | null;
+  product: ProductType | null;
   product_part: ProductPartType | null;
   product_part_id: number | null;
   fabric: FabricType | null;
@@ -35,6 +37,7 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
       id: null,
       user: null,
       user_id: null,
+      product: null,
       product_part: null,
       product_part_id: null,
       fabric: null,

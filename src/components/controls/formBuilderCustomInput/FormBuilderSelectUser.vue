@@ -1,6 +1,6 @@
 <template>
   <div class="form-builder-select-user">
-    <div class="outsideLabel">کاربر</div>
+    <div class="outsideLabel">{{ label }}</div>
     <q-select ref="input"
               v-model="localValue"
               transition-show="jump-down"
@@ -30,16 +30,28 @@
               :clearable="clearable"
               @filter="filterFn">
       <template #selected-item="{opt}">
-        <template v-if="opt.roles && opt.roles[0]">
-          {{ getUserRoleLabel(opt.roles[0].name) }} -
+        <template v-if="opt.roles">
+          <div v-if="opt.roles[0]?.name">
+            ({{ getUserRoleLabel(opt.roles[0].name) }})
+          </div>
+          <div v-else>
+            (*)
+          </div>
+          <div class="q-ml-md">
+            {{ opt.firstname }}
+            {{ opt.lastname }}
+          </div>
         </template>
-        {{ opt.firstname }}
-        {{ opt.lastname }}
       </template>
       <template #option="{opt, toggleOption}">
         <q-item clickable @click="toggleOption(opt)">
           <q-item-section avatar>
-            {{ getUserRoleLabel(opt.roles[0].name) }}
+            <span v-if="opt.roles[0]?.name">
+              {{ getUserRoleLabel(opt.roles[0].name) }}
+            </span>
+            <span v-else>
+              *
+            </span>
           </q-item-section>
           <q-item-section>
             {{ opt.firstname }}
@@ -65,6 +77,10 @@ defineOptions({
 });
 
 const props = defineProps({
+  label: {
+    default: 'کاربر',
+    type: String
+  },
   name: {
     default: '',
     type: String
