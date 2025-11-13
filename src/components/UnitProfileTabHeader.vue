@@ -3,14 +3,33 @@
     <div class="content">
       <div class="financial-section">
         <div class="row q-col-gutter-md justify-lg-end justify-center">
-          <q-btn color="primary" icon="refresh" class="refresh-balance-btn" :loading="balanceLoading" @click="updateBalance" />
+          <q-btn
+            color="primary"
+            icon="refresh"
+            class="refresh-balance-btn"
+            :loading="balanceLoading"
+            @click="updateBalance" />
           <div class="col-md-6 col-12">
-            <q-skeleton v-if="!unit" height="150px" />
-            <dashboard-card v-else title="تراز مالی مالک" icon="account_balance" :number="ownerBalance" show-status-color />
+            <q-skeleton
+              v-if="!unit"
+              height="150px" />
+            <dashboard-card
+              v-else
+              title="تراز مالی مالک"
+              icon="account_balance"
+              :number="ownerBalance"
+              show-status-color />
           </div>
           <div class="col-md-6 col-12">
-            <q-skeleton v-if="!unit" height="150px" />
-            <dashboard-card v-else title="تراز مالی ساکن" icon="account_balance" :number="residentBalance" show-status-color />
+            <q-skeleton
+              v-if="!unit"
+              height="150px" />
+            <dashboard-card
+              v-else
+              title="تراز مالی ساکن"
+              icon="account_balance"
+              :number="residentBalance"
+              show-status-color />
           </div>
         </div>
       </div>
@@ -38,8 +57,8 @@
             </span>
             -
             <span class="text-bold">
-            طبقه
-            {{ unit?.floor }}
+              طبقه
+              {{ unit?.floor }}
             </span>
             -
             <span class="text-bold">
@@ -57,7 +76,7 @@
             <div>
               توضیحات:
             </div>
-<!--            <div v-html="unit?.description" />-->
+            <!--            <div v-html="unit?.description" />-->
           </div>
         </div>
       </div>
@@ -65,13 +84,12 @@
         v-model="tab"
         stretch
         dense
-        align="justify"
-      >
-        <q-tab v-for="(tabItem, tabIndex) in tabs"
-               :key="tabIndex"
-               :name="tabItem.name"
-               :label="tabItem.label"
-        />
+        align="justify">
+        <q-tab
+          v-for="(tabItem, tabIndex) in tabs"
+          :key="tabIndex"
+          :name="tabItem.name"
+          :label="tabItem.label" />
       </q-tabs>
     </div>
   </q-card>
@@ -79,7 +97,7 @@
 
 <script setup lang="ts">
 import { ref, defineModel, computed } from 'vue'
-import DashboardCard from 'src/components/DashBoardCard.vue';
+import DashboardCard from 'src/components/DashBoardCard.vue'
 
 const props = defineProps<{
   unit: Record<string, any> | null;
@@ -93,16 +111,16 @@ const emits = defineEmits(['updateBalance'])
 const tabs = ref([
   {
     name: 'actions',
-    label: 'عملیات',
+    label: 'عملیات'
   },
   {
     name: 'invoices',
-    label: 'فاکتورها',
+    label: 'فاکتورها'
   },
   {
     name: 'transactions',
-    label: 'تراکنش ها',
-  },
+    label: 'تراکنش ها'
+  }
 ])
 
 const ownerBalance = computed(() => {
@@ -121,7 +139,7 @@ const residentBalance = computed(() => {
   return props.unit.current_resident_balance ? props.unit.current_resident_balance : 0
 })
 
-function updateBalance() {
+function updateBalance () {
   emits('updateBalance')
 }
 </script>

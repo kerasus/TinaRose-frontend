@@ -4,31 +4,33 @@
     v-model="value"
     class="search-input"
     :clearable="!menuToggle"
-    :placeholder="$t('general.startSearching')"
-  >
+    :placeholder="$t('general.startSearching')">
     <template #prepend>
-      <q-icon name="oms:search" color="white" @click="atClickSearchIcon" />
+      <q-icon
+        name="oms:search"
+        color="white"
+        @click="atClickSearchIcon" />
     </template>
   </q-input>
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed } from 'vue';
-import { useAppLayout } from 'stores/appLayout';
+import { ref, defineEmits, computed } from 'vue'
+import { useAppLayout } from 'stores/appLayout'
 
 const value = defineModel('value', {
   type: String,
-  default: '',
-});
-const input = ref<HTMLInputElement | null>(null);
-const appLayoutStore = useAppLayout();
-const menuToggle = computed(() => appLayoutStore.layoutLeftDrawerMini);
-const emits = defineEmits(['click-icon']);
+  default: ''
+})
+const input = ref<HTMLInputElement | null>(null)
+const appLayoutStore = useAppLayout()
+const menuToggle = computed(() => appLayoutStore.layoutLeftDrawerMini)
+const emits = defineEmits(['click-icon'])
 
-function atClickSearchIcon() {
+function atClickSearchIcon () {
   if (menuToggle.value) {
-    emits('click-icon');
-    input.value?.focus();
+    emits('click-icon')
+    input.value?.focus()
   }
 }
 </script>

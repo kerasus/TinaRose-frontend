@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { watch, type ModelRef } from 'vue';
+import { useRoute } from 'vue-router'
+import { watch, type ModelRef } from 'vue'
 
 interface ListItem {
   icon: string;
@@ -14,76 +14,79 @@ interface ListItem {
 
 const items: ModelRef<ListItem[]> = defineModel('items', {
   type: Array,
-  default: () => [],
-});
+  default: () => []
+})
 
 withDefaults(defineProps<{ mini?: boolean }>(), {
-  mini: false,
-});
+  mini: false
+})
 
-const route = useRoute();
+const route = useRoute()
 
-function hasChild(item: ListItem | undefined): boolean {
-  return !!item?.child && Array.isArray(item.child) && item.child.length > 0;
+function hasChild (item: ListItem | undefined): boolean {
+  return !!item?.child && Array.isArray(item.child) && item.child.length > 0
 }
 
-function hasActiveChild(item: ListItem): boolean {
+function hasActiveChild (item: ListItem): boolean {
   if (!hasChild(item)) {
-    return false;
+    return false
   }
-  return item.child!.some((item: ListItem) => isActive(item));
+  return item.child!.some((item: ListItem) => isActive(item))
 }
 
-function isRouteActive(PageRouteName: string, itemRouteName: string): boolean {
+function isRouteActive (PageRouteName: string, itemRouteName: string): boolean {
   return (
     PageRouteName === itemRouteName ||
     (PageRouteName.startsWith('Panel.InstrumentsManagement.InstrumentsList') &&
       itemRouteName.startsWith('Panel.InstrumentsManagement.InstrumentsList')) ||
     (PageRouteName.startsWith('Panel.OnlineManagement.Commission') &&
       itemRouteName.startsWith('Panel.OnlineManagement.Commission'))
-  );
+  )
 }
 
-function isActive(item: ListItem): boolean {
+function isActive (item: ListItem): boolean {
   if (item.route && isRouteActive(route.name?.toString() || '', item.route.name)) {
-    return true;
+    return true
   }
   if (hasChild(item)) {
-    return item.child?.some((childItem) => isActive(childItem)) || false;
+    return item.child?.some((childItem) => isActive(childItem)) || false
   }
-  return false;
+  return false
 }
 
-function loadExpandedAttrOfItems(items: ListItem[]): void {
+function loadExpandedAttrOfItems (items: ListItem[]): void {
   items.forEach((item) => {
     if (hasChild(item)) {
-      item.expanded = hasActiveChild(item);
-      loadExpandedAttrOfItems(item.child!);
+      item.expanded = hasActiveChild(item)
+      loadExpandedAttrOfItems(item.child!)
     }
-  });
+  })
 }
 
 watch(
   () => route.name,
   () => {
-    loadExpandedAttrOfItems(items.value);
+    loadExpandedAttrOfItems(items.value)
   },
   {
-    immediate: true,
-  },
-);
+    immediate: true
+  }
+)
 </script>
 
 <template>
-  <template v-for="item in items" :key="item.title">
+  <template
+    v-for="item in items"
+    :key="item.title">
     <q-expansion-item
       v-if="hasChild(item)"
       :model-value="item.expanded"
       :label="(item.title)"
       :icon="item.icon"
-      class="menu-item"
-    >
-      <list-item :items="item.child" :mini="mini" />
+      class="menu-item">
+      <list-item
+        :items="item.child"
+        :mini="mini" />
     </q-expansion-item>
     <q-item
       v-else
@@ -92,10 +95,11 @@ watch(
       :to="item.route"
       clickable
       class="menu-item"
-      :class="{ mini: mini }"
-    >
+      :class="{ mini: mini }">
       <q-item-section avatar>
-        <q-icon :name="item.icon" :color="item.iconColor" />
+        <q-icon
+          :name="item.icon"
+          :color="item.iconColor" />
       </q-item-section>
       <q-item-section>
         <q-item-label>{{ (item.title) }}</q-item-label>

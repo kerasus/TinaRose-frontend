@@ -1,65 +1,67 @@
 <script setup lang="ts">
-import moment from 'jalali-moment';
-import { useRouter } from 'vue-router';
-import { useUser } from 'src/stores/user';
-import { ref, onMounted, onUnmounted } from 'vue';
+import moment from 'jalali-moment'
+import { useRouter } from 'vue-router'
+import { useUser } from 'src/stores/user'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 withDefaults(defineProps<{ floated?: boolean }>(), {
-  floated: false,
-});
+  floated: false
+})
 
-const router = useRouter();
-const userManager = useUser();
-const formattedDate = ref('');
-const formattedTime = ref('');
+const router = useRouter()
+const userManager = useUser()
+const formattedDate = ref('')
+const formattedTime = ref('')
 
-function updateDateTime() {
-  const now = moment();
-  formattedDate.value = now.format('jYYYY/jMM/jDD');
-  formattedTime.value = now.format('HH:mm');
+function updateDateTime () {
+  const now = moment()
+  formattedDate.value = now.format('jYYYY/jMM/jDD')
+  formattedTime.value = now.format('HH:mm')
 }
 
-function updateTime() {
-  updateDateTime();
+function updateTime () {
+  updateDateTime()
 }
 
-let timer: any;
+let timer: any
 onMounted(() => {
-  updateDateTime();
-  timer = setInterval(updateTime, 60000);
-});
+  updateDateTime()
+  timer = setInterval(updateTime, 60000)
+})
 
 onUnmounted(() => {
-  if (timer) clearInterval(timer);
-});
+  if (timer) clearInterval(timer)
+})
 
-function logout() {
-  userManager.logout();
-  router.push({ name: 'Auth.Login' });
+function logout () {
+  userManager.logout()
+  router.push({ name: 'Auth.Login' })
 }
 </script>
 
 <template>
-  <div class="main-dashboard-wrapper" :class="{ floated: floated }">
+  <div
+    class="main-dashboard-wrapper"
+    :class="{ floated: floated }">
     <q-toolbar class="main-dashboard">
       <q-toolbar-title class="main-dashboard__main-section">
         <div class="main-dashboard__right-section">
           <div class="toggle-mini-btn">
-            <q-btn v-if="userManager.me"
+            <q-btn
+              v-if="userManager.me"
               class="icon-button drawer-btn"
               color="primary"
               label="واحد من"
-              :to="{ name: 'Panel.Unit.Mine' }"
-            />
+              :to="{ name: 'Panel.Unit.Mine' }" />
           </div>
         </div>
         <div class="main-dashboard__center-section">
-          <q-img flat
-                 src="/panel/images/logo.png"
-                 class="full-width"
-                 width="100px"
-                 :to="{ name: 'HomePage' }"
-          />
+          <q-img
+            flat
+            src="/panel/images/logo.png"
+            class="full-width"
+            width="100px"
+            :to="{ name: 'HomePage' }" />
         </div>
         <div class="main-dashboard__left-section">
           <!-- <div class="time">
@@ -70,13 +72,19 @@ function logout() {
           <!-- <q-btn icon="notifications" class="icon-button" @click="toggleRightDrawer">
             <q-badge floating rounded color="red"> 2 </q-badge>
           </q-btn> -->
-          <q-btn v-if="userManager.me"
-                 icon="person" class="icon-button">
-            <q-menu transition-show="jump-down" transition-hide="jump-up">
+          <q-btn
+            v-if="userManager.me"
+            icon="person"
+            class="icon-button">
+            <q-menu
+              transition-show="jump-down"
+              transition-hide="jump-up">
               <div class="row no-wrap q-pa-md">
                 <div class="column items-center">
                   <q-avatar size="72px">
-                    <img src="/panel/images/blankProfile.png" alt="avatar" />
+                    <img
+                      src="/panel/images/blankProfile.png"
+                      alt="avatar">
                   </q-avatar>
 
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
@@ -88,18 +96,22 @@ function logout() {
                     </div>
                   </div>
 
-                  <q-btn v-close-popup color="primary" icon="logout" flat @click="logout" />
+                  <q-btn
+                    v-close-popup
+                    color="primary"
+                    icon="logout"
+                    flat
+                    @click="logout" />
                 </div>
               </div>
             </q-menu>
           </q-btn>
           <q-btn
             v-else
-                 class="icon-button drawer-btn gt-sm"
-                 color="primary"
-                 label="ورود"
-                 :to="{ name: 'Auth.Login' }"
-          />
+            class="icon-button drawer-btn gt-sm"
+            color="primary"
+            label="ورود"
+            :to="{ name: 'Auth.Login' }" />
         </div>
       </q-toolbar-title>
     </q-toolbar>

@@ -1,11 +1,11 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
     path: 'reports',
     name: 'Panel.Report',
     meta: {
-      pageCategory: 'گزارشات',
+      pageCategory: 'گزارشات'
     },
     component: () => import('src/layouts/BareLayout.vue'),
     children: [
@@ -15,21 +15,21 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'تولیدات',
-            },
-          ],
+              label: 'تولیدات'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/report/productions.vue'),
-      },
-    ],
+        component: () => import('src/pages/panel/report/productions.vue')
+      }
+    ]
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
-  },
-];
+    component: () => import('pages/ErrorNotFound.vue')
+  }
+]
 
-export default routes;
+export default routes

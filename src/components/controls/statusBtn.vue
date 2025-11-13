@@ -1,5 +1,7 @@
 <template>
-  <q-dialog v-model="showDialog" :persistent="loading">
+  <q-dialog
+    v-model="showDialog"
+    :persistent="loading">
     <confirmation
       :title="selectedRowForChangeStatus.title"
       :message="selectedRowForChangeStatus.message"
@@ -9,8 +11,7 @@
       :title-color="selectedRowForChangeStatus.titleColor"
       :loading="loading"
       @submit="onChangeStatus"
-      @cancel="hideDialog"
-    />
+      @cancel="hideDialog" />
   </q-dialog>
   <template v-if="row && row[stateKey]">
     <q-btn
@@ -20,26 +21,26 @@
       outline
       :loading="loading"
       class="full-width icon-button"
-      @click="onClickStatusBtn(row)"
-    >
-      <q-icon name="oms:dot" :color="row[stateKey].active ? activeIconColor : deactiveIconColor" />
+      @click="onClickStatusBtn(row)">
+      <q-icon
+        name="oms:dot"
+        :color="row[stateKey].active ? activeIconColor : deactiveIconColor" />
       {{ row[stateKey].active ? $t(activeLabel) : $t(deactiveLabel) }}
     </q-btn>
     <q-chip
       v-else
       class="tag"
-      :class="row[stateKey].active ? 'text-success-dark' : 'text-neutral-40'"
-    >
+      :class="row[stateKey].active ? 'text-success-dark' : 'text-neutral-40'">
       {{ row[stateKey].active ? $t(activeLabel) : $t(deactiveLabel) }}
     </q-chip>
   </template>
 </template>
 
 <script setup lang="ts">
-import type BaseAPI from 'src/repositories/BaseAPI';
-import { ref, type Ref, defineEmits } from 'vue';
-import type { ConfirmationProps } from 'src/components/cards/confirmation.vue';
-import Confirmation from 'src/components/cards/confirmation.vue';
+import type BaseAPI from 'src/repositories/BaseAPI'
+import { ref, type Ref, defineEmits } from 'vue'
+import type { ConfirmationProps } from 'src/components/cards/confirmation.vue'
+import Confirmation from 'src/components/cards/confirmation.vue'
 
 export interface ExtendedConfirmationProps extends Omit<ConfirmationProps, 'message'> {
   message?: string | ((data: unknown) => string) | undefined;
@@ -66,10 +67,10 @@ interface StatusBtnProps {
   readOnly?: boolean;
 }
 
-const defaultActiveTitleColor = 'success-dark';
-const defaultDeactiveTitleColor = 'error';
-const defaultActiveIcon = 'oms:unlock';
-const defaultDeactiveIcon = 'oms:lock';
+const defaultActiveTitleColor = 'success-dark'
+const defaultDeactiveTitleColor = 'error'
+const defaultActiveIcon = 'oms:unlock'
+const defaultDeactiveIcon = 'oms:lock'
 
 const props = withDefaults(defineProps<StatusBtnProps>(), {
   row: null,
@@ -86,7 +87,7 @@ const props = withDefaults(defineProps<StatusBtnProps>(), {
     icon: 'oms:unlock',
     titleColor: defaultActiveTitleColor,
     submitLabel: 'general.agree',
-    cancelLabel: 'general.cancel',
+    cancelLabel: 'general.cancel'
   }),
   deactiveConfirmationOptions: () => ({
     title: 'dialog.deactiveCustomerTitle',
@@ -94,14 +95,14 @@ const props = withDefaults(defineProps<StatusBtnProps>(), {
     icon: 'oms:lock',
     titleColor: defaultDeactiveTitleColor,
     submitLabel: 'general.agree',
-    cancelLabel: 'general.cancel',
-  }),
-});
+    cancelLabel: 'general.cancel'
+  })
+})
 
-const emits = defineEmits(['change', 'changing']);
+const emits = defineEmits(['change', 'changing'])
 
-const showDialog = ref(false);
-const loading = ref(false);
+const showDialog = ref(false)
+const loading = ref(false)
 
 const selectedRowForChangeStatus: Ref<{
   title?: string;
@@ -114,64 +115,64 @@ const selectedRowForChangeStatus: Ref<{
   message: '',
   row: null,
   icon: null,
-  titleColor: 'neutral-0',
-});
+  titleColor: 'neutral-0'
+})
 
-function getDialogActiveMessage(row: RowData): string | undefined {
+function getDialogActiveMessage (row: RowData): string | undefined {
   if (typeof props.activeConfirmationOptions.message === 'function') {
-    return props.activeConfirmationOptions.message(row);
+    return props.activeConfirmationOptions.message(row)
   }
-  return props.activeConfirmationOptions.message;
+  return props.activeConfirmationOptions.message
 }
 
-function getDialogDeactiveMessage(row: RowData): string | undefined {
+function getDialogDeactiveMessage (row: RowData): string | undefined {
   if (typeof props.deactiveConfirmationOptions.message === 'function') {
-    return props.deactiveConfirmationOptions.message(row);
+    return props.deactiveConfirmationOptions.message(row)
   }
-  return props.deactiveConfirmationOptions.message;
+  return props.deactiveConfirmationOptions.message
 }
 
-function onClickStatusBtn(row: RowData) {
-  selectedRowForChangeStatus.value.row = row;
-  showDialog.value = true;
+function onClickStatusBtn (row: RowData) {
+  selectedRowForChangeStatus.value.row = row
+  showDialog.value = true
   selectedRowForChangeStatus.value.title = row[props.stateKey].active
     ? props.deactiveConfirmationOptions.title
-    : props.activeConfirmationOptions.title;
+    : props.activeConfirmationOptions.title
 
   selectedRowForChangeStatus.value.message = row[props.stateKey].active
     ? getDialogDeactiveMessage(row)
-    : getDialogActiveMessage(row);
+    : getDialogActiveMessage(row)
 
   selectedRowForChangeStatus.value.icon = row[props.stateKey].active
     ? props.deactiveConfirmationOptions.icon || defaultDeactiveIcon
-    : props.activeConfirmationOptions.icon || defaultActiveIcon;
+    : props.activeConfirmationOptions.icon || defaultActiveIcon
 
   selectedRowForChangeStatus.value.titleColor = row[props.stateKey].active
     ? props.deactiveConfirmationOptions.titleColor || defaultDeactiveTitleColor
-    : props.activeConfirmationOptions.titleColor || defaultActiveTitleColor;
+    : props.activeConfirmationOptions.titleColor || defaultActiveTitleColor
 }
 
-function hideDialog() {
-  showDialog.value = false;
+function hideDialog () {
+  showDialog.value = false
 }
 
-function onChangeStatus() {
-  loading.value = true;
-  emits('changing');
+function onChangeStatus () {
+  loading.value = true
+  emits('changing')
 
-  const entityId = selectedRowForChangeStatus.value.row?.[props.entityIdKey];
+  const entityId = selectedRowForChangeStatus.value.row?.[props.entityIdKey]
 
   if (!entityId) {
-    return;
+    return
   }
 
   const promise = selectedRowForChangeStatus.value.row?.[props.stateKey].active
     ? props.api.delete(entityId)
-    : props.api.activate(entityId);
+    : props.api.activate(entityId)
   promise.finally(() => {
-    showDialog.value = false;
-    loading.value = false;
-    emits('change');
-  });
+    showDialog.value = false
+    loading.value = false
+    emits('change')
+  })
 }
 </script>

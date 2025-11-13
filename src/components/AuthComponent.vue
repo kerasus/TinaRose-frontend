@@ -6,8 +6,7 @@
           ref="usernameInput"
           v-model="username"
           label="نام کاربری"
-          @keyup.enter="focusNext('passwordInput')"
-        />
+          @keyup.enter="focusNext('passwordInput')" />
       </div>
       <div class="auth-component__password">
         <q-input
@@ -15,69 +14,71 @@
           v-model="password"
           label="کلمه عبور"
           :type="passwordVisibility ? 'text' : 'password'"
-          @keyup.enter="onClickLoginBtn"
-        >
+          @keyup.enter="onClickLoginBtn">
           <template #append>
             <q-btn
               flat
               :icon="passwordVisibility ? 'visibility' : 'visibility_off'"
-              @click="onClickPasswordVisibility"
-            />
+              @click="onClickPasswordVisibility" />
           </template>
         </q-input>
       </div>
       <div class="auth-component__action-area">
-        <q-btn label="ورود" color="primary" :loading="loginLoading" @click="onClickLoginBtn" />
+        <q-btn
+          label="ورود"
+          color="primary"
+          :loading="loginLoading"
+          @click="onClickLoginBtn" />
       </div>
     </q-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useQuasar } from 'quasar';
-import { useRouter } from 'vue-router';
-import { useUser } from 'src/stores/user';
-import { useAppConfig } from 'src/stores/appConfig';
-import { axiosInstanceManager } from 'src/boot/axios';
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
+import { useUser } from 'src/stores/user'
+import { useAppConfig } from 'src/stores/appConfig'
+import { axiosInstanceManager } from 'src/boot/axios'
 
-const $q = useQuasar();
-const router = useRouter();
-const userManager = useUser();
-const i18nManager = useI18n();
-const appConfigManager = useAppConfig();
-const loginLoading = ref(false);
-const username = ref<string | null>(null);
-const password = ref<string | null>(null);
-const passwordVisibility = ref<boolean>(false);
+const $q = useQuasar()
+const router = useRouter()
+const userManager = useUser()
+const i18nManager = useI18n()
+const appConfigManager = useAppConfig()
+const loginLoading = ref(false)
+const username = ref<string | null>(null)
+const password = ref<string | null>(null)
+const passwordVisibility = ref<boolean>(false)
 
-const usernameInput = ref<HTMLInputElement | null>(null);
-const passwordInput = ref<HTMLInputElement | null>(null);
+const usernameInput = ref<HTMLInputElement | null>(null)
+const passwordInput = ref<HTMLInputElement | null>(null)
 
 const onClickPasswordVisibility = () => {
-  passwordVisibility.value = !passwordVisibility.value;
-};
-
-function isValidAuthPayload() {
-  let state = true;
-  if (!username.value || !password.value) {
-    state = false;
-  }
-
-  return state;
+  passwordVisibility.value = !passwordVisibility.value
 }
 
-function onClickLoginBtn() {
-  if (!isValidAuthPayload()) {
-    return;
+function isValidAuthPayload () {
+  let state = true
+  if (!username.value || !password.value) {
+    state = false
   }
-  loginLoading.value = true;
-  axiosInstanceManager.setCredentials(username.value ?? '', password.value ?? '', '111111');
+
+  return state
+}
+
+function onClickLoginBtn () {
+  if (!isValidAuthPayload()) {
+    return
+  }
+  loginLoading.value = true
+  axiosInstanceManager.setCredentials(username.value ?? '', password.value ?? '', '111111')
   axiosInstanceManager
     .obtainMainToken()
     .then(async () => {
-      await redirectAfterLogin();
+      await redirectAfterLogin()
     })
     .catch((error) => {
       $q.notify({
@@ -91,17 +92,17 @@ function onClickLoginBtn() {
             class: 'icon-button',
             handler: () => {
               /* ... */
-            },
-          },
-        ],
-      });
+            }
+          }
+        ]
+      })
     })
     .finally(() => {
-      loginLoading.value = false;
-    });
+      loginLoading.value = false
+    })
 }
 
-async function redirectAfterLogin() {
+async function redirectAfterLogin () {
   let defaultRoute = { name: 'Panel.Dashboard', params: {} }
   if (userManager.isManager || userManager.isAccountant) {
     defaultRoute = { name: 'Panel.Dashboard', params: {} }
@@ -110,23 +111,23 @@ async function redirectAfterLogin() {
   } else if (userManager.isWarehouseKeeper) {
     defaultRoute = { name: 'Panel.Transfer.Create', params: {} }
   } else if (userManager.isFabricCutter) {
-    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'fabric-cutter' }}
+    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'fabric-cutter' } }
   } else if (userManager.isColoringWorker) {
-    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'coloring' }}
+    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'coloring' } }
   } else if (userManager.isMoldingWorker) {
-    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'molding' }}
+    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'molding' } }
   } else if (userManager.isAssembler) {
-    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'assembler' }}
+    defaultRoute = { name: 'Panel.Production.Create', params: { worker_role: 'assembler' } }
   }
 
-  const redirectLocation = appConfigManager.redirectAfterLogin || defaultRoute;
-  await router.push(redirectLocation);
+  const redirectLocation = appConfigManager.redirectAfterLogin || defaultRoute
+  await router.push(redirectLocation)
 }
 
-function focusNext(refName: string) {
-  const nextInput = refName === 'passwordInput' ? passwordInput.value : null;
+function focusNext (refName: string) {
+  const nextInput = refName === 'passwordInput' ? passwordInput.value : null
   if (nextInput) {
-    nextInput.focus();
+    nextInput.focus()
   }
 }
 </script>

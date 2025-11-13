@@ -1,8 +1,10 @@
+import { inventoryTypeOptions } from 'src/repositories/inventory'
+
 export default () => [
   {
     type: 'hidden',
     name: 'id',
-    responseKey: 'id',
+    responseKey: 'id'
   },
   {
     type: 'input',
@@ -10,15 +12,16 @@ export default () => [
     responseKey: 'name',
     label: 'نام',
     placeholder: ' ',
-    col: 'col-md-6 col-12',
+    col: 'col-md-6 col-12'
   },
   {
-    type: 'input',
+    type: 'select',
     name: 'type',
     responseKey: 'type',
-    label: 'نوع',
+    label: 'نوع انبار',
     placeholder: ' ',
-    col: 'col-md-6 col-12',
+    options: inventoryTypeOptions,
+    col: 'col-md-6 col-12'
   },
   {
     type: 'input',
@@ -26,6 +29,6 @@ export default () => [
     responseKey: 'description',
     label: 'توضیحات',
     placeholder: ' ',
-    col: 'col-md-12 col-12',
-  },
+    col: 'col-md-12 col-12'
+  }
 ]

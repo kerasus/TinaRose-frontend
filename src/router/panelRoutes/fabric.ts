@@ -1,11 +1,11 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
     path: 'fabric',
     name: 'Panel.Fabric',
     meta: {
-      pageCategory: 'پارچه ها',
+      pageCategory: 'پارچه ها'
     },
     component: () => import('src/layouts/BareLayout.vue'),
     children: [
@@ -15,11 +15,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'لیست',
-            },
-          ],
+              label: 'لیست'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/fabric/list.vue'),
+        component: () => import('src/pages/panel/fabric/list.vue')
       },
       {
         path: 'create',
@@ -27,11 +27,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'جدید',
-            },
-          ],
+              label: 'جدید'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/fabric/create.vue'),
+        component: () => import('src/pages/panel/fabric/create.vue')
       },
       {
         path: ':id',
@@ -39,11 +39,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'مشاهده',
-            },
-          ],
+              label: 'مشاهده'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/fabric/show.vue'),
+        component: () => import('src/pages/panel/fabric/show.vue')
       },
       {
         path: ':id/edit',
@@ -51,21 +51,21 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'ویرایش',
-            },
-          ],
+              label: 'ویرایش'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/fabric/edit.vue'),
+        component: () => import('src/pages/panel/fabric/edit.vue')
       }
-    ],
+    ]
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
-  },
-];
+    component: () => import('pages/ErrorNotFound.vue')
+  }
+]
 
-export default routes;
+export default routes

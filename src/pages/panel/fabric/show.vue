@@ -8,36 +8,35 @@
     :index-route-name="indexRouteName"
     :show-route-name="showRouteName"
     :edit-route-name="editRouteName"
-    :show-expand-button="false"
-  />
+    :show-expand-button="false" />
 </template>
 
 <script setup lang="ts">
-import getInputs from './inputs';
-import { computed, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import { EntityShow } from 'quasar-crud';
-import FabricAPI from 'src/repositories/fabric';
+import getInputs from './inputs'
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { EntityShow } from 'quasar-crud'
+import FabricAPI from 'src/repositories/fabric'
 
-const fabricAPI = new FabricAPI();
-const route = useRoute();
+const fabricAPI = new FabricAPI()
+const route = useRoute()
 
-const buildingId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0));
+const buildingId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0))
 
-const api = ref(fabricAPI.endpoints.byId(buildingId.value));
-const label = ref('مشاهده پارچه');
-const indexRouteName = ref('Panel.Fabric.List');
-const showRouteName = ref('Panel.Fabric.Show');
-const editRouteName = ref('Panel.Fabric.Edit');
-const entityIdKey = ref('id');
-const entityParamKey = ref('id');
+const api = ref(fabricAPI.endpoints.byId(buildingId.value))
+const label = ref('مشاهده پارچه')
+const indexRouteName = ref('Panel.Fabric.List')
+const showRouteName = ref('Panel.Fabric.Show')
+const editRouteName = ref('Panel.Fabric.Edit')
+const entityIdKey = ref('id')
+const entityParamKey = ref('id')
 
 const inputs = ref([
   {
     type: 'hidden',
     name: 'id',
-    responseKey: 'id',
+    responseKey: 'id'
   },
   ...getInputs()
-]);
+])
 </script>

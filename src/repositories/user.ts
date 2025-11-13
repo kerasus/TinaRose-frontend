@@ -1,7 +1,8 @@
-import BaseAPI from './BaseAPI';
-import type { AxiosResponse } from 'axios';
+import BaseAPI from './BaseAPI'
+import type { AxiosResponse } from 'axios'
 
 export type WorkerRoleType = 'molding' | 'coloring' | 'fabric-cutter' | 'assembler'
+export type UserRolesForPathType = 'manager' | 'accountant' | 'molding' | 'coloring' | 'fabric-cutter' | 'middle' | 'assembler' | 'warehouse-keeper'
 export type UserRolesType = 'Manager' | 'Accountant' | 'MoldingWorker' | 'ColoringWorker' | 'FabricCutter' | 'MiddleWorker' | 'Assembler' | 'WarehouseKeeper'
 
 export const userRoleOptions = [
@@ -12,7 +13,7 @@ export const userRoleOptions = [
   { label: 'برش کار', value: 'FabricCutter' },
   { label: 'رنگ کار', value: 'ColoringWorker' },
   { label: 'اتو کار', value: 'MoldingWorker' },
-  { label: 'مونتاژ کار', value: 'Assembler' },
+  { label: 'مونتاژ کار', value: 'Assembler' }
 ]
 
 export type RoleType = {
@@ -30,6 +31,7 @@ export type UserType = {
   lastname: string | null;
   email: string | null;
   username: string | null;
+  employee_code: string | null;
   mobile: string | null;
   roles_list: string[];
   roles: RoleType[];
@@ -40,7 +42,7 @@ export type UserType = {
 };
 
 export function getUserRoleLabel (roleName: string): string {
-  const targetRole = userRoleOptions.find(item=>item.value === roleName)
+  const targetRole = userRoleOptions.find((item)=>item.value === roleName)
   if (targetRole) {
     return targetRole.label
   }
@@ -49,54 +51,55 @@ export function getUserRoleLabel (roleName: string): string {
 }
 
 export default class UserAPI extends BaseAPI<UserType> {
-  constructor() {
-    super('/users');
+  constructor () {
+    super('/users')
     this.defaultObject = {
       id: null,
       firstname: null,
       lastname: null,
       email: null,
       username: null,
+      employee_code: null,
       mobile: null,
       roles: [],
       roles_list: [],
       email_verified_at: null,
       mobile_verified_at: null,
       created_at: null,
-      updated_at: null,
-    };
+      updated_at: null
+    }
     this.endpoints = {
       ...this.endpoints,
       assignRole: (userId: number) => `${this.baseEndpoint}/${userId}/assign-role`,
       removeRole: (userId: number) => `${this.baseEndpoint}/${userId}/remove-role`,
-      resetPassword: (userId: number) => `${this.baseEndpoint}/${userId}/reset-password`,
+      resetPassword: (userId: number) => `${this.baseEndpoint}/${userId}/reset-password`
     }
   }
 
-  async assignRole(userId: number, role: string): Promise<{ message: string, data: { user: UserType }}> {
+  async assignRole (userId: number, role: string): Promise<{ message: string, data: { user: UserType }}> {
     try {
       const response: AxiosResponse<{ message: string, data: { user: UserType }}> = await this.getAxiosInstanceWithToken()
-        .post(this.endpoints.assignRole(userId), { role });
-      return response.data;
+        .post(this.endpoints.assignRole(userId), { role })
+      return response.data
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw new Error(error.message)
       } else {
-        throw new Error('An unknown error occurred on updateBalance');
+        throw new Error('An unknown error occurred on updateBalance')
       }
     }
   }
 
-  async removeRole(userId: number, role: string): Promise<{ message: string, data: { user: UserType }}> {
+  async removeRole (userId: number, role: string): Promise<{ message: string, data: { user: UserType }}> {
     try {
       const response: AxiosResponse<{ message: string, data: { user: UserType }}> = await this.getAxiosInstanceWithToken()
-        .post(this.endpoints.removeRole(userId), { role });
-      return response.data;
+        .post(this.endpoints.removeRole(userId), { role })
+      return response.data
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw new Error(error.message)
       } else {
-        throw new Error('An unknown error occurred on updateBalance');
+        throw new Error('An unknown error occurred on updateBalance')
       }
     }
   }

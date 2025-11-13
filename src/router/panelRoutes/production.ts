@@ -1,11 +1,11 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
     path: 'production',
     name: 'Panel.Production',
     meta: {
-      pageCategory: 'تولیدات',
+      pageCategory: 'تولیدات'
     },
     component: () => import('src/layouts/BareLayout.vue'),
     children: [
@@ -15,11 +15,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'لیست',
-            },
-          ],
+              label: 'لیست'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/production/list.vue'),
+        component: () => import('src/pages/panel/production/list.vue')
       },
       {
         path: ':worker_role/create',
@@ -27,11 +27,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'قالب کاری جدید',
-            },
-          ],
+              label: 'تولید جدید'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/production/create.vue'),
+        component: () => import('src/pages/panel/production/create.vue')
       },
       {
         path: ':worker_role/:id',
@@ -39,11 +39,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'مشاهده',
-            },
-          ],
+              label: 'مشاهده'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/production/show.vue'),
+        component: () => import('src/pages/panel/production/show.vue')
       },
       {
         path: ':worker_role/:id/edit',
@@ -51,21 +51,21 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'ویرایش',
-            },
-          ],
+              label: 'ویرایش'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/production/edit.vue'),
+        component: () => import('src/pages/panel/production/edit.vue')
       }
-    ],
+    ]
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
-  },
-];
+    component: () => import('pages/ErrorNotFound.vue')
+  }
+]
 
-export default routes;
+export default routes

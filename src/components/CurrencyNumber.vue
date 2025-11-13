@@ -1,5 +1,7 @@
 <template>
-  <span class="currency-number" :class="{ 'text-green': showStatusColor && number >= 0, 'text-red': showStatusColor && number < 0 }">
+  <span
+    class="currency-number"
+    :class="{ 'text-green': showStatusColor && number >= 0, 'text-red': showStatusColor && number < 0 }">
     {{ formattedNumber }}
   </span>
 </template>

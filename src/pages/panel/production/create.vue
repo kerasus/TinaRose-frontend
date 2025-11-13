@@ -11,12 +11,12 @@
     :before-send-data="beforeSendData"
     :show-expand-button="false"
     :show-close-button="false"
-    :show-save-button="false"
-  >
+    :show-save-button="false">
     <template #after-form-builder>
       <div class="q-mt-md flex justify-end">
-        <q-btn color="primary"
-         @click="onCreateEntity">
+        <q-btn
+          color="primary"
+          @click="onCreateEntity">
           ثبت
         </q-btn>
       </div>
@@ -35,16 +35,14 @@
     :show-expand-button="false"
     :show-reload-button="false"
     :show-search-button="true"
-    :row-key="itemIdentifyKey"
-  >
+    :row-key="itemIdentifyKey">
     <template #entity-index-table-cell="{ inputData }">
       <template v-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
           <q-btn
             v-if="inputData.props.row.description"
             color="primary"
-            flat
-          >
+            flat>
             توضیحات
             <q-tooltip>
               {{ inputData.props.row.description }}
@@ -60,34 +58,34 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { ref, shallowRef } from 'vue';
-import { useRoute } from 'vue-router';
+import { useQuasar } from 'quasar'
+import { ref, shallowRef } from 'vue'
+import { useRoute } from 'vue-router'
 import Digit from 'src/composables/Digit'
-import { useUser } from 'src/stores/user';
-import { useDate } from 'src/composables/Date';
-import { EntityCreate, EntityIndex } from 'quasar-crud';
-import { FormBuilderAssist } from 'quasar-form-builder';
-import getInputs, { type WorkerRoleType } from './inputs';
-import ProductionAPI, { type ProductionType } from 'src/repositories/production';
-import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue';
-import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue';
-import FormBuilderSelectProduct from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProduct.vue';
-import FormBuilderSelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue';
+import { useUser } from 'src/stores/user'
+import { useDate } from 'src/composables/Date'
+import { EntityCreate, EntityIndex } from 'quasar-crud'
+import { FormBuilderAssist } from 'quasar-form-builder'
+import getInputs, { type WorkerRoleType } from './inputs'
+import ProductionAPI, { type ProductionType } from 'src/repositories/production'
+import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue'
+import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue'
+import FormBuilderSelectProduct from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProduct.vue'
+import FormBuilderSelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue'
 
-const $q = useQuasar();
+const $q = useQuasar()
 const route = useRoute()
-const dateManager = useDate();
-const userManager = useUser();
-const productionAPI = new ProductionAPI();
+const dateManager = useDate()
+const userManager = useUser()
+const productionAPI = new ProductionAPI()
 
-const formBuilderSelectColorComponent = shallowRef(FormBuilderSelectColor);
-const formBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric);
-const FormBuilderSelectProductComponent = shallowRef(FormBuilderSelectProduct);
-const formBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProductPart);
+const formBuilderSelectColorComponent = shallowRef(FormBuilderSelectColor)
+const formBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric)
+const FormBuilderSelectProductComponent = shallowRef(FormBuilderSelectProduct)
+const formBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProductPart)
 
-const entityIndexRef = ref();
-const entityCreateRef = ref();
+const entityIndexRef = ref()
+const entityCreateRef = ref()
 const managerColumns = {
   columns: [
     {
@@ -95,35 +93,35 @@ const managerColumns = {
       required: true,
       label: 'پرسنل',
       align: 'left',
-      field: (row: ProductionType) => row.user?.firstname + ' ' + row.user?.lastname,
+      field: (row: ProductionType) => row.user?.firstname + ' ' + row.user?.lastname
     },
     {
       name: 'product_part',
       required: true,
       label: 'زیر محصول',
       align: 'left',
-      field: (row: ProductionType) => row.product_part?.name,
+      field: (row: ProductionType) => row.product_part?.name
     },
     {
       name: 'fabric_id',
       required: true,
       label: 'پارچه',
       align: 'left',
-      field: (row: ProductionType) => row.fabric?.name,
+      field: (row: ProductionType) => row.fabric?.name
     },
     {
       name: 'color',
       required: true,
       label: 'رنگ',
       align: 'left',
-      field: (row: ProductionType) => row.color?.name,
+      field: (row: ProductionType) => row.color?.name
     },
     {
       name: 'bunch_count',
       required: true,
       label: 'تعداد',
       align: 'left',
-      field: (row: ProductionType) => row.bunch_count,
+      field: (row: ProductionType) => row.bunch_count
     },
     {
       name: 'production_date',
@@ -131,7 +129,7 @@ const managerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'created_at',
@@ -139,16 +137,16 @@ const managerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'actions',
       required: true,
       label: 'عملیات',
       align: 'left',
-      field: () => '',
-    },
-  ],
+      field: () => ''
+    }
+  ]
 }
 const moldingWorkerColumns = {
   columns: [
@@ -157,14 +155,14 @@ const moldingWorkerColumns = {
       required: true,
       label: 'زیر محصول',
       align: 'left',
-      field: (row: ProductionType) => row.product_part?.name,
+      field: (row: ProductionType) => row.product_part?.name
     },
     {
       name: 'bunch_count',
       required: true,
       label: 'تعداد',
       align: 'left',
-      field: (row: ProductionType) => row.bunch_count,
+      field: (row: ProductionType) => row.bunch_count
     },
     {
       name: 'production_date',
@@ -172,7 +170,7 @@ const moldingWorkerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'created_at',
@@ -180,16 +178,16 @@ const moldingWorkerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'actions',
       required: true,
       label: 'عملیات',
       align: 'left',
-      field: () => '',
-    },
-  ],
+      field: () => ''
+    }
+  ]
 }
 const fabricCutterWorkerColumns = {
   columns: [
@@ -198,21 +196,21 @@ const fabricCutterWorkerColumns = {
       required: true,
       label: 'زیر محصول',
       align: 'left',
-      field: (row: ProductionType) => row.product_part?.name,
+      field: (row: ProductionType) => row.product_part?.name
     },
     {
       name: 'fabric_id',
       required: true,
       label: 'پارچه',
       align: 'left',
-      field: (row: ProductionType) => row.fabric?.name,
+      field: (row: ProductionType) => row.fabric?.name
     },
     {
       name: 'bunch_count',
       required: true,
       label: 'تعداد',
       align: 'left',
-      field: (row: ProductionType) => row.bunch_count,
+      field: (row: ProductionType) => row.bunch_count
     },
     {
       name: 'production_date',
@@ -220,7 +218,7 @@ const fabricCutterWorkerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'created_at',
@@ -228,16 +226,16 @@ const fabricCutterWorkerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'actions',
       required: true,
       label: 'عملیات',
       align: 'left',
-      field: () => '',
-    },
-  ],
+      field: () => ''
+    }
+  ]
 }
 const coloringWorkerColumns = {
   columns: [
@@ -246,21 +244,21 @@ const coloringWorkerColumns = {
       required: true,
       label: 'زیر محصول',
       align: 'left',
-      field: (row: ProductionType) => row.product_part?.name,
+      field: (row: ProductionType) => row.product_part?.name
     },
     {
       name: 'color',
       required: true,
       label: 'رنگ',
       align: 'left',
-      field: (row: ProductionType) => row.color?.name,
+      field: (row: ProductionType) => row.color?.name
     },
     {
       name: 'bunch_count',
       required: true,
       label: 'تعداد',
       align: 'left',
-      field: (row: ProductionType) => row.bunch_count,
+      field: (row: ProductionType) => row.bunch_count
     },
     {
       name: 'production_date',
@@ -268,7 +266,7 @@ const coloringWorkerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'created_at',
@@ -276,16 +274,16 @@ const coloringWorkerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'actions',
       required: true,
       label: 'عملیات',
       align: 'left',
-      field: () => '',
-    },
-  ],
+      field: () => ''
+    }
+  ]
 }
 const assemblerColumns = {
   columns: [
@@ -294,14 +292,14 @@ const assemblerColumns = {
       required: true,
       label: 'محصول',
       align: 'left',
-      field: (row: ProductionType) => row.product?.name,
+      field: (row: ProductionType) => row.product?.name
     },
     {
       name: 'bunch_count',
       required: true,
       label: 'تعداد',
       align: 'left',
-      field: (row: ProductionType) => row.bunch_count,
+      field: (row: ProductionType) => row.bunch_count
     },
     {
       name: 'production_date',
@@ -309,7 +307,7 @@ const assemblerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-',
+        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'created_at',
@@ -317,16 +315,16 @@ const assemblerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'actions',
       required: true,
       label: 'عملیات',
       align: 'left',
-      field: () => '',
-    },
-  ],
+      field: () => ''
+    }
+  ]
 }
 const moldingWorkerInputs = [
   {
@@ -415,27 +413,27 @@ const assemblerInputs = [
   }
 ]
 
-const itemIdentifyKey = ref('id');
+const itemIdentifyKey = ref('id')
 const tableKeys = ref({
   data: 'data',
   total: 'total',
   currentPage: 'current_page',
   perPage: 'per_page',
-  pageKey: 'page',
-});
-const table = ref(getTableColumns());
-const api = ref(productionAPI.endpoints.base);
-const createFormlabel = ref('تولید جدید');
-const listLabel = ref('تولیدات');
-const indexRouteName = ref('Panel.Production.List');
-const showRouteName = ref('Panel.Production.Show');
-const entityIdKey = ref('id');
-const entityParamKey = ref('id');
+  pageKey: 'page'
+})
+const table = ref(getTableColumns())
+const api = ref(productionAPI.endpoints.base)
+const createFormlabel = ref('تولید جدید')
+const listLabel = ref('تولیدات')
+const indexRouteName = ref('Panel.Production.List')
+const showRouteName = ref('Panel.Production.Show')
+const entityIdKey = ref('id')
+const entityParamKey = ref('id')
 
 const inputs = ref([
   ...getInputs(route.params.worker_role as WorkerRoleType)
-]);
-const listInputs = ref(getFilterInputs());
+])
+const listInputs = ref(getFilterInputs())
 
 function beforeSendData (formData: Record<string, any>) {
   formData.bunch_count = Digit.toEnDigit(formData.bunch_count)

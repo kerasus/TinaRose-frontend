@@ -1,5 +1,7 @@
 <template>
-  <div class="form-builder-input" :class="customClass">
+  <div
+    class="form-builder-input"
+    :class="customClass">
     <div class="outsideLabel">
       {{ placeholder ? label : null }}
     </div>
@@ -31,56 +33,57 @@
       :autogrow="autogrow"
       @click="onClick"
       @keydown="onKeydown"
-      @keypress="onKeyPress"
-    >
+      @keypress="onKeyPress">
       <template #prepend>
-        <q-icon v-if="props.inputType === 'iban'" name="payments" />
+        <q-icon
+          v-if="props.inputType === 'iban'"
+          name="payments" />
       </template>
     </q-input>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ValidationRule } from 'quasar';
-import type { ComputedRef } from 'vue';
-import { defineEmits, computed, type PropType } from 'vue';
+import type { ValidationRule } from 'quasar'
+import type { ComputedRef } from 'vue'
+import { defineEmits, computed, type PropType } from 'vue'
 
 defineOptions({
-  name: 'FormBuilderInput',
-});
+  name: 'FormBuilderInput'
+})
 
 const props = defineProps({
   name: {
     default: '',
-    type: String,
+    type: String
   },
   autogrow: {
     type: Boolean,
-    default: false,
+    default: false
   },
   preventPersian: {
     type: Boolean,
-    default: false,
+    default: false
   },
   preventEnglish: {
     type: Boolean,
-    default: false,
+    default: false
   },
   justNumber: {
     type: Boolean,
-    default: false,
+    default: false
   },
   mask: {
     type: String,
-    default: undefined,
+    default: undefined
   },
   fillMask: {
     type: String,
-    default: undefined,
+    default: undefined
   },
   reverseFillMask: {
     type: Boolean,
-    default: undefined,
+    default: undefined
   },
   inputType: {
     type: String,
@@ -106,143 +109,143 @@ const props = defineProps({
         'int-',
         'phone',
         'persian',
-        'iban',
-      ].includes(value);
-    },
+        'iban'
+      ].includes(value)
+    }
   },
   maxlength: {
     type: [String, Number],
-    default: undefined,
+    default: undefined
   },
   hint: {
     type: String,
-    default: undefined,
+    default: undefined
   },
   value: {
     default: '',
-    type: [String, Number, Boolean],
+    type: [String, Number, Boolean]
   },
 
   label: {
     default: '',
-    type: String,
+    type: String
   },
   class: {
     default: '',
-    type: String,
+    type: String
   },
   error: {
     default: false,
-    type: Boolean,
+    type: Boolean
   },
   errorMessage: {
     default: '',
-    type: String,
+    type: String
   },
   disable: {
     default: false,
-    type: Boolean,
+    type: Boolean
   },
   readonly: {
     default: false,
-    type: Boolean,
+    type: Boolean
   },
   filled: {
     default: false,
-    type: Boolean,
+    type: Boolean
   },
   color: {
     default: 'primary',
-    type: String,
+    type: String
   },
   type: {
     default: 'radio', // checkbox-toggle
     // Object type is for custom components
-    type: [String, Object],
+    type: [String, Object]
   },
   dense: {
     default: true,
-    type: Boolean,
+    type: Boolean
   },
   rounded: {
     default: false,
-    type: Boolean,
+    type: Boolean
   },
   responseKey: {
     default: () => {
-      return {};
+      return {}
     },
-    type: [String, Number, Boolean, Array, Boolean, Object],
+    type: [String, Number, Boolean, Array, Boolean, Object]
   },
   outlined: {
     default: false,
-    type: [Boolean],
+    type: [Boolean]
   },
   flat: {
     default: false,
-    type: [Boolean],
+    type: [Boolean]
   },
   placeholder: {
     default: '',
-    type: String,
+    type: String
   },
   rules: {
     default: () => [] as ValidationRule[],
-    type: Array as PropType<ValidationRule[]>,
+    type: Array as PropType<ValidationRule[]>
   },
   lazyRules: {
     default: false,
-    type: [Boolean],
+    type: [Boolean]
   },
   col: {
     default: '',
-    type: String,
+    type: String
   },
   clearable: {
     default: false,
-    type: Boolean,
+    type: Boolean
   },
   loading: {
     default: false,
-    type: Boolean,
-  },
-});
+    type: Boolean
+  }
+})
 
-const emits = defineEmits(['update:value', 'input', 'change', 'onClick', 'onKeyPress']);
+const emits = defineEmits(['update:value', 'input', 'change', 'onClick', 'onKeyPress'])
 
 const inputData: any = computed({
-  get() {
+  get () {
     if (props.inputType === 'iban') {
-      return typeof props.value === 'string' ? props.value.replace(/^IR/, '') : props.value;
+      return typeof props.value === 'string' ? props.value.replace(/^IR/, '') : props.value
     }
-    return props.value;
+    return props.value
   },
-  set(newValue) {
+  set (newValue) {
     if (props.inputType === 'iban') {
-      newValue = 'IR' + newValue;
+      newValue = 'IR' + newValue
     }
-    emits('update:value', newValue);
-  },
-});
+    emits('update:value', newValue)
+  }
+})
 const customClass = computed(() => {
-  const preClass = localInputType.value === 'number' ? 'ltr ' : '';
-  return preClass + props.class;
-});
+  const preClass = localInputType.value === 'number' ? 'ltr ' : ''
+  return preClass + props.class
+})
 const localInputType: any = computed(() => {
   return ['number+', 'number-', 'int', 'int+', 'int-', 'iban'].includes(props.inputType)
     ? 'number'
     : ['persian', 'phone', 'mobile'].includes(props.inputType)
-      ? 'text'
-      : props.inputType;
-});
+        ? 'text'
+        : props.inputType
+})
 const computedHint: ComputedRef<string | undefined> = computed(() => {
   if (props.inputType === 'phone' && !props.hint) {
-    return 'inputHints.phone';
+    return 'inputHints.phone'
   }
-  return props.hint;
-});
+  return props.hint
+})
 
-function onKeydown(event: KeyboardEvent) {
+function onKeydown (event: KeyboardEvent) {
   // List of functional keys to allow
   const allowedKeys = [
     'Backspace',
@@ -258,16 +261,16 @@ function onKeydown(event: KeyboardEvent) {
     'Escape',
     'End',
     'Home',
-    'Delete',
-  ];
+    'Delete'
+  ]
 
   // Allow functional keys
 
   const isShortcutCombination =
     (event.ctrlKey || event.metaKey) &&
-    ['c', 'v', 'x', 'a', 'z', 'y'].includes(event.key.toLowerCase());
+    ['c', 'v', 'x', 'a', 'z', 'y'].includes(event.key.toLowerCase())
   if (isShortcutCombination) {
-    return;
+    return
   }
 
   if (
@@ -277,41 +280,41 @@ function onKeydown(event: KeyboardEvent) {
     isShortcutCombination
     // event.shiftKey
   ) {
-    return;
+    return
   }
 
-  const inputElement = event.target as HTMLInputElement;
-  const maxLength = Number(props.maxlength);
-  const inputValue = inputData.value.toString();
-  const cursorPosition = inputElement.selectionStart;
+  const inputElement = event.target as HTMLInputElement
+  const maxLength = Number(props.maxlength)
+  const inputValue = inputData.value.toString()
+  const cursorPosition = inputElement.selectionStart
   const newValue =
-    inputValue.slice(0, cursorPosition) + (event?.key || '') + inputValue.slice(cursorPosition);
+    inputValue.slice(0, cursorPosition) + (event?.key || '') + inputValue.slice(cursorPosition)
 
   // handle maxLength
   if (maxLength && inputValue.length >= maxLength) {
-    event?.preventDefault();
-    return;
+    event?.preventDefault()
+    return
   }
 
   // handle input type strategies
-  const isValidKey = isValidInput(props.inputType, newValue);
+  const isValidKey = isValidInput(props.inputType, newValue)
 
   if (isValidKey) {
     // emits('update:value', newValue)
   } else {
-    event?.preventDefault();
+    event?.preventDefault()
   }
 }
 
-function onClick(event: Event) {
-  emits('onClick', event);
+function onClick (event: Event) {
+  emits('onClick', event)
 }
 
-function onKeyPress(event: Event) {
-  emits('onKeyPress', event);
+function onKeyPress (event: Event) {
+  emits('onKeyPress', event)
 }
 
-function isValidInput(strategyType: string, inputValue: string): boolean {
+function isValidInput (strategyType: string, inputValue: string): boolean {
   const numberRegexPatterns = {
     number: /^((-\d+\.)|(-)|(\d+\.?))\d*$/,
     //  cursorPosition is null in input type number sp we should can to put . (dot) in first
@@ -323,22 +326,22 @@ function isValidInput(strategyType: string, inputValue: string): boolean {
     // TODO: fix int- input type , where start with - (dash)
     // TODO: set a dash when the type is int -  and dont allow user to enter this dash
     'int-': /^-\d*$/,
-    phone: /^\+?\d*$/,
-  };
+    phone: /^\+?\d*$/
+  }
 
   // number strategies
   if (Object.keys(numberRegexPatterns).includes(strategyType)) {
-    const currentRegex = numberRegexPatterns[props.inputType as keyof typeof numberRegexPatterns];
+    const currentRegex = numberRegexPatterns[props.inputType as keyof typeof numberRegexPatterns]
 
-    return currentRegex ? currentRegex.test(inputValue) : true;
+    return currentRegex ? currentRegex.test(inputValue) : true
   }
 
   // force persian
   if (strategyType === 'persian') {
-    const englishChars = /[a-zA-Z]/;
-    return !englishChars.test(inputValue);
+    const englishChars = /[a-zA-Z]/
+    return !englishChars.test(inputValue)
   }
 
-  return true;
+  return true
 }
 </script>

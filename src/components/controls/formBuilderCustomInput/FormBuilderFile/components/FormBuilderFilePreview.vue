@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { formatFileSize } from './assist';
-import FileIconComponent from './fileIcon.vue';
-import type { SavedSourcesType } from '../index.vue';
-import { defineEmits, ref } from 'vue';
-import ImagePreview from 'src/components/cards/imagePreview.vue';
-import { useImageSrc } from './useImageSrc';
+import { formatFileSize } from './assist'
+import FileIconComponent from './fileIcon.vue'
+import type { SavedSourcesType } from '../index.vue'
+import { defineEmits, ref } from 'vue'
+import ImagePreview from 'src/components/cards/imagePreview.vue'
+import { useImageSrc } from './useImageSrc'
 
 const props = withDefaults(
   defineProps<{
@@ -17,69 +17,71 @@ const props = withDefaults(
     file: undefined,
     srcUrl: '',
     srcObj: undefined,
-    label: '',
-  },
-);
+    label: ''
+  }
+)
 
-const imagePreviewDialog = ref(false);
-const emit = defineEmits<{ (e: 'delete', file: File | string | SavedSourcesType): void }>();
+const imagePreviewDialog = ref(false)
+const emit = defineEmits<{ (e: 'delete', file: File | string | SavedSourcesType): void }>()
 
-const { imageSrc } = useImageSrc(props.file, props.srcUrl, props.srcObj);
+const { imageSrc } = useImageSrc(props.file, props.srcUrl, props.srcObj)
 
-function deleteFile() {
+function deleteFile () {
   if (props.file) {
-    emit('delete', props.file);
+    emit('delete', props.file)
   } else if (props.srcUrl) {
-    emit('delete', props.srcUrl);
+    emit('delete', props.srcUrl)
   } else if (props.srcObj) {
-    emit('delete', props.srcObj);
+    emit('delete', props.srcObj)
   }
 }
 
-function downloadFile(file: File) {
-  const fileUrl = URL.createObjectURL(file);
-  const fileName = file.name;
+function downloadFile (file: File) {
+  const fileUrl = URL.createObjectURL(file)
+  const fileName = file.name
   fetch(fileUrl)
     .then((response) => response.blob())
     .then((blob) => {
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = fileName;
-      link.click();
-      URL.revokeObjectURL(blobUrl);
+      const blobUrl = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = fileName
+      link.click()
+      URL.revokeObjectURL(blobUrl)
     })
     .catch((error) => {
-      console.error('Error downloading file:', error);
-    });
+      console.error('Error downloading file:', error)
+    })
 }
 
-function showImagePreviewDialog() {
-  imagePreviewDialog.value = true;
+function showImagePreviewDialog () {
+  imagePreviewDialog.value = true
 }
 
-function closeImagePreviewDialog() {
-  imagePreviewDialog.value = false;
+function closeImagePreviewDialog () {
+  imagePreviewDialog.value = false
 }
 
-function extractFileNameFromSrcUrl(url: string) {
-  const regex = /\/([^/?]+)\?/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
+function extractFileNameFromSrcUrl (url: string) {
+  const regex = /\/([^/?]+)\?/
+  const match = url.match(regex)
+  return match ? match[1] : null
 }
 </script>
 
 <template>
   <div class="flex q-pa-sm file-preview justify-between items-center no-wrap">
     <div class="image-preview">
-      <file-icon-component :file="file" :src-url="srcUrl" :src-obj="srcObj">
+      <file-icon-component
+        :file="file"
+        :src-url="srcUrl"
+        :src-obj="srcObj">
         <template #visibility>
           <q-btn
             icon="oms:eye"
             flat
             class="show-image icon-button"
-            @click="showImagePreviewDialog"
-          />
+            @click="showImagePreviewDialog" />
         </template>
         <template #download>
           <q-btn
@@ -87,12 +89,14 @@ function extractFileNameFromSrcUrl(url: string) {
             class="icon-button"
             flat
             icon="oms:document"
-            @click="downloadFile(file)"
-          />
+            @click="downloadFile(file)" />
         </template>
       </file-icon-component>
       <q-dialog v-model="imagePreviewDialog">
-        <image-preview :title="label" :src="imageSrc" @cancel="closeImagePreviewDialog" />
+        <image-preview
+          :title="label"
+          :src="imageSrc"
+          @cancel="closeImagePreviewDialog" />
       </q-dialog>
     </div>
     <div class="flex details">
@@ -109,7 +113,9 @@ function extractFileNameFromSrcUrl(url: string) {
           </template>
         </div>
         <div class="file-size ellipsis">
-          <q-chip v-if="srcUrl" class="tag hasUploadedFile-tag text-info"> آپلود شده </q-chip>
+          <q-chip
+            v-if="srcUrl"
+            class="tag hasUploadedFile-tag text-info"> آپلود شده </q-chip>
           <template v-if="file?.size">
             {{ formatFileSize(file.size / 1024) }}
           </template>
@@ -120,7 +126,11 @@ function extractFileNameFromSrcUrl(url: string) {
       </div>
     </div>
     <div class="flex delete-file-action-column">
-      <q-btn icon="oms:close" class="icon-button" flat @click="deleteFile" />
+      <q-btn
+        icon="oms:close"
+        class="icon-button"
+        flat
+        @click="deleteFile" />
       <!-- <div @click="downloadFile(file)">
         <q-icon name="cake"
                 class="q-pa-sm" />

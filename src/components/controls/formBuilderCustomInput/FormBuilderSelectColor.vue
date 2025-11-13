@@ -1,36 +1,39 @@
 <template>
   <div class="form-builder-select-color">
-    <div class="outsideLabel">رنگ</div>
-    <q-select ref="input"
-              v-model="localValue"
-              transition-show="jump-down"
-              transition-hide="jump-up"
-              :name="name"
-              :filled="filled"
-              :rounded="rounded"
-              :outlined="outlined"
-              :error-message="errorMessage"
-              :option-value="optionValue"
-              :option-label="optionLabel"
-              :option-disable="optionDisable"
-              :options="filteredOptions"
-              :label="' '"
-              :stack-label="!!placeholder"
-              :placeholder="placeholderSetter"
-              :multiple="multiple"
-              :use-chips="useChips"
-              use-input
-              input-debounce="500"
-              :disable="disable"
-              :readonly="readonly"
-              emit-value
-              :hide-dropdown-icon="hideDropdownIcon"
-              :dropdown-icon="dropdownIcon"
-              map-options
-              :clearable="clearable"
-              @filter="filterFn">
+    <div class="outsideLabel">{{ label }}</div>
+    <q-select
+      ref="input"
+      v-model="localValue"
+      transition-show="jump-down"
+      transition-hide="jump-up"
+      :name="name"
+      :filled="filled"
+      :rounded="rounded"
+      :outlined="outlined"
+      :error-message="errorMessage"
+      :option-value="optionValue"
+      :option-label="optionLabel"
+      :option-disable="optionDisable"
+      :options="filteredOptions"
+      :label="' '"
+      :stack-label="!!placeholder"
+      :placeholder="placeholderSetter"
+      :multiple="multiple"
+      :use-chips="useChips"
+      use-input
+      input-debounce="500"
+      :disable="disable"
+      :readonly="readonly"
+      :emit-value="emitValue"
+      :map-options="mapOptions"
+      :hide-dropdown-icon="hideDropdownIcon"
+      :dropdown-icon="dropdownIcon"
+      :clearable="clearable"
+      @filter="filterFn">
       <template #option="{opt, toggleOption}">
-        <q-item clickable @click="toggleOption(opt)">
+        <q-item
+          clickable
+          @click="toggleOption(opt)">
           <q-item-section avatar>
             <span :style="{ backgroundColor: opt.color_hex, width: '10px', height:'10px', display: 'inline-block', marginLeft: '5px' }" />
           </q-item-section>
@@ -49,14 +52,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref } from 'vue';
-import ColorAPI, { type ColorType } from 'src/repositories/color';
+import { computed, defineProps, defineEmits, ref } from 'vue'
+import ColorAPI, { type ColorType } from 'src/repositories/color'
 
 defineOptions({
-  name: 'FormBuilderSelectColor',
-});
+  name: 'FormBuilderSelectColor'
+})
 
 const props = defineProps({
+  label: {
+    default: 'رنگ',
+    type: String
+  },
   name: {
     default: '',
     type: String
@@ -117,24 +124,32 @@ const props = defineProps({
     default: false,
     type: Boolean
   },
+  emitValue: {
+    default: true,
+    type: Boolean
+  },
+  mapOptions: {
+    default: true,
+    type: Boolean
+  },
   readonly: {
     default: false,
     type: Boolean
-  },
-});
+  }
+})
 
-const emits = defineEmits(['update:value', 'input', 'click', 'keydown', 'keypress', 'submit']);
+const emits = defineEmits(['update:value', 'input', 'click', 'keydown', 'keypress', 'submit'])
 
 const colorAPI = new ColorAPI()
 
 const localValue = computed({
-  get() {
+  get () {
     return props.value
   },
-  set(newValue) {
-    emits('update:value', newValue);
-  },
-});
+  set (newValue) {
+    emits('update:value', newValue)
+  }
+})
 const placeholderSetter = computed(() => {
   if (localValue.value === null) {
     return props.placeholder
@@ -162,11 +177,11 @@ const optionValue = ref('id')
 const optionLabel = ref('name')
 
 async function getColors (name: string | null) {
-  const colorsList = await colorAPI.index({name})
+  const colorsList = await colorAPI.index({ name })
   return colorsList.data
 }
 
-function filterFn(val: string, update: (cb: ()=>Promise<void>)=>void) {
+function filterFn (val: string, update: (cb: ()=>Promise<void>)=>void) {
   if (val === '') {
     update(async () => {
       filteredOptions.value = await getColors(null)

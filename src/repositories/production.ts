@@ -1,10 +1,10 @@
-import BaseAPI from './BaseAPI';
-import { type UserType } from './user';
-import { type ColorType } from './color';
-import { type FabricType } from './fabric';
-import { type ProductType } from './product';
-import { type ProductPartType } from './productPart';
-import type { AxiosResponse } from 'axios';
+import BaseAPI from './BaseAPI'
+import { type UserType } from './user'
+import { type ColorType } from './color'
+import { type FabricType } from './fabric'
+import { type ProductType } from './product'
+import { type ProductPartType } from './productPart'
+import type { AxiosResponse } from 'axios'
 
 export type ProductionType = {
   id: number | null;
@@ -31,8 +31,8 @@ export type ProductionSummaryFilter = {
 }
 
 export default class ProductionAPI extends BaseAPI<ProductionType> {
-  constructor() {
-    super('/productions');
+  constructor () {
+    super('/productions')
     this.defaultObject = {
       id: null,
       user: null,
@@ -49,7 +49,7 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
       description: null,
       created_at: null,
       updated_at: null
-    };
+    }
     this.endpoints = {
       ...this.endpoints,
       summary: `${this.baseEndpoint}/summary`,
@@ -57,28 +57,28 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
     }
   }
 
-  async summary(filter: ProductionSummaryFilter): Promise<{ message: string, data: { user: ProductionType }}> {
+  async summary (filter: ProductionSummaryFilter): Promise<{ message: string, data: { user: ProductionType }}> {
     try {
       const response: AxiosResponse<{ message: string, data: { user: ProductionType }}> = await this.getAxiosInstanceWithToken()
-        .get(this.endpoints.summary, { params: filter });
-      return response.data;
+        .get(this.endpoints.summary, { params: filter })
+      return response.data
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw new Error(error.message)
       } else {
-        throw new Error('An unknown error occurred on updateBalance');
+        throw new Error('An unknown error occurred on updateBalance')
       }
     }
   }
 
-  async summaryExport(filter: ProductionSummaryFilter): Promise<{ blob: Blob, filename: string}> {
+  async summaryExport (filter: ProductionSummaryFilter): Promise<{ blob: Blob, filename: string}> {
     try {
       const response = await this.getAxiosInstanceWithToken().get(this.endpoints.summaryExport, {
         params: filter,
         responseType: 'blob'
-      });
+      })
       // const contentDisposition = response.headers['content-disposition'];
-      const filename = 'گزارش-تولید.xlsx';
+      const filename = 'گزارش-تولید.xlsx'
 
       // if (contentDisposition) {
       //   const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
@@ -94,9 +94,9 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
 
     } catch (error: any) {
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw new Error(error.message)
       } else {
-        throw new Error('An unknown error occurred on updateBalance');
+        throw new Error('An unknown error occurred on updateBalance')
       }
     }
   }

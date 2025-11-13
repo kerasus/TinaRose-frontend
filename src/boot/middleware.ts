@@ -15,7 +15,7 @@ export type MiddlewareContext = {
   }
 }
 
-export default boot(({ router, store }) => {
+export default boot(({ router }) => {
   router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const middleware = to.meta.middleware
 
@@ -28,7 +28,7 @@ export default boot(({ router, store }) => {
     let passRoute = null
     for (const middlewareFn of middlewareArray) {
       if (typeof middlewareFn === 'function') {
-        passRoute = middlewareFn({ to, from, next, store, sharedStore: { useUser } })
+        passRoute = middlewareFn({ to, from, next, sharedStore: { useUser } })
         if (passRoute) {
           return next(passRoute)
         }

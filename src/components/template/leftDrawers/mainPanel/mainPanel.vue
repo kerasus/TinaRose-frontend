@@ -1,48 +1,50 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
-import { useUser } from 'src/stores/user';
-import { computed, ref, type Ref, watch } from 'vue';
-import { useAppLayout } from 'stores/appLayout';
-import ListItem from './components/listItem.vue';
+import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
+import { useUser } from 'src/stores/user'
+import { computed, ref, type Ref, watch } from 'vue'
+import { useAppLayout } from 'stores/appLayout'
+import ListItem from './components/listItem.vue'
+import { UserRolesType } from 'src/repositories/user'
+import user from 'src/router/panelRoutes/user'
 // import { useAppConfig } from 'stores/appConfig'
 
-const $q = useQuasar();
-const route = useRoute();
-const i18nManager = useI18n();
-const userManager = useUser();
-const appLayoutStore = useAppLayout();
+const $q = useQuasar()
+const route = useRoute()
+const i18nManager = useI18n()
+const userManager = useUser()
+const appLayoutStore = useAppLayout()
 // const appConfig = useAppConfig()
 
-const searchValue = ref('');
+const searchValue = ref('')
 
 
 const allowedLinks = computed(() => topLinks.value
   .filter((link) => {
     return !link.forRoles ? true : link.forRoles.some((role) => userManager.hasRole(userManager.me, role))
-  }));
+  }))
 const filterLinks = computed(() => {
   if (searchValue.value === null) {
-    return allowedLinks.value;
+    return allowedLinks.value
   }
   return allowedLinks.value
     .map((link) => {
       if (link.child) {
         const filteredChildren = link.child.filter((child) =>
-          i18nManager.t(child.title).includes(searchValue.value),
-        );
+          i18nManager.t(child.title).includes(searchValue.value)
+        )
         if (filteredChildren.length > 0) {
-          return { ...link, child: filteredChildren };
+          return { ...link, child: filteredChildren }
         }
       }
       if ((link.title).includes(searchValue.value)) {
-        return link;
+        return link
       }
-      return null;
+      return null
     })
-    .filter((link) => link !== null);
-});
+    .filter((link) => link !== null)
+})
 const currentRouteName = computed(() => route.name)
 
 type ListItemType = {
@@ -50,65 +52,65 @@ type ListItemType = {
   iconColor?: string;
   title: string;
   mainRouteName?: string;
-  route?: { name: string };
-  forRoles?: string[];
+  route?: { name: string, params?: Record<string, string> };
+  forRoles?: UserRolesType[];
   child?: ListItemType[];
 };
 
-const topLinks: Ref<Array<ListItemType>> = ref([
+const topLinks = ref<ListItemType[]>([
   {
     icon: 'dashboard',
     title: 'داشبورد',
     forRoles: [ 'Manager', 'Accountant' ],
-    route: { name: 'Panel.Dashboard' },
+    route: { name: 'Panel.Dashboard' }
   },
   {
     icon: 'dashboard',
-    title: 'ثبت برش کاری جدید',
-    forRoles: [ 'FabricCutter' ],
-    route: { name: 'Panel.Production.Create', params: { worker_role: 'fabric-cutter' }}
+    title: 'داشبورد',
+    forRoles: [ 'Assembler' ],
+    route: { name: 'Panel.WorkerDashboard' }
   },
   {
     icon: 'dashboard',
-    title: 'ثبت رنگ کاری جدید',
-    forRoles: [ 'ColoringWorker' ],
-    route: { name: 'Panel.Production.Create', params: { worker_role: 'coloring' }}
-  },
-  {
-    icon: 'dashboard',
-    title: 'ثبت اتوکاری جدید',
-    forRoles: [ 'MoldingWorker' ],
-    route: { name: 'Panel.Production.Create', params: { worker_role: 'molding' }}
+    title: getWorkerProductionPageTitle(userManager.mainRole),
+    forRoles: [ 'Assembler', 'FabricCutter', 'ColoringWorker', 'MoldingWorker' ],
+    route: { name: 'Panel.Production.Create', params: { worker_role: userManager.mainRoleForPath } }
   },
   {
     icon: 'dashboard',
     title: 'گزارش تولیدات',
     forRoles: [ 'MoldingWorker', 'ColoringWorker', 'FabricCutter' ],
-    route: { name: 'Panel.Production.List' },
+    route: { name: 'Panel.Production.List' }
   },
   {
     icon: 'group',
     title: 'کاربران',
     forRoles: [ 'Manager' ],
-    route: { name: 'Panel.User.List' },
+    route: { name: 'Panel.User.List' }
   },
   {
-    icon: 'maps_home_work',
+    icon: 'factory',
     title: 'تولیدات',
     forRoles: [ 'Manager', 'Accountant' ],
-    route: { name: 'Panel.Production.List' },
+    route: { name: 'Panel.Production.List' }
   },
   {
-    icon: 'maps_home_work',
+    icon: 'content_paste_go',
     title: 'حواله ها',
     forRoles: [ 'Manager', 'Accountant' ],
-    route: { name: 'Panel.Transfer.Create' },
+    route: { name: 'Panel.Transfer.Create' }
   },
   {
-    icon: 'maps_home_work',
+    icon: 'warehouse',
     title: 'انبار ها',
     forRoles: [ 'Manager', 'Accountant' ],
-    route: { name: 'Panel.Inventory.List' },
+    route: { name: 'Panel.Inventory.List' }
+  },
+  {
+    icon: 'sync',
+    title: 'انبار گردانی',
+    forRoles: [ 'Manager', 'Accountant' ],
+    route: { name: 'Panel.InventoryCount.List' }
   },
   {
     icon: 'receipt_long',
@@ -116,55 +118,61 @@ const topLinks: Ref<Array<ListItemType>> = ref([
     forRoles: [ 'Manager', 'Accountant' ],
     child: [
       {
-        icon: 'receipt_long',
+        icon: 'remove',
         title: 'تولیدات',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.Report.Productions' },
+        route: { name: 'Panel.Report.Productions' }
       }
-    ],
+    ]
   },
   {
-    icon: 'receipt_long',
+    icon: 'keyboard_command_key',
     title: 'تعاریف اولیه',
     forRoles: [ 'Manager', 'Accountant' ],
     child: [
       {
-        icon: 'receipt',
+        icon: 'remove',
         title: 'رنگ ها',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.Color.List' },
+        route: { name: 'Panel.Color.List' }
       },
       {
-        icon: 'receipt',
+        icon: 'remove',
         title: 'پارچه ها',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.Fabric.List' },
+        route: { name: 'Panel.Fabric.List' }
       },
       {
-        icon: 'receipt_long',
+        icon: 'remove',
         title: 'زیر محصولات',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.ProductPart.List' },
+        route: { name: 'Panel.ProductPart.List' }
       },
       {
-        icon: 'receipt',
+        icon: 'remove',
         title: 'مواد اولیه',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.RawMaterial.List' },
+        route: { name: 'Panel.RawMaterial.List' }
       },
       {
-        icon: 'receipt',
+        icon: 'remove',
         title: 'محصولات',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.Product.List' },
+        route: { name: 'Panel.Product.List' }
+      },
+      {
+        icon: 'remove',
+        title: 'پک حواله ها',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.TransferPackage.List' }
       }
-    ],
+    ]
   }
-]);
+])
 
 const bottomLinks: Ref<Array<ListItemType>> = ref([
   // { icon: 'ph:chats-circle', title: 'menu.leftDrawer.forum', route: { name: 'Panel.Forum' } }
-]);
+])
 
 // function toggleLeftDrawer() {
 //   appLayoutStore.layoutLeftDrawerMiniToOverlay = $q.screen.lt.md;
@@ -172,9 +180,23 @@ const bottomLinks: Ref<Array<ListItemType>> = ref([
 //   // appLayoutStore.layoutLeftDrawerVisible = !appLayoutStore.layoutLeftDrawerVisible
 // }
 
+function getWorkerProductionPageTitle (userRole: UserRolesType): string {
+  if (userRole === 'Assembler') {
+    return 'ثبت مونتاژ کاری جدید'
+  } else if (userRole === 'MoldingWorker') {
+    return 'ثبت اتوکاری جدید'
+  } else if (userRole === 'ColoringWorker') {
+    return 'ثبت رنگ کاری جدید'
+  } else if (userRole === 'FabricCutter') {
+    return 'ثبت برش کاری جدید'
+  }
+
+  return '-'
+}
+
 watch(currentRouteName, () => {
   if ($q.screen.lt.md) {
-    appLayoutStore.layoutLeftDrawerVisible = false;
+    appLayoutStore.layoutLeftDrawerVisible = false
   }
 }, {
   immediate: true
@@ -195,20 +217,24 @@ watch(currentRouteName, () => {
       @click="toggleLeftDrawer"
     /> -->
   </div>
-  <div class="left-drawer" :class="{ 'left-drawer--mini': appLayoutStore.layoutLeftDrawerMini }">
+  <div
+    class="left-drawer"
+    :class="{ 'left-drawer--mini': appLayoutStore.layoutLeftDrawerMini }">
     <div class="left-drawer__inner">
       <div class="left-drawer__logo-section">
         <div class="left-drawer__logo-section-img">
-          <q-img
-            :src="appLayoutStore.layoutLeftDrawerMini ? '/panel/images/logo.png' : '/panel/images/logo.png'"
-          />
+          <q-img :src="appLayoutStore.layoutLeftDrawerMini ? '/panel/images/logo.png' : '/panel/images/logo.png'" />
         </div>
-        <div v-if="false" class="left-drawer__logo-section-title" />
+        <div
+          v-if="false"
+          class="left-drawer__logo-section-title" />
       </div>
       <q-separator />
       <q-scroll-area class="scroll-area">
         <q-list padding>
-          <list-item :items="filterLinks" :mini="appLayoutStore.layoutLeftDrawerMini" />
+          <list-item
+            :items="filterLinks"
+            :mini="appLayoutStore.layoutLeftDrawerMini" />
         </q-list>
         <q-list padding>
           <q-item
@@ -218,10 +244,11 @@ watch(currentRouteName, () => {
             exact
             :to="link.route"
             clickable
-            class="menu-item"
-          >
+            class="menu-item">
             <q-item-section avatar>
-              <q-icon :name="link.icon" :color="link.iconColor" />
+              <q-icon
+                :name="link.icon"
+                :color="link.iconColor" />
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ (link.title) }}</q-item-label>

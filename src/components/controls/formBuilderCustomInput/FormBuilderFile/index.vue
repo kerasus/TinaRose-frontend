@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { ValidationRule } from 'quasar';
-import { formatFileSize } from './components/assist';
-import FormBuilderFilePreview from './components/FormBuilderFilePreview.vue';
-import { ref, type ComponentPublicInstance, computed, watch, nextTick } from 'vue';
+import type { ValidationRule } from 'quasar'
+import { formatFileSize } from './components/assist'
+import FormBuilderFilePreview from './components/FormBuilderFilePreview.vue'
+import { ref, type ComponentPublicInstance, computed, watch, nextTick } from 'vue'
 
 defineOptions({
-  name: 'FormBuilderFile',
-});
+  name: 'FormBuilderFile'
+})
 
 interface QFileComponent extends ComponentPublicInstance {
   pickFiles: () => void;
@@ -28,187 +28,187 @@ const props = withDefaults(
   {
     label: '',
     multiple: false,
-    rules: undefined,
-  },
-);
+    rules: undefined
+  }
+)
 const value = defineModel('value', {
   required: true,
   type: [File, String, Object, null],
-  default: () => [],
-});
+  default: () => []
+})
 
-const isDragging = ref(false);
-const selectedFiles = ref<File[]>([]);
-const savedSources = ref<string[]>([]);
-const input = ref<QFileComponent | null>(null);
-const savedSourcesObject = ref<SavedSourcesType[]>([]);
+const isDragging = ref(false)
+const selectedFiles = ref<File[]>([])
+const savedSources = ref<string[]>([])
+const input = ref<QFileComponent | null>(null)
+const savedSourcesObject = ref<SavedSourcesType[]>([])
 
 const qFileInputModelValue = computed({
-  get() {
-    return selectedFiles.value;
+  get () {
+    return selectedFiles.value
   },
-  set(newValue) {
+  set (newValue) {
     if (newValue instanceof File) {
-      selectedFiles.value = [newValue];
+      selectedFiles.value = [newValue]
     } else if (newValue instanceof FileList) {
-      selectedFiles.value = newValue;
+      selectedFiles.value = newValue
     }
 
     if (props.multiple) {
-      value.value = selectedFiles.value;
+      value.value = selectedFiles.value
     } else {
-      value.value = selectedFiles.value[0];
+      value.value = selectedFiles.value[0]
     }
-  },
-});
+  }
+})
 
 const sizeRuleValue = computed(() => {
   if (!props.rules) {
-    return null;
+    return null
   }
 
-  const seizeRuleIndex = props.rules.findIndex((rule: any) => rule.ruleName === 'size');
+  const seizeRuleIndex = props.rules.findIndex((rule: any) => rule.ruleName === 'size')
 
   if (seizeRuleIndex === -1) {
-    return null;
+    return null
   }
 
-  const sizeRule = props.rules[seizeRuleIndex];
+  const sizeRule = props.rules[seizeRuleIndex]
   // @ts-ignore
-  const sizeRuleParam = sizeRule.ruleParams[0];
+  const sizeRuleParam = sizeRule.ruleParams[0]
 
   if (!sizeRuleParam) {
-    return null;
+    return null
   }
 
-  return formatFileSize(parseInt(sizeRuleParam));
-});
+  return formatFileSize(parseInt(sizeRuleParam))
+})
 
 const hasUploadedFiles = computed(() => {
-  return savedSourcesObject.value.length > 0 || savedSources.value.length > 0;
-});
+  return savedSourcesObject.value.length > 0 || savedSources.value.length > 0
+})
 
-function isSavedSourcesType(obj: any): obj is SavedSourcesType {
+function isSavedSourcesType (obj: any): obj is SavedSourcesType {
   return (
     typeof obj === 'object' &&
     obj !== null &&
     typeof obj.name === 'string' &&
     typeof obj.path === 'string' &&
     typeof obj.size === 'number'
-  );
+  )
 }
 
 const handleDrop = (event: DragEvent) => {
-  isDragging.value = false;
+  isDragging.value = false
   if (event.dataTransfer?.files) {
-    const files = event.dataTransfer.files;
+    const files = event.dataTransfer.files
     if (props.multiple) {
-      processFiles(files);
+      processFiles(files)
     } else {
-      selectedFiles.value = [];
-      processFiles(files[0]);
+      selectedFiles.value = []
+      processFiles(files[0])
     }
   }
-};
+}
 
 const processFiles = (fileList: FileList | File | undefined) => {
   if (!fileList) {
-    return;
+    return
   }
 
-  let files: File[];
+  let files: File[]
 
   if (fileList instanceof File) {
-    files = [fileList];
+    files = [fileList]
   } else {
-    files = Array.from(fileList);
+    files = Array.from(fileList)
   }
 
-  const fileArray = files.filter((file) => !selectedFiles.value.some((f) => f.name === file.name));
+  const fileArray = files.filter((file) => !selectedFiles.value.some((f) => f.name === file.name))
   fileArray.forEach((file) => {
-    selectedFiles.value.push(file);
-  });
-  loadValueFromSelectedFile();
-};
+    selectedFiles.value.push(file)
+  })
+  loadValueFromSelectedFile()
+}
 
-function loadValueFromSelectedFile() {
+function loadValueFromSelectedFile () {
   if (props.multiple) {
-    value.value = selectedFiles.value;
+    value.value = selectedFiles.value
   } else {
-    value.value = selectedFiles.value[0];
+    value.value = selectedFiles.value[0]
   }
 }
 
-function select() {
-  savedSourcesObject.value = [];
-  savedSources.value = [];
-  selectedFiles.value = [];
-  loadValueFromSelectedFile();
+function select () {
+  savedSourcesObject.value = []
+  savedSources.value = []
+  selectedFiles.value = []
+  loadValueFromSelectedFile()
 
   nextTick(() => {
     if (input.value) {
-      input.value.pickFiles();
+      input.value.pickFiles()
     }
-  });
+  })
 }
 
-function onUpdateQFile(fileList: FileList | File) {
-  processFiles(fileList);
-  clearSavedSources();
+function onUpdateQFile (fileList: FileList | File) {
+  processFiles(fileList)
+  clearSavedSources()
 }
 
-function atClickRemoveFileBtn(file: File | string | SavedSourcesType) {
+function atClickRemoveFileBtn (file: File | string | SavedSourcesType) {
   if (file instanceof File) {
-    removeFile(file);
+    removeFile(file)
   }
 }
 
-function atClickRemoveSrcUrlBtn(file: File | string | SavedSourcesType) {
+function atClickRemoveSrcUrlBtn (file: File | string | SavedSourcesType) {
   if (typeof file === 'string') {
-    removeSrcUrl(file);
+    removeSrcUrl(file)
   }
 }
 
-function atClickRemoveSrcObjBtn(file: File | string | SavedSourcesType) {
+function atClickRemoveSrcObjBtn (file: File | string | SavedSourcesType) {
   if (isSavedSourcesType(file)) {
-    removeSrcObj(file);
+    removeSrcObj(file)
   }
 }
 
-function removeFile(file: File) {
+function removeFile (file: File) {
   const targetIndex = selectedFiles.value.findIndex(
-    (selectedFile) => selectedFile.name === file.name,
-  );
+    (selectedFile) => selectedFile.name === file.name
+  )
 
   if (targetIndex === -1) {
-    return;
+    return
   }
-  selectedFiles.value.splice(targetIndex, 1);
-  loadValueFromSelectedFile();
+  selectedFiles.value.splice(targetIndex, 1)
+  loadValueFromSelectedFile()
 }
 
-function removeSrcUrl(srcUrl: string) {
-  const targetIndex = savedSources.value.findIndex((savedSources) => savedSources === srcUrl);
+function removeSrcUrl (srcUrl: string) {
+  const targetIndex = savedSources.value.findIndex((savedSources) => savedSources === srcUrl)
   if (targetIndex === -1) {
-    return;
+    return
   }
-  savedSources.value.splice(targetIndex, 1);
+  savedSources.value.splice(targetIndex, 1)
 }
 
-function removeSrcObj(srcObj: SavedSourcesType) {
+function removeSrcObj (srcObj: SavedSourcesType) {
   const targetIndex = savedSourcesObject.value.findIndex(
-    (savedSourcesObject) => savedSourcesObject === srcObj,
-  );
+    (savedSourcesObject) => savedSourcesObject === srcObj
+  )
   if (targetIndex === -1) {
-    return;
+    return
   }
-  savedSourcesObject.value.splice(targetIndex, 1);
+  savedSourcesObject.value.splice(targetIndex, 1)
 }
 
-function clearSavedSources() {
+function clearSavedSources () {
   if (!props.multiple) {
-    savedSources.value = [];
-    savedSourcesObject.value = [];
+    savedSources.value = []
+    savedSourcesObject.value = []
   }
 }
 
@@ -216,29 +216,29 @@ watch(
   () => value.value,
   (newValue) => {
     if (!newValue || (Array.isArray(newValue) && newValue.length === 0)) {
-      selectedFiles.value = [];
-      savedSources.value = [];
-      savedSourcesObject.value = [];
-      return;
+      selectedFiles.value = []
+      savedSources.value = []
+      savedSourcesObject.value = []
+      return
     }
 
-    let target = newValue;
+    let target = newValue
     if (!Array.isArray(newValue)) {
-      target = [newValue];
+      target = [newValue]
     }
 
     if (target[0] instanceof File) {
-      selectedFiles.value = target;
+      selectedFiles.value = target
     } else if (typeof target[0] === 'string') {
-      savedSources.value = target;
+      savedSources.value = target
     } else if (isSavedSourcesType(target[0])) {
-      savedSourcesObject.value = target;
+      savedSourcesObject.value = target
     }
   },
   {
-    immediate: true,
-  },
-);
+    immediate: true
+  }
+)
 </script>
 
 <template>
@@ -248,20 +248,29 @@ watch(
       @dragover.prevent
       @drop.prevent="handleDrop"
       @dragenter="isDragging = true"
-      @dragleave="isDragging = false"
-    >
-      <q-icon name="oms:gallery-import" color="black" />
+      @dragleave="isDragging = false">
+      <q-icon
+        name="oms:gallery-import"
+        color="black" />
       <div class="full-width row no-wrap items-center justify-between">
         <div class="column">
           <div class="uploader__title">
             {{ label }}
           </div>
         </div>
-        <q-btn class="no-wrap" color="secondary" type="a" outline dense @click="select">
+        <q-btn
+          class="no-wrap"
+          color="secondary"
+          type="a"
+          outline
+          dense
+          @click="select">
           {{ $t('general.selectFile') }}
         </q-btn>
       </div>
-      <div v-if="sizeRuleValue" class="maximum-size">
+      <div
+        v-if="sizeRuleValue"
+        class="maximum-size">
         {{ $t('general.maxFIleSize') }} {{ sizeRuleValue }}
       </div>
     </div>
@@ -271,30 +280,26 @@ watch(
       v-model="qFileInputModelValue"
       :rules="rules"
       :multiple="multiple"
-      @update:model-value="onUpdateQFile"
-    />
+      @update:model-value="onUpdateQFile" />
     <div class="body-preview">
       <form-builder-file-preview
         v-for="(file, fileIndex) in selectedFiles"
         :key="fileIndex"
         :file="file"
         :label="label"
-        @delete="atClickRemoveFileBtn"
-      />
+        @delete="atClickRemoveFileBtn" />
       <form-builder-file-preview
         v-for="(srcUrl, fileIndex) in savedSources"
         :key="fileIndex"
         :src-url="srcUrl"
         :label="label"
-        @delete="atClickRemoveSrcUrlBtn"
-      />
+        @delete="atClickRemoveSrcUrlBtn" />
       <form-builder-file-preview
         v-for="(srcObj, fileIndex) in savedSourcesObject"
         :key="fileIndex"
         :src-obj="srcObj"
         :label="label"
-        @delete="atClickRemoveSrcObjBtn"
-      />
+        @delete="atClickRemoveSrcObjBtn" />
     </div>
   </div>
 </template>

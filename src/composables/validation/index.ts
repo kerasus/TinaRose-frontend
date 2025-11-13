@@ -1,27 +1,27 @@
-import { useI18n } from 'vue-i18n';
-import CustomValidations from './customValidations';
-import { all as allVeeValidations } from '@vee-validate/rules';
+import { useI18n } from 'vue-i18n'
+import CustomValidations from './customValidations'
+import { all as allVeeValidations } from '@vee-validate/rules'
 
-const allValidations = Object.assign(allVeeValidations, CustomValidations);
+const allValidations = Object.assign(allVeeValidations, CustomValidations)
 
 export const useValidation = () => {
-  const i18n = useI18n();
+  const i18n = useI18n()
 
-  function getTranslation(key: string, named: Record<string, string> = {}) {
-    return i18n.t(key, named);
+  function getTranslation (key: string, named: Record<string, string> = {}) {
+    return i18n.t(key, named)
     // return i18n.global.t(key, named)
   }
 
-  function getRuleTranslation(ruleName: string, ruleParams: any[], fieldName: string) {
-    const translatedFieldName = !fieldName ? '-' : getTranslation(fieldName);
-    const validationParamsForTranslation = getRuleParamsForTranslation(ruleName, ruleParams);
-    const translationParams = { field: translatedFieldName, ...validationParamsForTranslation };
-    return getTranslation('error.validation.' + ruleName, translationParams);
+  function getRuleTranslation (ruleName: string, ruleParams: any[], fieldName: string) {
+    const translatedFieldName = !fieldName ? '-' : getTranslation(fieldName)
+    const validationParamsForTranslation = getRuleParamsForTranslation(ruleName, ruleParams)
+    const translationParams = { field: translatedFieldName, ...validationParamsForTranslation }
+    return getTranslation('error.validation.' + ruleName, translationParams)
   }
 
-  function getRuleParamsForTranslation(
+  function getRuleParamsForTranslation (
     ruleName: string,
-    ruleParams: any[],
+    ruleParams: any[]
   ): Record<string, string> {
     if (
       ruleName === 'digits' ||
@@ -29,27 +29,27 @@ export const useValidation = () => {
       ruleName === 'min' ||
       ruleName === 'max'
     ) {
-      return { length: ruleParams[0] };
+      return { length: ruleParams[0] }
     }
 
     if (ruleName === 'between') {
-      return { min: ruleParams[0], max: ruleParams[1] };
+      return { min: ruleParams[0], max: ruleParams[1] }
     }
 
     if (ruleName === 'dimensions') {
-      return { width: ruleParams[0], height: ruleParams[1] };
+      return { width: ruleParams[0], height: ruleParams[1] }
     }
 
     if (ruleName === 'max_value') {
-      return { max: ruleParams[0] };
+      return { max: ruleParams[0] }
     }
 
     if (ruleName === 'min_value') {
-      return { min: ruleParams[0] };
+      return { min: ruleParams[0] }
     }
 
     if (ruleName === 'size') {
-      return { size: ruleParams[0] };
+      return { size: ruleParams[0] }
     }
 
     if (
@@ -58,106 +58,106 @@ export const useValidation = () => {
       ruleName === 'min' ||
       ruleName === 'max'
     ) {
-      return { length: ruleParams[0] };
+      return { length: ruleParams[0] }
     }
 
-    return {};
+    return {}
   }
 
-  function parseRule(rule: string) {
-    let params: string[] = [];
-    const name = rule.split(':')[0];
+  function parseRule (rule: string) {
+    let params: string[] = []
+    const name = rule.split(':')[0]
 
     if (rule.includes(':')) {
-      params = rule.split(':').slice(1).join(':').split(',');
+      params = rule.split(':').slice(1).join(':').split(',')
     }
 
-    return { name, params };
+    return { name, params }
   }
 
-  function buildParams(provided: unknown[] | Record<string, unknown>) {
+  function buildParams (provided: unknown[] | Record<string, unknown>) {
     if (Array.isArray(provided)) {
-      return provided;
+      return provided
     }
 
     // #3073
     if (provided instanceof RegExp) {
-      return [provided];
+      return [provided]
     }
 
     return Object.keys(provided).reduce(
       (prev, key) => {
-        prev[key] = provided[key];
+        prev[key] = provided[key]
 
-        return prev;
+        return prev
       },
-      {} as Record<string, unknown>,
-    );
+      {} as Record<string, unknown>
+    )
   }
 
-  function getNormalizeRules(
-    rulesString: string,
+  function getNormalizeRules (
+    rulesString: string
   ): Record<string, unknown[] | Record<string, unknown>> {
-    const acc: Record<string, unknown[] | Record<string, unknown>> = {};
+    const acc: Record<string, unknown[] | Record<string, unknown>> = {}
 
-    const regexPattern = /regex:.*$/; // Match the regex rule starting with `regex:` till the end of the string
-    const regexMatch = rulesString.match(regexPattern); // Find the regex rule
-    let regexRule = '';
+    const regexPattern = /regex:.*$/ // Match the regex rule starting with `regex:` till the end of the string
+    const regexMatch = rulesString.match(regexPattern) // Find the regex rule
+    let regexRule = ''
 
     if (regexMatch) {
-      regexRule = regexMatch[0]; // Extract the regex rule
-      rulesString = rulesString.replace(regexPattern, ''); // Remove the regex rule from the string
+      regexRule = regexMatch[0] // Extract the regex rule
+      rulesString = rulesString.replace(regexPattern, '') // Remove the regex rule from the string
     }
 
     // Split the remaining rules and append the regex rule at the end
-    const rulesArrayOfString = rulesString.split('|').filter(Boolean); // Split and remove empty entries
+    const rulesArrayOfString = rulesString.split('|').filter(Boolean) // Split and remove empty entries
     if (regexRule) {
-      rulesArrayOfString.push(regexRule);
+      rulesArrayOfString.push(regexRule)
     }
 
     return rulesArrayOfString.reduce((prev, rule) => {
-      const parsedRule = parseRule(rule);
+      const parsedRule = parseRule(rule)
       if (!parsedRule.name) {
-        return prev;
+        return prev
       }
 
-      prev[parsedRule.name] = buildParams(parsedRule.params);
+      prev[parsedRule.name] = buildParams(parsedRule.params)
 
-      return prev;
-    }, acc);
+      return prev
+    }, acc)
   }
 
-  function rules(targetRules: string, fieldName: string = '') {
-    const normalizeRules = getNormalizeRules(targetRules);
+  function rules (targetRules: string, fieldName: string = '') {
+    const normalizeRules = getNormalizeRules(targetRules)
     return Object.keys(normalizeRules).reduce(
       (accumulator, ruleName) => {
-        const ruleParams = normalizeRules[ruleName] as Record<string, string>[];
+        const ruleParams = normalizeRules[ruleName] as Record<string, string>[]
         // Define the rule function
         const ruleFunction = function (inputValue: any) {
-          const ruleFunction = allValidations[ruleName];
+          const ruleFunction = allValidations[ruleName]
           if (typeof ruleFunction === 'function') {
-            const ruleResult = ruleFunction(inputValue, ruleParams);
+            const ruleResult = ruleFunction(inputValue, ruleParams)
 
             // Handle synchronous results
             if (ruleResult instanceof Promise) {
-              console.warn(`Validation rule "${ruleName}" is asynchronous and will be ignored.`);
-              return false; // Ignore asynchronous rules in this context
+              console.warn(`Validation rule "${ruleName}" is asynchronous and will be ignored.`)
+              return false // Ignore asynchronous rules in this context
             }
 
-            return ruleResult || getRuleTranslation(ruleName, ruleParams, fieldName);
+            return ruleResult || getRuleTranslation(ruleName, ruleParams, fieldName)
           }
-          return false;
-        };
-        ruleFunction.ruleName = ruleName;
-        ruleFunction.ruleParams = ruleParams;
-        accumulator.push(ruleFunction);
-        return accumulator;
+          return false
+        }
+        ruleFunction.ruleName = ruleName
+        ruleFunction.ruleParams = ruleParams
+        accumulator.push(ruleFunction)
+        return accumulator
       },
-      [] as ((inputValue: string | number) => boolean | string)[],
-    );
+      [] as ((inputValue: string | number) => boolean | string)[]
+    )
   }
 
   return {
-    rules,
-  };
-};
+    rules
+  }
+}

@@ -1,11 +1,11 @@
-import { shallowRef } from 'vue';
-import { type UserRolesType } from 'src/repositories/user';
-import { inventoryTypeOptions } from 'src/repositories/inventory';
-import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue';
-import FormBuilderSelectTransferItem from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectTransferItem.vue';
+import { shallowRef } from 'vue'
+import { type UserRolesType } from 'src/repositories/user'
+import { inventoryTypeOptions } from 'src/repositories/inventory'
+import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
+import FormBuilderSelectTransferItem from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectTransferItem.vue'
 
-const FormBuilderSelectUserComponent = shallowRef(FormBuilderSelectUser);
-const FormBuilderSelectTransferItemComponent = shallowRef(FormBuilderSelectTransferItem);
+const FormBuilderSelectUserComponent = shallowRef(FormBuilderSelectUser)
+const FormBuilderSelectTransferItemComponent = shallowRef(FormBuilderSelectTransferItem)
 
 export function getFormData (role: UserRolesType, formData: any, userId: number) {
   console.log(userId)
@@ -67,14 +67,14 @@ export default (role: UserRolesType) => {
       responseKey: 'description',
       label: 'توضیحات',
       placeholder: ' ',
-      col: 'col-12',
+      col: 'col-12'
     },
     {
       type: FormBuilderSelectTransferItemComponent,
       name: 'items',
       readonly: false,
       col: 'col-12'
-    },
+    }
   ]
   // const workerInputs: any = [
   //   {

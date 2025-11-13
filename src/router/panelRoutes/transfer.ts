@@ -1,11 +1,11 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
     path: 'transfers',
     name: 'Panel.Transfer',
     meta: {
-      pageCategory: 'حواله ها',
+      pageCategory: 'حواله ها'
     },
     component: () => import('src/layouts/BareLayout.vue'),
     children: [
@@ -15,11 +15,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'لیست',
-            },
-          ],
+              label: 'لیست'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/transfer/list.vue'),
+        component: () => import('src/pages/panel/transfer/list.vue')
       },
       {
         path: 'create',
@@ -27,11 +27,11 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'حواله جدید',
-            },
-          ],
+              label: 'حواله جدید'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/transfer/create.vue'),
+        component: () => import('src/pages/panel/transfer/create.vue')
       },
       {
         path: ':id',
@@ -39,12 +39,12 @@ const routes: RouteRecordRaw[] = [
         meta: {
           breadCrumbs: [
             {
-              label: 'مشاهده',
-            },
-          ],
+              label: 'مشاهده'
+            }
+          ]
         },
-        component: () => import('src/pages/panel/transfer/show.vue'),
-      },
+        component: () => import('src/pages/panel/transfer/show.vue')
+      }
       // {
       //   path: ':id/edit',
       //   name: 'Panel.Transfer.Edit',
@@ -57,15 +57,15 @@ const routes: RouteRecordRaw[] = [
       //   },
       //   component: () => import('src/pages/panel/transfer/edit.vue'),
       // }
-    ],
+    ]
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
-  },
-];
+    component: () => import('pages/ErrorNotFound.vue')
+  }
+]
 
-export default routes;
+export default routes

@@ -1,4 +1,4 @@
-import BaseAPI from './BaseAPI';
+import BaseAPI from './BaseAPI'
 
 export type ColorType = {
   id: number | null;
@@ -10,8 +10,8 @@ export type ColorType = {
 };
 
 export default class ColorAPI extends BaseAPI<ColorType> {
-  constructor() {
-    super('/colors');
+  constructor () {
+    super('/colors')
     this.defaultObject = {
       id: null,
       name: null,
@@ -19,6 +19,6 @@ export default class ColorAPI extends BaseAPI<ColorType> {
       color_hex: null,
       created_at: null,
       updated_at: null
-    };
+    }
   }
 }

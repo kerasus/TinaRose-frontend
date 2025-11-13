@@ -1,6 +1,6 @@
-import type { RouteRecordRaw } from 'vue-router';
-import { index as panelRoutes } from 'src/router/panelRoutes/index';
-import { index as publicRoutes } from 'src/router/publicRoutes/index';
+import type { RouteRecordRaw } from 'vue-router'
+import { index as panelRoutes } from 'src/router/panelRoutes/index'
+import { index as publicRoutes } from 'src/router/publicRoutes/index'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -36,22 +36,22 @@ const routes: RouteRecordRaw[] = [
         layoutHeaderCustomClass: '',
         layoutBreadcrumbsElements: [],
         layoutBreadcrumbs: {
-          separator: 'home',
+          separator: 'home'
         },
         layoutLeftDrawerCustomClass: '',
-        layoutPageContainerCustomClass: '',
-      },
+        layoutPageContainerCustomClass: ''
+      }
     },
     component: () => import('layouts/MainLayout.vue'),
-    children: [...publicRoutes, ...panelRoutes],
+    children: [...publicRoutes, ...panelRoutes]
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
-  },
-];
+    component: () => import('pages/ErrorNotFound.vue')
+  }
+]
 
-export default routes;
+export default routes

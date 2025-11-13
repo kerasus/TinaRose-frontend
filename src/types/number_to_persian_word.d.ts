@@ -6,6 +6,6 @@ declare module 'number_to_persian_word' {
     convertPeToEn: (number: string | number) => string;
   }
 
-  const NumberToPersianWord: NumberToPersianWord;
-  export default NumberToPersianWord;
+  const NumberToPersianWord: NumberToPersianWord
+  export default NumberToPersianWord
 }

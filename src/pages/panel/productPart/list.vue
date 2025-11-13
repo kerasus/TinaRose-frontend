@@ -12,22 +12,20 @@
     :show-expand-button="false"
     :show-reload-button="false"
     :show-search-button="true"
-    :row-key="itemIdentifyKey"
-  >
+    :row-key="itemIdentifyKey">
     <template #entity-index-table-cell="{ inputData }">
       <template v-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
-          <delete-btn :row="inputData.props.row"
-                      :api="productPartAPI"
-                      :use-flag="false"
-                      @change="afterRemove"
-          />
+          <delete-btn
+            :row="inputData.props.row"
+            :api="productPartAPI"
+            :use-flag="false"
+            @change="afterRemove" />
           <q-btn
             color="primary"
             flat
             icon="visibility"
-            :to="{ name: showRouteName, params: { id: inputData.props.row.id } }"
-          />
+            :to="{ name: showRouteName, params: { id: inputData.props.row.id } }" />
         </div>
       </template>
       <template v-else>
@@ -38,61 +36,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useQuasar } from 'quasar';
-import { EntityIndex } from 'quasar-crud';
-import { useDate } from 'src/composables/Date';
-import DeleteBtn from 'src/components/controls/deleteBtn.vue';
-import ProductPartAPI, { type ProductPartType } from 'src/repositories/productPart';
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
+import { EntityIndex } from 'quasar-crud'
+import { useDate } from 'src/composables/Date'
+import DeleteBtn from 'src/components/controls/deleteBtn.vue'
+import ProductPartAPI, { type ProductPartType } from 'src/repositories/productPart'
 
 
-const $q = useQuasar();
-const dateManager = useDate();
-const productPartAPI = new ProductPartAPI();
+const $q = useQuasar()
+const dateManager = useDate()
+const productPartAPI = new ProductPartAPI()
 
-const api = ref(productPartAPI.endpoints.base);
-const label = ref('زیرمحصول ها');
-const createRouteName = ref('Panel.ProductPart.Create');
-const showRouteName = ref('Panel.ProductPart.Show');
-const itemIdentifyKey = ref('id');
+const api = ref(productPartAPI.endpoints.base)
+const label = ref('زیرمحصول ها')
+const createRouteName = ref('Panel.ProductPart.Create')
+const showRouteName = ref('Panel.ProductPart.Show')
+const itemIdentifyKey = ref('id')
 
 const tableKeys = ref({
   data: 'data',
   total: 'total',
   currentPage: 'current_page',
   perPage: 'per_page',
-  pageKey: 'page',
-});
+  pageKey: 'page'
+})
 
 const table = ref({
   columns: [
-    {
-      name: 'name',
-      required: true,
-      label: 'نام',
-      align: 'left',
-      field: (row: ProductPartType) => row.name,
-    },
     {
       name: 'code',
       required: true,
       label: 'کد',
       align: 'left',
-      field: (row: ProductPartType) => row.code,
+      field: (row: ProductPartType) => row.code
     },
     {
-      name: 'initial_stock',
+      name: 'name',
       required: true,
-      label: 'موجودی اولیه',
+      label: 'نام',
       align: 'left',
-      field: (row: ProductPartType) => row.initial_stock,
+      field: (row: ProductPartType) => row.name
     },
     {
       name: 'count_per_bunch',
       required: true,
       label: 'تعداد در دسته',
       align: 'left',
-      field: (row: ProductPartType) => row.count_per_bunch,
+      field: (row: ProductPartType) => parseFloat((row.count_per_bunch ?? 0).toString()).toLocaleString()
     },
     {
       name: 'created_at',
@@ -100,17 +91,17 @@ const table = ref({
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductPartType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-',
+        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
     },
     {
       name: 'actions',
       required: true,
       label: 'عملیات',
       align: 'left',
-      field: () => '',
-    },
-  ],
-});
+      field: () => ''
+    }
+  ]
+})
 
 const inputs = ref([
   {
@@ -128,17 +119,17 @@ const inputs = ref([
     name: 'name',
     label: 'نام',
     placeholder: ' ',
-    col: 'col-md-3 col-12',
+    col: 'col-md-3 col-12'
   },
   {
     type: 'input',
     name: 'code',
     label: 'کد',
     placeholder: ' ',
-    col: 'col-md-3 col-12',
-  },
-]);
-const entityIndexRef = ref();
+    col: 'col-md-3 col-12'
+  }
+])
+const entityIndexRef = ref()
 
 function afterRemove () {
   entityIndexRef.value.reload()

@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-import type { RouteLocationNormalized } from 'vue-router';
+import { defineStore } from 'pinia'
+import type { RouteLocationNormalized } from 'vue-router'
 
 interface breadCrumb {
   label: string;
@@ -17,20 +17,20 @@ export const useHeaderBreadCrumbs = defineStore('headerBreadCrumbs', {
     return {
       pageCategory: '',
       breadCrumbs: [],
-      routeName: '',
-    };
+      routeName: ''
+    }
   },
   actions: {
-    updateLayoutConfig(config: Partial<State>) {
+    updateLayoutConfig (config: Partial<State>) {
       if (config.pageCategory !== undefined) {
-        this.pageCategory = config.pageCategory;
+        this.pageCategory = config.pageCategory
       }
       if (config.breadCrumbs !== undefined) {
-        this.breadCrumbs = config.breadCrumbs;
+        this.breadCrumbs = config.breadCrumbs
       }
       if (config.routeName !== undefined) {
-        this.routeName = config.routeName;
+        this.routeName = config.routeName
       }
-    },
-  },
-});
+    }
+  }
+})

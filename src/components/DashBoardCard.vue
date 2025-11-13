@@ -7,9 +7,18 @@
             {{ title }}
           </div>
           <div class="value">
-            <currency-number :number="number"
-                             :show-status-color="showStatusColor"/>
-            {{ suffix }}
+            <q-skeleton
+              v-if="loading"
+              type="text" />
+            <template v-else-if="!isNaN(number)">
+              <currency-number
+                :number="number"
+                :show-status-color="showStatusColor" />
+              {{ suffix }}
+            </template>
+            <template v-else>
+              -
+            </template>
           </div>
         </div>
         <div class="col-4 flex justify-end">
@@ -23,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import CurrencyNumber from 'src/components/CurrencyNumber.vue';
+import CurrencyNumber from 'src/components/CurrencyNumber.vue'
 
 defineProps<{
   icon: string,
@@ -31,6 +40,7 @@ defineProps<{
   number: number,
   suffix?: string,
   showStatusColor?: boolean
+  loading?: boolean
 }>()
 </script>
 

@@ -102,7 +102,7 @@ export const useAppLayout = defineStore('appLayout', {
   },
   actions: {
     updateLayoutConfig (config: State) {
-      Object.keys(config).forEach(key => {
+      Object.keys(config).forEach((key) => {
         // @ts-ignore
         this[key] = config[key]
       })

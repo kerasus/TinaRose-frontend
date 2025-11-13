@@ -42,10 +42,10 @@ export const selectStrategy = (input: FormTableInputType) => (row: Row) => {
   }
 
   if (!input.multiple) {
-    const option = allOptions?.find(opt => isSelectedOption(opt, row))
+    const option = allOptions?.find((opt) => isSelectedOption(opt, row))
     return option ? option[optionLabelKey] : ''
   }
 
-  const options = allOptions?.filter(opt => isSelectedOption(opt, row))
+  const options = allOptions?.filter((opt) => isSelectedOption(opt, row))
   return options?.join(', ')
 }

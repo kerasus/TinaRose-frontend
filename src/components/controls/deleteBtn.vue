@@ -1,5 +1,7 @@
 <template>
-  <q-dialog v-model="showDialog" :persistent="loading">
+  <q-dialog
+    v-model="showDialog"
+    :persistent="loading">
     <confirmation
       :title="selectedRowForChangeStatus.title"
       :message="selectedRowForChangeStatus.message"
@@ -9,8 +11,7 @@
       :title-color="selectedRowForChangeStatus.titleColor"
       :loading="loading"
       @submit="onChangeStatus"
-      @cancel="hideDialog"
-    />
+      @cancel="hideDialog" />
   </q-dialog>
 
   <q-btn
@@ -20,15 +21,14 @@
     :loading="loading"
     flat
     dense
-    @click="onClickDeleteBtn(row)"
-  />
+    @click="onClickDeleteBtn(row)" />
 </template>
 
 <script setup lang="ts">
-import type BaseAPI from 'src/repositories/BaseAPI';
-import Confirmation from 'src/components/cards/confirmation.vue';
-import { ref, type Ref, defineEmits } from 'vue';
-import type { ConfirmationProps } from 'src/components/cards/confirmation.vue';
+import type BaseAPI from 'src/repositories/BaseAPI'
+import Confirmation from 'src/components/cards/confirmation.vue'
+import { ref, type Ref, defineEmits } from 'vue'
+import type { ConfirmationProps } from 'src/components/cards/confirmation.vue'
 
 interface ConfirmationData {
   row: any;
@@ -38,8 +38,8 @@ interface ConfirmationData {
   titleColor: string;
 }
 
-const defaultActiveTitleColor = 'success-dark';
-const defaultDeactiveTitleColor = 'error';
+const defaultActiveTitleColor = 'success-dark'
+const defaultDeactiveTitleColor = 'error'
 
 const selectedRowForChangeStatus: Ref<{
   title?: string;
@@ -52,8 +52,8 @@ const selectedRowForChangeStatus: Ref<{
   message: '',
   row: null,
   icon: null,
-  titleColor: defaultDeactiveTitleColor,
-});
+  titleColor: defaultDeactiveTitleColor
+})
 
 interface ExtendedConfirmationProps extends Omit<ConfirmationProps, 'message'> {
   message: string | ((data: unknown) => string);
@@ -81,7 +81,7 @@ const props = withDefaults(
       icon: 'oms:unlock',
       titleColor: defaultActiveTitleColor,
       submitLabel: 'بله',
-      cancelLabel: 'انصراف',
+      cancelLabel: 'انصراف'
     }),
     deactiveConfirmationOptions: () => ({
       title: 'توجه',
@@ -89,15 +89,15 @@ const props = withDefaults(
       icon: 'dangerous',
       titleColor: defaultDeactiveTitleColor,
       submitLabel: 'بله',
-      cancelLabel: 'انصراف',
-    }),
-  },
-);
+      cancelLabel: 'انصراف'
+    })
+  }
+)
 
-const emits = defineEmits(['change', 'changing']);
+const emits = defineEmits(['change', 'delete', 'changing'])
 
-const showDialog = ref(false);
-const loading = ref(false);
+const showDialog = ref(false)
+const loading = ref(false)
 
 // function getDialogActiveMessage(row: any): string {
 //   if (typeof props.activeConfirmationOptions.message === 'function') {
@@ -106,27 +106,27 @@ const loading = ref(false);
 //   return props.activeConfirmationOptions.message;
 // }
 
-function getDialogDeactiveMessage(row: any) {
+function getDialogDeactiveMessage (row: any) {
   if (typeof props.deactiveConfirmationOptions.message === 'function') {
-    return props.deactiveConfirmationOptions.message(row);
+    return props.deactiveConfirmationOptions.message(row)
   }
-  return props.deactiveConfirmationOptions.message;
+  return props.deactiveConfirmationOptions.message
 }
 
-function onClickDeleteBtn(row: any) {
-  showDialog.value = true;
+function onClickDeleteBtn (row: any) {
+  showDialog.value = true
 
-  const updatedData = getUpdatedSelectedRowForChangeStatus(row);
-  selectedRowForChangeStatus.value.row = updatedData.row;
-  selectedRowForChangeStatus.value.title = updatedData.title;
-  selectedRowForChangeStatus.value.message = updatedData.message;
-  selectedRowForChangeStatus.value.icon = updatedData.icon;
-  selectedRowForChangeStatus.value.titleColor = updatedData.titleColor;
+  const updatedData = getUpdatedSelectedRowForChangeStatus(row)
+  selectedRowForChangeStatus.value.row = updatedData.row
+  selectedRowForChangeStatus.value.title = updatedData.title
+  selectedRowForChangeStatus.value.message = updatedData.message
+  selectedRowForChangeStatus.value.icon = updatedData.icon
+  selectedRowForChangeStatus.value.titleColor = updatedData.titleColor
 }
 
-function getUpdatedSelectedRowForChangeStatus(row: any) {
+function getUpdatedSelectedRowForChangeStatus (row: any) {
   if (typeof props.getConfirmationData === 'function') {
-    return props.getConfirmationData(row);
+    return props.getConfirmationData(row)
   }
 
   return {
@@ -135,42 +135,52 @@ function getUpdatedSelectedRowForChangeStatus(row: any) {
     title: props.deactiveConfirmationOptions.title,
     message: getDialogDeactiveMessage(row),
     titleColor: props.deactiveConfirmationOptions.titleColor || defaultDeactiveTitleColor
-  };
+  }
 }
 
-function hideDialog() {
-  showDialog.value = false;
+function hideDialog () {
+  showDialog.value = false
 }
 
-function onChangeStatus() {
-  loading.value = true;
-  emits('changing');
+async function onChangeStatus () {
+  loading.value = true
+  emits('changing')
 
   if (typeof props.changeStatusPromise === 'function') {
-    props.changeStatusPromise(selectedRowForChangeStatus.value.row).finally(() => {
-      afterChangeStatus();
-    });
-    return;
+    try {
+      await props.changeStatusPromise(selectedRowForChangeStatus.value.row)
+      onDelete()
+    } finally {
+      afterChangeStatus()
+    }
+    return
   }
 
   if (!props.api) {
-    return;
+    return
   }
-  const entityId = selectedRowForChangeStatus.value.row[props.entityIdKey];
+  const entityId = selectedRowForChangeStatus.value.row[props.entityIdKey]
 
   if (!entityId) {
-    showDialog.value = false;
-    return;
+    showDialog.value = false
+    return
   }
 
-  props.api.delete(entityId).finally(() => {
-    afterChangeStatus();
-  });
+  try {
+    await props.api.delete(entityId)
+    onDelete()
+  } finally {
+    afterChangeStatus()
+  }
 }
 
-function afterChangeStatus() {
-  showDialog.value = false;
-  loading.value = false;
-  emits('change');
+function onDelete () {
+  emits('delete')
+}
+
+function afterChangeStatus () {
+  showDialog.value = false
+  loading.value = false
+  emits('change')
 }
 </script>

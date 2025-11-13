@@ -1,4 +1,4 @@
-import BaseAPI from './BaseAPI';
+import BaseAPI from './BaseAPI'
 
 export type FabricType = {
   id: number | null;
@@ -10,8 +10,8 @@ export type FabricType = {
 };
 
 export default class FabricAPI extends BaseAPI<FabricType> {
-  constructor() {
-    super('/fabrics');
+  constructor () {
+    super('/fabrics')
     this.defaultObject = {
       id: null,
       name: null,
@@ -19,6 +19,6 @@ export default class FabricAPI extends BaseAPI<FabricType> {
       color_hex: null,
       created_at: null,
       updated_at: null
-    };
+    }
   }
 }

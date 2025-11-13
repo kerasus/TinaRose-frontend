@@ -2,7 +2,7 @@ export default () => [
   {
     type: 'hidden',
     name: 'id',
-    responseKey: 'id',
+    responseKey: 'id'
   },
   {
     type: 'input',
@@ -10,7 +10,7 @@ export default () => [
     responseKey: 'name',
     label: 'نام',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   },
   {
     type: 'input',
@@ -18,7 +18,7 @@ export default () => [
     responseKey: 'code',
     label: 'کد',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   },
   {
     type: 'color',
@@ -26,6 +26,6 @@ export default () => [
     responseKey: 'color_hex',
     label: 'رنگ',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   }
 ]

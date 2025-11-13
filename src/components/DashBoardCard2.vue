@@ -11,8 +11,9 @@
       </div>
       <q-separator class="q-my-md" />
       <div class="value">
-        <currency-number :number="number"
-                         :show-status-color="showStatusColor"/>
+        <currency-number
+          :number="number"
+          :show-status-color="showStatusColor" />
         {{ numberUnit }}
       </div>
     </q-card-section>
@@ -20,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import CurrencyNumber from 'components/CurrencyNumber.vue';
+import CurrencyNumber from 'components/CurrencyNumber.vue'
 
 defineProps<{
   icon: string,

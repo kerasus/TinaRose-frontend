@@ -1,70 +1,72 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import moment from 'jalali-moment';
-import { useRouter } from 'vue-router';
-import { useUser } from 'src/stores/user';
-import { useAppLayout } from 'stores/appLayout';
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useHeaderBreadCrumbs } from 'src/stores/headerBreadCrumbs';
+import { useQuasar } from 'quasar'
+import moment from 'jalali-moment'
+import { useRouter } from 'vue-router'
+import { useUser } from 'src/stores/user'
+import { useAppLayout } from 'stores/appLayout'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useHeaderBreadCrumbs } from 'src/stores/headerBreadCrumbs'
 
 withDefaults(defineProps<{ floated?: boolean }>(), {
-  floated: false,
-});
+  floated: false
+})
 
-const $q = useQuasar();
-const router = useRouter();
-const userManager = useUser();
-const appLayoutStore = useAppLayout();
-const headerBreadCrumbsStore = useHeaderBreadCrumbs();
+const $q = useQuasar()
+const router = useRouter()
+const userManager = useUser()
+const appLayoutStore = useAppLayout()
+const headerBreadCrumbsStore = useHeaderBreadCrumbs()
 // const setting1 = ref(false)
 // const setting2 = ref(true)
-const formattedDate = ref('');
-const formattedTime = ref('');
+const formattedDate = ref('')
+const formattedTime = ref('')
 
 
-function updateDateTime() {
-  const now = moment();
-  formattedDate.value = now.format('jYYYY/jMM/jDD');
-  formattedTime.value = now.format('HH:mm');
+function updateDateTime () {
+  const now = moment()
+  formattedDate.value = now.format('jYYYY/jMM/jDD')
+  formattedTime.value = now.format('HH:mm')
 }
 
-function updateTime() {
-  updateDateTime();
+function updateTime () {
+  updateDateTime()
 }
 
-let timer: any;
+let timer: any
 onMounted(() => {
-  updateDateTime();
-  timer = setInterval(updateTime, 60000);
-});
+  updateDateTime()
+  timer = setInterval(updateTime, 60000)
+})
 
 onUnmounted(() => {
-  if (timer) clearInterval(timer);
-});
+  if (timer) clearInterval(timer)
+})
 
 // function toggleRightDrawer() {
 //   appLayoutStore.layoutRightDrawerVisible = !appLayoutStore.layoutRightDrawerVisible;
 // }
 
-function toggleLeftDrawerMini() {
-  appLayoutStore.layoutLeftDrawerMiniToOverlay = $q.screen.lt.md;
-  appLayoutStore.layoutLeftDrawerMini = !appLayoutStore.layoutLeftDrawerMini;
+function toggleLeftDrawerMini () {
+  appLayoutStore.layoutLeftDrawerMiniToOverlay = $q.screen.lt.md
+  appLayoutStore.layoutLeftDrawerMini = !appLayoutStore.layoutLeftDrawerMini
   // appLayoutStore.layoutLeftDrawerVisible = !appLayoutStore.layoutLeftDrawerVisible
 }
 
-function toggleLeftDrawerVisible() {
-  appLayoutStore.layoutLeftDrawerMiniToOverlay = false;
-  appLayoutStore.layoutLeftDrawerVisible = !appLayoutStore.layoutLeftDrawerVisible;
+function toggleLeftDrawerVisible () {
+  appLayoutStore.layoutLeftDrawerMiniToOverlay = false
+  appLayoutStore.layoutLeftDrawerVisible = !appLayoutStore.layoutLeftDrawerVisible
 }
 
-function logout() {
-  userManager.logout();
-  router.push({ name: 'Auth.Login' });
+function logout () {
+  userManager.logout()
+  router.push({ name: 'Auth.Login' })
 }
 </script>
 
 <template>
-  <div class="main-dashboard-wrapper" :class="{ floated: floated }">
+  <div
+    class="main-dashboard-wrapper"
+    :class="{ floated: floated }">
     <q-toolbar class="main-dashboard">
       <q-toolbar-title class="main-dashboard__main-section">
         <div class="main-dashboard__right-section">
@@ -78,23 +80,20 @@ function logout() {
                   ? 'keyboard_double_arrow_left'
                   : 'keyboard_double_arrow_right'
               "
-              @click="toggleLeftDrawerMini"
-            />
+              @click="toggleLeftDrawerMini" />
             <q-btn
               class="icon-button drawer-btn lt-md"
               color="primary"
               flat
               icon="menu"
-              @click="toggleLeftDrawerVisible"
-            />
+              @click="toggleLeftDrawerVisible" />
           </div>
           <div class="breadCrumbs">
             <q-breadcrumbs active-color="color-text2">
               <q-breadcrumbs-el
                 v-for="(breadCrumb, breadCrumbIndex) in headerBreadCrumbsStore.breadCrumbs"
                 :key="breadCrumbIndex"
-                :to="breadCrumb.to ? breadCrumb.to : undefined"
-              >
+                :to="breadCrumb.to ? breadCrumb.to : undefined">
                 {{ (breadCrumb.label) }}
               </q-breadcrumbs-el>
             </q-breadcrumbs>
@@ -113,12 +112,21 @@ function logout() {
           <!-- <q-btn icon="notifications" class="icon-button" @click="toggleRightDrawer">
             <q-badge floating rounded color="red"> 2 </q-badge>
           </q-btn> -->
-          <q-btn v-if="userManager.me" icon="account_circle" color="primary" flat class="icon-button">
-            <q-menu transition-show="jump-down" transition-hide="jump-up">
+          <q-btn
+            v-if="userManager.me"
+            icon="account_circle"
+            color="primary"
+            flat
+            class="icon-button">
+            <q-menu
+              transition-show="jump-down"
+              transition-hide="jump-up">
               <div class="row no-wrap q-pa-md">
                 <div class="column items-center">
                   <q-avatar size="72px">
-                    <img src="/panel/images/blankProfile.png" alt="avatar" />
+                    <img
+                      src="/panel/images/blankProfile.png"
+                      alt="avatar">
                   </q-avatar>
 
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
@@ -130,12 +138,22 @@ function logout() {
                     </div>
                   </div>
 
-                  <q-btn v-close-popup color="primary" icon="logout" flat @click="logout" />
+                  <q-btn
+                    v-close-popup
+                    color="primary"
+                    icon="logout"
+                    flat
+                    @click="logout" />
                 </div>
               </div>
             </q-menu>
           </q-btn>
-          <q-btn v-else icon="login" color="primary" outline :to="{ name: 'Auth.Login' }" />
+          <q-btn
+            v-else
+            icon="login"
+            color="primary"
+            outline
+            :to="{ name: 'Auth.Login' }" />
         </div>
       </q-toolbar-title>
     </q-toolbar>

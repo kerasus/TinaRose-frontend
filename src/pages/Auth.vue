@@ -5,9 +5,9 @@
         <div class="row justify-center items-center full-width">
           <div class="col-md-8">
             <div class="auth-page__login__head">
-              <q-img src="/panel/images/logo.png"
-                     @click="goToHomePage"
-              />
+              <q-img
+                src="/panel/images/logo.png"
+                @click="goToHomePage" />
             </div>
             <div class="auth-page__login__title">تینا رز</div>
             <auth-component class="auth-component" />
@@ -19,17 +19,17 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import AuthComponent from 'src/components/AuthComponent.vue';
+import { useRouter } from 'vue-router'
+import AuthComponent from 'src/components/AuthComponent.vue'
 
-const router = useRouter();
+const router = useRouter()
 
 defineOptions({
-  name: 'AuthPage',
-});
+  name: 'AuthPage'
+})
 
-function goToHomePage() {
-  router.push({ name: 'HomePage' });
+function goToHomePage () {
+  router.push({ name: 'HomePage' })
 }
 </script>
 

@@ -4,12 +4,20 @@
       <div class="title">
         {{ $t(title ? title : '') }}
       </div>
-      <q-btn icon="oms:close" flat class="icon-button" @click="cancel" />
+      <q-btn
+        icon="oms:close"
+        flat
+        class="icon-button"
+        @click="cancel" />
     </q-card-section>
     <q-separator />
     <q-card-section class="image-preview-content">
-      <q-img v-if="imageLoaded && src" :src="src" />
-      <div v-else class="image-preview-error">
+      <q-img
+        v-if="imageLoaded && src"
+        :src="src" />
+      <div
+        v-else
+        class="image-preview-error">
         <!-- ToDo: must change icon to gallery-slash-->
         <q-icon name="oms:gallery" />
         <div class="error-message">
@@ -21,8 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, ref, watch } from 'vue';
-const imageLoaded = ref(false);
+import { defineEmits, ref, watch } from 'vue'
+const imageLoaded = ref(false)
 
 const props = withDefaults(
   defineProps<{
@@ -31,25 +39,25 @@ const props = withDefaults(
   }>(),
   {
     title: undefined,
-    src: undefined,
-  },
-);
+    src: undefined
+  }
+)
 
-const emit = defineEmits(['cancel']);
+const emit = defineEmits(['cancel'])
 
 const cancel = (event: Event) => {
-  emit('cancel', event);
-};
+  emit('cancel', event)
+}
 
 watch(
   () => props.src,
   (newSrc) => {
-    imageLoaded.value = !!newSrc; // Set to true if newSrc exists
+    imageLoaded.value = !!newSrc // Set to true if newSrc exists
   },
   {
-    immediate: true,
-  },
-);
+    immediate: true
+  }
+)
 </script>
 
 <style scoped lang="scss">

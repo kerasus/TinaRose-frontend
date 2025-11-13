@@ -2,7 +2,7 @@ export default () => [
   {
     type: 'hidden',
     name: 'id',
-    responseKey: 'id',
+    responseKey: 'id'
   },
   {
     type: 'input',
@@ -10,7 +10,7 @@ export default () => [
     responseKey: 'name',
     label: 'نام',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   },
   {
     type: 'input',
@@ -18,7 +18,7 @@ export default () => [
     responseKey: 'code',
     label: 'کد',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   },
   {
     type: 'input',
@@ -27,7 +27,7 @@ export default () => [
     label: 'موجودی اولیه',
     placeholder: ' ',
     inputType: 'number',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   },
   {
     type: 'input',
@@ -35,7 +35,7 @@ export default () => [
     responseKey: 'unit_small',
     label: 'واحد جز',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   },
   {
     type: 'input',
@@ -43,7 +43,7 @@ export default () => [
     responseKey: 'unit_large',
     label: 'واحد کل',
     placeholder: ' ',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   },
   {
     type: 'input',
@@ -52,6 +52,6 @@ export default () => [
     label: 'تعداد واحد جز در واحد کل',
     placeholder: ' ',
     inputType: 'number',
-    col: 'col-md-4 col-12',
+    col: 'col-md-4 col-12'
   }
 ]

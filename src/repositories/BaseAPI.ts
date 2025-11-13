@@ -1,5 +1,5 @@
-import type { AxiosError, AxiosResponse } from 'axios';
-import { axiosInstanceManager } from 'src/boot/axios';
+import type { AxiosError, AxiosResponse } from 'axios'
+import { axiosInstanceManager } from 'src/boot/axios'
 
 export type ListType<T> = {
   data: T[];
@@ -30,21 +30,21 @@ interface CacheEntry {
 }
 
 export default class BaseAPI<T> {
-  public baseEndpoint: string;
-  public defaultObject: T;
-  public endpoints: Endpoints;
+  public baseEndpoint: string
+  public defaultObject: T
+  public endpoints: Endpoints
 
-  constructor(baseEndpoint: string) {
-    this.baseEndpoint = baseEndpoint;
-    this.defaultObject = {} as T;
+  constructor (baseEndpoint: string) {
+    this.baseEndpoint = baseEndpoint
+    this.defaultObject = {} as T
     this.endpoints = {
       base: this.baseEndpoint,
-      byId: (id: number) => this.baseEndpoint + '/' + id,
-    };
+      byId: (id: number) => this.baseEndpoint + '/' + id
+    }
   }
 
-  getAxiosInstanceWithToken() {
-    const axiosManager = axiosInstanceManager;
+  getAxiosInstanceWithToken () {
+    const axiosManager = axiosInstanceManager
 
     const cache = new Map<string, CacheEntry>()
     const pendingRequests = new Map<string, Promise<AxiosResponse | AxiosError>>()
@@ -111,130 +111,130 @@ export default class BaseAPI<T> {
       }
     }
 
-    return axiosManager.axiosInstance;
+    return axiosManager.axiosInstance
   }
 
-  getAxiosInstanceWithoutToken() {
-    return axiosInstanceManager.axiosInstanceWithoutToken;
+  getAxiosInstanceWithoutToken () {
+    return axiosInstanceManager.axiosInstanceWithoutToken
   }
 
-  normalize<U>(response: Partial<U>, defaultValues: U): U {
-    return { ...defaultValues, ...response };
+  normalize<U> (response: Partial<U>, defaultValues: U): U {
+    return { ...defaultValues, ...response }
   }
 
-  protected async fetchAndNormalize(id: number): Promise<T> {
-    const response = await this.getAxiosInstanceWithToken().get(this.endpoints.byId(id));
-    return this.getNormalizedItem(this.normalize(response.data, this.defaultObject));
+  protected async fetchAndNormalize (id: number): Promise<T> {
+    const response = await this.getAxiosInstanceWithToken().get(this.endpoints.byId(id))
+    return this.getNormalizedItem(this.normalize(response.data, this.defaultObject))
   }
 
-  async index(filters: any = { length: 10 }): Promise<ListType<T>> {
+  async index (filters: any = { length: 10 }): Promise<ListType<T>> {
     return new Promise((resolve, reject) => {
       this.getAxiosInstanceWithToken()
         .get(this.endpoints.base, {
-          params: this.getNormalizedIndexFilter(filters),
+          params: this.getNormalizedIndexFilter(filters)
         })
         .then((response) => {
-          const normalizedListType = this.getNormalizedListType(response);
-          normalizedListType.data = this.getNormalizedList(normalizedListType.data);
-          resolve(normalizedListType);
+          const normalizedListType = this.getNormalizedListType(response)
+          normalizedListType.data = this.getNormalizedList(normalizedListType.data)
+          resolve(normalizedListType)
         })
         .catch((e) => {
-          console.error(e);
-          reject(e);
-        });
-    });
+          console.error(e)
+          reject(e)
+        })
+    })
   }
 
-  getNormalizedListType(response: AxiosResponse<ListType<T>>): ListType<T> {
+  getNormalizedListType (response: AxiosResponse<ListType<T>>): ListType<T> {
     return {
       data: response.data.data,
       from: response.data.from,
       to: response.data.to,
       current_page: response.data.current_page,
       per_page: response.data.per_page,
-      total: response.data.total,
-    };
+      total: response.data.total
+    }
   }
 
-  getNormalizedIndexFilter(filters: any = { length: 10 }) {
-    return filters;
+  getNormalizedIndexFilter (filters: any = { length: 10 }) {
+    return filters
   }
 
-  getNormalizedList(list: any[]) {
+  getNormalizedList (list: any[]) {
     return list.map((item: any) => {
-      return this.getNormalizedItem(item);
-    });
+      return this.getNormalizedItem(item)
+    })
   }
 
-  getNormalizedItem(item: any) {
-    item.flagStates = this.parseFlag();
-    return item;
+  getNormalizedItem (item: any) {
+    item.flagStates = this.parseFlag()
+    return item
   }
 
-  async create(data: T | FormData): Promise<number> {
+  async create (data: T | FormData): Promise<number> {
     try {
       const response: AxiosResponse<{ id: number }> = await this.getAxiosInstanceWithToken().post(
         this.endpoints.base,
-        data,
-      );
-      return response.data.id;
+        data
+      )
+      return response.data.id
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(error.message); // Access the message property
+        throw new Error(error.message) // Access the message property
       } else {
-        throw new Error('An unknown error occurred on create'); // Handle non-Error types
+        throw new Error('An unknown error occurred on create') // Handle non-Error types
       }
     }
   }
 
-  async get(id: number, useCache: boolean = true, ttl: number = 1000): Promise<T> {
-    const a = this.getAxiosInstanceWithToken();
-    const url = this.endpoints.byId(id);
+  async get (id: number, useCache: boolean = true, ttl: number = 1000): Promise<T> {
+    const a = this.getAxiosInstanceWithToken()
+    const url = this.endpoints.byId(id)
     const response = useCache
       ? await a.getWithCache(url, {
-          // Enable caching for this request if `useCache` is true
-          useCache,
-          cache: {
-            ttl,
-          },
-        })
-      : await a.get(url);
+        // Enable caching for this request if `useCache` is true
+        useCache,
+        cache: {
+          ttl
+        }
+      })
+      : await a.get(url)
 
-    return this.getNormalizedItem(this.normalize(response.data, this.defaultObject));
+    return this.getNormalizedItem(this.normalize(response.data, this.defaultObject))
   }
 
-  async update(id: number, data: T | FormData): Promise<void | Error> {
+  async update (id: number, data: T | FormData): Promise<void | Error> {
     try {
-      await this.getAxiosInstanceWithToken().put(this.endpoints.byId(id), data);
+      await this.getAxiosInstanceWithToken().put(this.endpoints.byId(id), data)
     } catch {
-      return new Error();
+      return new Error()
     }
   }
 
-  async delete(id: number): Promise<void | Error> {
+  async delete (id: number): Promise<void | Error> {
     return new Promise((resolve, reject) => {
       this.getAxiosInstanceWithToken()
         .delete(this.endpoints.byId(id))
         .then(() => {
-          resolve();
+          resolve()
         })
         .catch((error) => {
-          reject(error);
-        });
-    });
+          reject(error)
+        })
+    })
   }
 
-  async activate(id: number): Promise<void | Error> {
+  async activate (id: number): Promise<void | Error> {
     try {
-      await this.getAxiosInstanceWithToken().patch(this.endpoints.byId(id));
+      await this.getAxiosInstanceWithToken().patch(this.endpoints.byId(id))
     } catch {
-      return new Error();
+      return new Error()
     }
   }
 
-  parseFlag(): MainFlagStates {
+  parseFlag (): MainFlagStates {
     return {
-      active: true,
-    };
+      active: true
+    }
   }
 }

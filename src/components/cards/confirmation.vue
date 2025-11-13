@@ -1,8 +1,15 @@
 <template>
   <q-card class="dialog confirmation-card">
-    <q-card-section class="confirmation-header" :class="{ 'confirmation-icon': icon }">
-      <q-icon v-if="icon" :name="icon" :class="'text-' + titleColor" />
-      <div class="title" :class="'text-' + titleColor">
+    <q-card-section
+      class="confirmation-header"
+      :class="{ 'confirmation-icon': icon }">
+      <q-icon
+        v-if="icon"
+        :name="icon"
+        :class="'text-' + titleColor" />
+      <div
+        class="title"
+        :class="'text-' + titleColor">
         {{ $t(title ? title : '') }}
       </div>
     </q-card-section>
@@ -16,8 +23,7 @@
         :loading="loading"
         color="primary"
         class="submit-btn"
-        @click="submit"
-      />
+        @click="submit" />
       <q-btn
         v-if="cancelLabel"
         :label="$t(cancelLabel)"
@@ -25,14 +31,13 @@
         color="secondary"
         outline
         class="cancel-btn"
-        @click="cancel"
-      />
+        @click="cancel" />
     </q-card-section>
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from 'vue';
+import { defineEmits } from 'vue'
 
 export interface ConfirmationProps {
   title?: string | undefined;
@@ -44,17 +49,17 @@ export interface ConfirmationProps {
   loading?: boolean | undefined;
 }
 
-defineProps<ConfirmationProps>();
+defineProps<ConfirmationProps>()
 
-const emit = defineEmits(['submit', 'cancel']);
+const emit = defineEmits(['submit', 'cancel'])
 
 const submit = (event: Event) => {
-  emit('submit', event);
-};
+  emit('submit', event)
+}
 
 const cancel = (event: Event) => {
-  emit('cancel', event);
-};
+  emit('cancel', event)
+}
 </script>
 
 <style scoped lang="scss">

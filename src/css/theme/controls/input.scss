@@ -86,7 +86,7 @@ $q-field__label_margin_bottom: $space-1;
         .q-field__native {
           color: $color-text1;
           // height: $input-height;
-          // min-height: $input-height;
+          min-height: $input-height;
           order: 2;
           z-index: 2;
           overflow: hidden;
@@ -311,7 +311,7 @@ $q-field__label_margin_bottom: $space-1;
   &.q-field--readonly {
     .q-field__inner {
       .q-field__control {
-        $field-disabled-input-color: $light-disable;
+        $field-disabled-input-color: $light-disable-variant;
         &::before {
           background: $field-disabled-background;
         }

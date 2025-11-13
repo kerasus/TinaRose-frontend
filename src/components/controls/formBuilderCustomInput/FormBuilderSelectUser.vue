@@ -1,34 +1,35 @@
 <template>
   <div class="form-builder-select-user">
     <div class="outsideLabel">{{ label }}</div>
-    <q-select ref="input"
-              v-model="localValue"
-              transition-show="jump-down"
-              transition-hide="jump-up"
-              :name="name"
-              :filled="filled"
-              :rounded="rounded"
-              :outlined="outlined"
-              :error-message="errorMessage"
-              :option-value="optionValue"
-              :option-label="optionLabel"
-              :option-disable="optionDisable"
-              :options="filteredOptions"
-              :label="' '"
-              :stack-label="!!placeholder"
-              :placeholder="placeholderSetter"
-              :multiple="multiple"
-              :use-chips="useChips"
-              use-input
-              input-debounce="500"
-              :disable="disable"
-              :readonly="readonly"
-              emit-value
-              map-options
-              :hide-dropdown-icon="hideDropdownIcon"
-              :dropdown-icon="dropdownIcon"
-              :clearable="clearable"
-              @filter="filterFn">
+    <q-select
+      ref="input"
+      v-model="localValue"
+      transition-show="jump-down"
+      transition-hide="jump-up"
+      :name="name"
+      :filled="filled"
+      :rounded="rounded"
+      :outlined="outlined"
+      :error-message="errorMessage"
+      :option-value="optionValue"
+      :option-label="optionLabel"
+      :option-disable="optionDisable"
+      :options="filteredOptions"
+      :label="' '"
+      :stack-label="!!placeholder"
+      :placeholder="placeholderSetter"
+      :multiple="multiple"
+      :use-chips="useChips"
+      use-input
+      input-debounce="500"
+      :disable="disable"
+      :readonly="readonly"
+      emit-value
+      map-options
+      :hide-dropdown-icon="hideDropdownIcon"
+      :dropdown-icon="dropdownIcon"
+      :clearable="clearable"
+      @filter="filterFn">
       <template #selected-item="{opt}">
         <template v-if="opt.roles">
           <div v-if="opt.roles[0]?.name">
@@ -44,7 +45,9 @@
         </template>
       </template>
       <template #option="{opt, toggleOption}">
-        <q-item clickable @click="toggleOption(opt)">
+        <q-item
+          clickable
+          @click="toggleOption(opt)">
           <q-item-section avatar>
             <span v-if="opt.roles[0]?.name">
               {{ getUserRoleLabel(opt.roles[0].name) }}
@@ -69,12 +72,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref } from 'vue';
-import UserAPI, { getUserRoleLabel, type UserType } from 'src/repositories/user';
+import { computed, defineProps, defineEmits, ref } from 'vue'
+import UserAPI, { getUserRoleLabel, type UserType } from 'src/repositories/user'
 
 defineOptions({
-  name: 'FormBuilderSelectUser',
-});
+  name: 'FormBuilderSelectUser'
+})
 
 const props = defineProps({
   label: {
@@ -144,21 +147,21 @@ const props = defineProps({
   readonly: {
     default: false,
     type: Boolean
-  },
-});
+  }
+})
 
-const emits = defineEmits(['update:value', 'input', 'click', 'keydown', 'keypress', 'submit']);
+const emits = defineEmits(['update:value', 'input', 'click', 'keydown', 'keypress', 'submit'])
 
 const userAPI = new UserAPI()
 
 const localValue = computed({
-  get() {
+  get () {
     return props.value
   },
-  set(newValue) {
-    emits('update:value', newValue);
-  },
-});
+  set (newValue) {
+    emits('update:value', newValue)
+  }
+})
 const placeholderSetter = computed(() => {
   if (localValue.value === null) {
     return props.placeholder
@@ -186,11 +189,11 @@ const optionValue = ref('id')
 const optionLabel = ref('label')
 
 async function getUsers (firstname: string | null) {
-  const usersList = await userAPI.index({firstname})
+  const usersList = await userAPI.index({ firstname })
   return usersList.data
 }
 
-function filterFn(val: string, update: (cb: ()=>Promise<void>)=>void) {
+function filterFn (val: string, update: (cb: ()=>Promise<void>)=>void) {
   if (val === '') {
     update(async () => {
       filteredOptions.value = await getUsers(null)

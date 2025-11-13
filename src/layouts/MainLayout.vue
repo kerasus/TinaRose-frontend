@@ -1,13 +1,14 @@
 <template>
-  <q-layout class="main-layout" :view="appLayoutStore.layoutView">
+  <q-layout
+    class="main-layout"
+    :view="appLayoutStore.layoutView">
     <q-no-ssr>
       <q-header
         v-if="appLayoutStore.layoutHeader"
         :reveal="appLayoutStore.layoutHeaderReveal"
         :elevated="appLayoutStore.layoutHeaderElevated"
         :bordered="appLayoutStore.layoutHeaderBordered"
-        :class="appLayoutStore.headerCustomClass"
-      >
+        :class="appLayoutStore.headerCustomClass">
         <header-component :floated="headerFloated" />
       </q-header>
 
@@ -25,8 +26,7 @@
         :width="appLayoutStore.layoutLeftDrawerWidth"
         :show-if-above="appLayoutStore.layoutLeftDrawerShowIfAbove"
         side="left"
-        class="main-layout__left-drawer"
-      >
+        class="main-layout__left-drawer">
         <left-drawer-component />
       </q-drawer>
 
@@ -41,13 +41,14 @@
         :width="appLayoutStore.rightDrawerWidth"
         :show-if-above="appLayoutStore.layoutRightDrawerShowIfAbove"
         side="right"
-        class="main-layout__right-drawer"
-      >
+        class="main-layout__right-drawer">
         <right-drawer-component />
       </q-drawer>
 
       <q-page-container>
-        <q-page v-scroll="onContentInsideScroll" :style-fn="myTweak">
+        <q-page
+          v-scroll="onContentInsideScroll"
+          :style-fn="myTweak">
           <router-view />
         </q-page>
       </q-page-container>
@@ -58,8 +59,7 @@
         :reveal="appLayoutStore.layoutFooterReveal"
         :elevated="appLayoutStore.layoutFooterElevated"
         :bordered="appLayoutStore.layoutFooterBordered"
-        :class="appLayoutStore.footerCustomClass"
-      >
+        :class="appLayoutStore.footerCustomClass">
         <footer-component />
       </q-footer>
     </q-no-ssr>
@@ -67,51 +67,51 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { useAppLayout } from 'src/stores/appLayout';
-import footerComponent from 'src/components/template/footers/index.vue';
-import headerComponent from 'src/components/template/headers/index.vue';
-import leftDrawerComponent from 'src/components/template/leftDrawers/index.vue';
-import rightDrawerComponent from 'src/components/template/rightDrawers/index.vue';
-import { onMounted, onUnmounted, ref, watch, type ComponentPublicInstance } from 'vue';
+import { useQuasar } from 'quasar'
+import { useAppLayout } from 'src/stores/appLayout'
+import footerComponent from 'src/components/template/footers/index.vue'
+import headerComponent from 'src/components/template/headers/index.vue'
+import leftDrawerComponent from 'src/components/template/leftDrawers/index.vue'
+import rightDrawerComponent from 'src/components/template/rightDrawers/index.vue'
+import { onMounted, onUnmounted, ref, watch, type ComponentPublicInstance } from 'vue'
 
 defineOptions({
-  name: 'MainLayout',
-});
+  name: 'MainLayout'
+})
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-const footerRef = ref<ComponentPublicInstance | null>(null);
-const headerFloated = ref<boolean>(false);
+const footerRef = ref<ComponentPublicInstance | null>(null)
+const headerFloated = ref<boolean>(false)
 
-const appLayoutStore = useAppLayout();
+const appLayoutStore = useAppLayout()
 
-function myTweak(offset: number) {
-  appLayoutStore.layoutPageOffset = offset;
+function myTweak (offset: number) {
+  appLayoutStore.layoutPageOffset = offset
   // "offset" is a Number (pixels) that refers to the total
   // height of header + footers that occupies on screen,
   // based on the QLayout "view" prop configuration
 
   // this is actually what the default style-fn does in Quasar
-  return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' };
+  return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' }
 }
 
-function onContentInsideScroll(data: number) {
-  headerFloated.value = data > 0;
+function onContentInsideScroll (data: number) {
+  headerFloated.value = data > 0
 }
 
-function showAxiosInterceptorsResponseError(event: CustomEvent) {
-  const messages: string[] = [];
-  const message: string | { loc: string; type: string }[] = event.detail.message;
+function showAxiosInterceptorsResponseError (event: CustomEvent) {
+  const messages: string[] = []
+  const message: string | { loc: string; type: string }[] = event.detail.message
   if (typeof message === 'string') {
-    messages.push(message);
+    messages.push(message)
   } else {
     message.forEach((item: { loc: string; type: string }) => {
-      messages.push(item.type);
-    });
+      messages.push(item.type)
+    })
   }
 
-  const joinedMessages = messages.join('</br>');
+  const joinedMessages = messages.join('</br>')
 
   $q.notify({
     classes: 'snack--negative snack--inline-action',
@@ -126,19 +126,19 @@ function showAxiosInterceptorsResponseError(event: CustomEvent) {
         class: 'icon-button',
         handler: () => {
           /* ... */
-        },
-      },
-    ],
-  });
+        }
+      }
+    ]
+  })
 }
 
 watch(()=>$q.screen.lt.md, (ltmd) => {
   if (ltmd) {
-    appLayoutStore.layoutLeftDrawerMini = false;
-    appLayoutStore.layoutLeftDrawerVisible = false;
+    appLayoutStore.layoutLeftDrawerMini = false
+    appLayoutStore.layoutLeftDrawerVisible = false
   } else {
-    appLayoutStore.layoutLeftDrawerMini = false;
-    appLayoutStore.layoutLeftDrawerVisible = true;
+    appLayoutStore.layoutLeftDrawerMini = false
+    appLayoutStore.layoutLeftDrawerVisible = true
   }
 }, {
   immediate: true
@@ -148,23 +148,23 @@ onMounted(() => {
   // Add an event listener when the component is mounted
   window.addEventListener(
     'axios-interceptors-response-error',
-    showAxiosInterceptorsResponseError as EventListener,
-  );
+    showAxiosInterceptorsResponseError as EventListener
+  )
 
   setTimeout(() => {
     if (footerRef.value) {
-      appLayoutStore.layoutFooterHeight = footerRef.value.$el.clientHeight;
+      appLayoutStore.layoutFooterHeight = footerRef.value.$el.clientHeight
     }
-  }, 500);
-});
+  }, 500)
+})
 
 onUnmounted(() => {
   // Clean up the event listener when the component is unmounted
   window.removeEventListener(
     'axios-interceptors-response-error',
-    showAxiosInterceptorsResponseError as EventListener,
-  );
-});
+    showAxiosInterceptorsResponseError as EventListener
+  )
+})
 </script>
 
 <style lang="scss" scoped>

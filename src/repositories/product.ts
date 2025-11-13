@@ -1,5 +1,5 @@
-import BaseAPI from './BaseAPI';
-import { type RawMaterialType } from './rawMaterial';
+import BaseAPI from './BaseAPI'
+import { type RawMaterialType } from './rawMaterial'
 
 export type RequiredItemTypeType = 'App\\Models\\ProductPart' | 'App\\Models\\RawMaterial';
 
@@ -23,7 +23,6 @@ export type ProductType = {
   unit_large: string | null;
   unit_small: string | null;
   conversion_rate: number | null;
-  initial_stock: number | null;
   requirements: ProductRequirementType[];
   created_at: string | null;
   updated_at: string | null;
@@ -37,8 +36,8 @@ export type AddRequirementFormType = {
 };
 
 export default class ProductAPI extends BaseAPI<ProductType> {
-  constructor() {
-    super('/products');
+  constructor () {
+    super('/products')
     this.defaultObject = {
       id: null,
       name: null,
@@ -46,11 +45,10 @@ export default class ProductAPI extends BaseAPI<ProductType> {
       unit_large: null,
       unit_small: null,
       conversion_rate: null,
-      initial_stock: null,
       requirements: [],
       created_at: null,
       updated_at: null
-    };
+    }
 
     this.endpoints = {
       ...this.endpoints,
@@ -59,12 +57,12 @@ export default class ProductAPI extends BaseAPI<ProductType> {
     }
   }
 
-  async addRequirement(productId: number, data: AddRequirementFormType): Promise<void> {
-    await this.getAxiosInstanceWithToken().post(this.endpoints.requirements(productId), data);
+  async addRequirement (productId: number, data: AddRequirementFormType): Promise<void> {
+    await this.getAxiosInstanceWithToken().post(this.endpoints.requirements(productId), data)
   }
 
-  async removeRequirement(productId: number, requirementId: number): Promise<void> {
-    await this.getAxiosInstanceWithToken().delete(this.endpoints.requirementAction(productId, requirementId));
+  async removeRequirement (productId: number, requirementId: number): Promise<void> {
+    await this.getAxiosInstanceWithToken().delete(this.endpoints.requirementAction(productId, requirementId))
   }
 
   getRequiredItemTypeLabel (itemType: RequiredItemTypeType): string {
@@ -78,10 +76,10 @@ export default class ProductAPI extends BaseAPI<ProductType> {
     return '-'
   }
 
-  override getNormalizedItem(item: ProductType) {
-    item.requirements.forEach(r=>{
+  override getNormalizedItem (item: ProductType) {
+    item.requirements.forEach((r)=>{
       r.required_item_type_label = this.getRequiredItemTypeLabel(r.required_item_type)
     })
-    return item;
+    return item
   }
 }
