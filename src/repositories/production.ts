@@ -128,7 +128,6 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
         const parts = contentDisposition.split(';')
         for (const part of parts) {
           const trimmedPart = part.trim()
-          debugger
           if (trimmedPart.startsWith('filename=')) {
             filename = trimmedPart.substring(9).replace(/"/g, '')
             break
