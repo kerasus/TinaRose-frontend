@@ -1,4 +1,4 @@
-import BaseAPI from './BaseAPI'
+import BaseAPI, { ListType } from './BaseAPI'
 import { type UserType } from './user'
 import { type ColorType } from './color'
 import { type FabricType } from './fabric'
@@ -30,6 +30,22 @@ export type ProductionSummaryFilter = {
   product_part_id?: string;
 }
 
+export interface SummaryType {
+  product_part_name: string;
+  color_name: string;
+  fabric_name: string;
+  total_bunch: number;
+  total_petals: number;
+}
+
+export interface UserSummaryType extends SummaryType {
+  user_id: number;
+  employee_code: string;
+  firstname: string;
+  lastname: string;
+  username: number;
+}
+
 export default class ProductionAPI extends BaseAPI<ProductionType> {
   constructor () {
     super('/productions')
@@ -53,14 +69,32 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
     this.endpoints = {
       ...this.endpoints,
       summary: `${this.baseEndpoint}/summary`,
-      summaryExport: `${this.baseEndpoint}/summary-export`
+      userSummary: `${this.baseEndpoint}/user-summary`,
+      summaryExport: `${this.baseEndpoint}/summary-export`,
+      userSummaryExport: `${this.baseEndpoint}/user-summary-export`
     }
   }
 
-  async summary (filter: ProductionSummaryFilter): Promise<{ message: string, data: { user: ProductionType }}> {
+  async summary (filter: ProductionSummaryFilter): Promise<ListType<SummaryType>> {
     try {
-      const response: AxiosResponse<{ message: string, data: { user: ProductionType }}> = await this.getAxiosInstanceWithToken()
-        .get(this.endpoints.summary, { params: filter })
+      const response: AxiosResponse<ListType<SummaryType>> =
+        await this.getAxiosInstanceWithToken()
+          .get(this.endpoints.summary, { params: filter })
+      return response.data
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message)
+      } else {
+        throw new Error('An unknown error occurred on updateBalance')
+      }
+    }
+  }
+
+  async userSummary (filter: ProductionSummaryFilter): Promise<ListType<UserSummaryType>> {
+    try {
+      const response: AxiosResponse<ListType<UserSummaryType>> =
+        await this.getAxiosInstanceWithToken()
+          .get(this.endpoints.userSummary, { params: filter })
       return response.data
     } catch (error) {
       if (error instanceof Error) {
@@ -72,23 +106,42 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
   }
 
   async summaryExport (filter: ProductionSummaryFilter): Promise<{ blob: Blob, filename: string}> {
+    let filename = 'گزارش-تولید-' + new Date().toISOString().slice(0, 10) + '.csv'
+    return this.export(this.endpoints.summaryExport, filter, filename)
+  }
+
+  async userSummaryExport (filter: ProductionSummaryFilter): Promise<{ blob: Blob, filename: string}> {
+    let filename = 'گزارش-تولید-کاربر' + new Date().toISOString().slice(0, 10) + '.csv'
+    return this.export(this.endpoints.userSummaryExport, filter, filename)
+  }
+
+  private async export (endpoint: string, filter: ProductionSummaryFilter, defaultFailName: string) {
     try {
-      const response = await this.getAxiosInstanceWithToken().get(this.endpoints.summaryExport, {
+      const response = await this.getAxiosInstanceWithToken().get(endpoint, {
         params: filter,
         responseType: 'blob'
       })
-      // const contentDisposition = response.headers['content-disposition'];
-      const filename = 'گزارش-تولید.xlsx'
+      const contentDisposition = response.headers['content-disposition']
+      let filename = defaultFailName
 
-      // if (contentDisposition) {
-      //   const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-      //   if (fileNameMatch.length > 1) {
-      //     filename = fileNameMatch[1];
-      //   }
-      // }
+      if (contentDisposition) {
+        const parts = contentDisposition.split(';')
+        for (const part of parts) {
+          const trimmedPart = part.trim()
+          debugger
+          if (trimmedPart.startsWith('filename=')) {
+            filename = trimmedPart.substring(9).replace(/"/g, '')
+            break
+          }
+          if (trimmedPart.startsWith('filename*=')) {
+            filename = decodeURIComponent(trimmedPart.substring(10).split("''")[1])
+            break
+          }
+        }
+      }
 
       return {
-        blob: new Blob([response.data]),
+        blob: new Blob([response.data], { type: 'text/csv;charset=utf-8;' }),
         filename
       }
 
@@ -100,5 +153,4 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
       }
     }
   }
-
 }

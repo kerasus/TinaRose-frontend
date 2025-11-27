@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { useUser } from 'src/stores/user'
 import { useAppLayout } from 'stores/appLayout'
 import { ref, onMounted, onUnmounted } from 'vue'
+import { userRoleOptions } from 'src/repositories/user'
 import { useHeaderBreadCrumbs } from 'src/stores/headerBreadCrumbs'
 
 withDefaults(defineProps<{ floated?: boolean }>(), {
@@ -16,8 +17,6 @@ const router = useRouter()
 const userManager = useUser()
 const appLayoutStore = useAppLayout()
 const headerBreadCrumbsStore = useHeaderBreadCrumbs()
-// const setting1 = ref(false)
-// const setting2 = ref(true)
 const formattedDate = ref('')
 const formattedTime = ref('')
 
@@ -28,28 +27,28 @@ function updateDateTime () {
   formattedTime.value = now.format('HH:mm')
 }
 
-function updateTime () {
-  updateDateTime()
+function translateRole (roleName: string): string {
+  const target = userRoleOptions.find((role) => role.value === roleName)
+  if (!target) {
+    return '-'
+  }
+
+  return target.label
 }
 
 let timer: any
 onMounted(() => {
   updateDateTime()
-  timer = setInterval(updateTime, 60000)
+  timer = setInterval(updateDateTime, 60000)
 })
 
 onUnmounted(() => {
   if (timer) clearInterval(timer)
 })
 
-// function toggleRightDrawer() {
-//   appLayoutStore.layoutRightDrawerVisible = !appLayoutStore.layoutRightDrawerVisible;
-// }
-
 function toggleLeftDrawerMini () {
   appLayoutStore.layoutLeftDrawerMiniToOverlay = $q.screen.lt.md
   appLayoutStore.layoutLeftDrawerMini = !appLayoutStore.layoutLeftDrawerMini
-  // appLayoutStore.layoutLeftDrawerVisible = !appLayoutStore.layoutLeftDrawerVisible
 }
 
 function toggleLeftDrawerVisible () {
@@ -104,11 +103,11 @@ function logout () {
         </div>
         <div class="main-dashboard__center-section" />
         <div class="main-dashboard__left-section">
-          <!-- <div class="time">
+          <div class="time">
             {{ formattedDate }}
             <q-icon name="remove" />
             {{ formattedTime }}
-          </div> -->
+          </div>
           <!-- <q-btn icon="notifications" class="icon-button" @click="toggleRightDrawer">
             <q-badge floating rounded color="red"> 2 </q-badge>
           </q-btn> -->
@@ -121,30 +120,31 @@ function logout () {
             <q-menu
               transition-show="jump-down"
               transition-hide="jump-up">
-              <div class="row no-wrap q-pa-md">
-                <div class="column items-center">
-                  <q-avatar size="72px">
-                    <img
-                      src="/panel/images/blankProfile.png"
-                      alt="avatar">
-                  </q-avatar>
+              <div class="profile-menu q-pa-md">
+                <q-avatar size="72px">
+                  <img
+                    src="/panel/images/blankProfile.png"
+                    alt="avatar">
+                </q-avatar>
 
-                  <div class="text-subtitle1 q-mt-md q-mb-xs">
+                <div class="profile-menu-user-info text-subtitle1 q-mt-md q-mb-xs">
+                  <div class="profile-menu-user-fullname">
                     <div class="labele text-center text-blue-grey-9">
                       {{ userManager.me?.firstname }}
-                    </div>
-                    <div class="labele text-center text-grey-7">
                       {{ userManager.me?.lastname }}
                     </div>
                   </div>
-
-                  <q-btn
-                    v-close-popup
-                    color="primary"
-                    icon="logout"
-                    flat
-                    @click="logout" />
+                  <div class="profile-menu-user-roles text-blue-grey-7">
+                    ({{ userManager.me.roles.map(r=>translateRole(r.name)).join(', ') }})
+                  </div>
                 </div>
+
+                <q-btn
+                  v-close-popup
+                  color="red"
+                  icon="logout"
+                  class="logout-btn"
+                  @click="logout" />
               </div>
             </q-menu>
           </q-btn>
@@ -231,5 +231,27 @@ function logout () {
 }
 .search-input {
   margin: 10px;
+}
+
+.profile-menu {
+  min-width: 200px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  .q-avatar {
+  }
+  .profile-menu-user-info {
+    .profile-menu-user-fullname {
+
+    }
+    .profile-menu-user-roles {
+
+    }
+  }
+  .logout-btn {
+    width: 100%;
+  }
 }
 </style>

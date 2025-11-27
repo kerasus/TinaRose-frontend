@@ -3,22 +3,18 @@ import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useUser } from 'src/stores/user'
-import { computed, ref, type Ref, watch } from 'vue'
 import { useAppLayout } from 'stores/appLayout'
 import ListItem from './components/listItem.vue'
+import { computed, ref, type Ref, watch } from 'vue'
 import { UserRolesType } from 'src/repositories/user'
-import user from 'src/router/panelRoutes/user'
-// import { useAppConfig } from 'stores/appConfig'
 
 const $q = useQuasar()
 const route = useRoute()
 const i18nManager = useI18n()
 const userManager = useUser()
 const appLayoutStore = useAppLayout()
-// const appConfig = useAppConfig()
 
 const searchValue = ref('')
-
 
 const allowedLinks = computed(() => topLinks.value
   .filter((link) => {
@@ -67,7 +63,7 @@ const topLinks = ref<ListItemType[]>([
   {
     icon: 'dashboard',
     title: 'داشبورد',
-    forRoles: [ 'Assembler' ],
+    forRoles: [ 'Assembler', 'MiddleWorker', 'WarehouseKeeper' ],
     route: { name: 'Panel.WorkerDashboard' }
   },
   {
@@ -97,7 +93,7 @@ const topLinks = ref<ListItemType[]>([
   {
     icon: 'content_paste_go',
     title: 'حواله ها',
-    forRoles: [ 'Manager', 'Accountant' ],
+    forRoles: [ 'Manager', 'Accountant', 'MiddleWorker', 'WarehouseKeeper' ],
     route: { name: 'Panel.Transfer.Create' }
   },
   {
@@ -119,9 +115,15 @@ const topLinks = ref<ListItemType[]>([
     child: [
       {
         icon: 'remove',
-        title: 'تولیدات',
+        title: 'تولیدات کلی',
         forRoles: [ 'Manager', 'Accountant' ],
-        route: { name: 'Panel.Report.Productions' }
+        route: { name: 'Panel.Report.TotalProductions' }
+      },
+      {
+        icon: 'remove',
+        title: 'تولیدات کارمندان',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.Report.UserProductions' }
       }
     ]
   },

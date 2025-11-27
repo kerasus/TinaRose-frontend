@@ -10,16 +10,28 @@ const routes: RouteRecordRaw[] = [
     component: () => import('src/layouts/BareLayout.vue'),
     children: [
       {
-        path: '',
-        name: 'Panel.Report.Productions',
+        path: 'total-productions',
+        name: 'Panel.Report.TotalProductions',
         meta: {
           breadCrumbs: [
             {
-              label: 'تولیدات'
+              label: 'تولیدات کلی'
             }
           ]
         },
-        component: () => import('src/pages/panel/report/productions.vue')
+        component: () => import('pages/panel/report/totalProductions.vue')
+      },
+      {
+        path: 'user-productions',
+        name: 'Panel.Report.UserProductions',
+        meta: {
+          breadCrumbs: [
+            {
+              label: 'تولیدات کارمندان'
+            }
+          ]
+        },
+        component: () => import('pages/panel/report/userProductions.vue')
       }
     ]
   },
