@@ -88,6 +88,12 @@ const table = ref({
       field: (row: TransferType) => row.status_label
     },
     {
+      name: 'creator',
+      label: 'سازنده',
+      align: 'left',
+      field: (row: TransferType) => row.creator ? row.creator?.firstname + ' ' + row.creator?.lastname : '-'
+    },
+    {
       name: 'actions',
       required: true,
       label: 'عملیات',

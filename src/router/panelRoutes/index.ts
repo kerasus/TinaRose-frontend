@@ -12,6 +12,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import inventoryCountRoutes from './inventoryCount'
 import TransferPackageRoutes from './transferPackage'
 import Authenticated from 'src/router/middleware/Authenticated'
+import hasOneOfThisRoles from 'src/router/middleware/hasOneOfThisRoles'
 
 export const index: RouteRecordRaw[] = [
   {
@@ -31,7 +32,10 @@ export const index: RouteRecordRaw[] = [
         path: 'dashboard',
         name: 'Panel.Dashboard',
         meta: {
-          pageCategory: 'داشبورد'
+          pageCategory: 'داشبورد',
+          middleware: [
+            hasOneOfThisRoles(['Manager', 'MiddleWorker'])
+          ]
         },
         component: () => import('src/pages/panel/dashboard.vue')
       },
@@ -39,9 +43,23 @@ export const index: RouteRecordRaw[] = [
         path: 'staff-dashboard',
         name: 'Panel.WorkerDashboard',
         meta: {
-          pageCategory: 'داشبورد'
+          pageCategory: 'داشبورد',
+          middleware: [
+            hasOneOfThisRoles(['FabricCutter', 'ColoringWorker', 'MoldingWorker', 'WarehouseKeeper', 'MiddleWorker', 'Assembler'])
+          ]
         },
         component: () => import('src/pages/panel/workerDashboard.vue')
+      },
+      {
+        path: 'accountant-dashboard',
+        name: 'Panel.AccountantDashboard',
+        meta: {
+          pageCategory: 'داشبورد',
+          middleware: [
+            hasOneOfThisRoles(['Accountant'])
+          ]
+        },
+        component: () => import('src/pages/panel/accountantDashboard.vue')
       },
 
       ...userRoutes,

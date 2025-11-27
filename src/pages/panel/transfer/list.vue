@@ -1,5 +1,5 @@
 <template>
-  <transfer-list :role="'MiddleWorker'" />
+  <transfer-list />
 </template>
 
 <script setup lang="ts">

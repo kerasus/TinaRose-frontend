@@ -25,10 +25,14 @@
   </entity-create>
   <q-separator class="q-my-md" />
   <transfer-list
-    v-if="me?.id"
+    v-if="userManager.isManager || userManager.isMiddleWorker || userManager.isAccountant || userManager.isWarehouseKeeper"
     ref="transferListRef"
     :role="'MiddleWorker'"
     :user-id="me.id" />
+  <my-transfer-list
+    v-else
+    :user-id="userManager.me.id"
+    :role="userManager.mainRole" />
 </template>
 
 <script setup lang="ts">
@@ -40,6 +44,7 @@ import getInputs, { getFormData } from './inputs'
 import TransferAPI from 'src/repositories/transfer'
 import { FormBuilderAssist } from 'quasar-form-builder'
 import TransferList from 'src/components/TransferList.vue'
+import MyTransferList from 'src/components/MyTransferList.vue'
 
 const $q = useQuasar()
 const userManager = useUser()

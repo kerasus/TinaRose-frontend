@@ -57,8 +57,14 @@ const topLinks = ref<ListItemType[]>([
   {
     icon: 'dashboard',
     title: 'داشبورد',
-    forRoles: [ 'Manager', 'Accountant' ],
+    forRoles: [ 'Manager' ],
     route: { name: 'Panel.Dashboard' }
+  },
+  {
+    icon: 'dashboard',
+    title: 'داشبورد',
+    forRoles: [ 'Accountant' ],
+    route: { name: 'Panel.AccountantDashboard' }
   },
   {
     icon: 'dashboard',
@@ -93,7 +99,7 @@ const topLinks = ref<ListItemType[]>([
   {
     icon: 'content_paste_go',
     title: 'حواله ها',
-    forRoles: [ 'Manager', 'Accountant', 'MiddleWorker', 'WarehouseKeeper' ],
+    forRoles: [ 'Manager', 'Accountant', 'MiddleWorker', 'WarehouseKeeper', 'Assembler' ],
     route: { name: 'Panel.Transfer.Create' }
   },
   {

@@ -4,15 +4,9 @@ import { ref, shallowRef } from 'vue'
 import { useUser } from 'src/stores/user'
 import { EntityIndex } from 'quasar-crud'
 import { useDate } from 'src/composables/Date'
-import { type UserRolesType } from 'src/repositories/user'
 import DeleteBtn from 'src/components/controls/deleteBtn.vue'
 import TransferAPI, { type TransferType } from 'src/repositories/transfer'
 import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
-
-defineProps<{
-  userId?: number,
-  role: UserRolesType,
-}>()
 
 const $q = useQuasar()
 const dateManager = useDate()
@@ -49,25 +43,6 @@ const managerFilters = [
     col: 'col-md-3 col-12'
   }
 ]
-// const workerFilters = [
-//   {
-//     type: 'hidden',
-//     name: 'from_user_id',
-//     value: props.userId
-//   },
-//   {
-//     type: 'hidden',
-//     name: 'to_user_id',
-//     value: props.userId
-//   },
-//   {
-//     type: 'date',
-//     name: 'transfer_date',
-//     outsideLabel: 'تاریخ حواله',
-//     clearable: true,
-//     col: 'col-md-4 col-12'
-//   }
-// ]
 
 const itemIdentifyKey = ref('id')
 const tableKeys = ref({

@@ -104,8 +104,10 @@ function onClickLoginBtn () {
 
 async function redirectAfterLogin () {
   let defaultRoute = { name: 'Panel.Dashboard', params: {} }
-  if (userManager.isManager || userManager.isAccountant) {
+  if (userManager.isManager) {
     defaultRoute = { name: 'Panel.Dashboard', params: {} }
+  } else if (userManager.isAccountant) {
+    defaultRoute = { name: 'Panel.AccountantDashboard', params: {} }
   } else if (userManager.isMiddleWorker) {
     defaultRoute = { name: 'Panel.Transfer.Create', params: {} }
   } else if (userManager.isWarehouseKeeper) {
