@@ -9,15 +9,11 @@ withDefaults(defineProps<{ floated?: boolean }>(), {
 const appLayoutStore = useAppLayout()
 
 const MainPanelComponent = defineAsyncComponent(() => import('./mainPanel.vue'))
-const PaymentResultComponent = defineAsyncComponent(() => import('./paymentResult.vue'))
 </script>
 
 <template>
   <main-panel-component
     v-if="appLayoutStore.layoutHeaderType === 'mainPanel'"
-    :floated="floated" />
-  <payment-result-component
-    v-else-if="appLayoutStore.layoutHeaderType === 'paymentResult'"
     :floated="floated" />
 </template>
 

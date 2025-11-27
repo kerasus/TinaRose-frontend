@@ -56,11 +56,11 @@ const formBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProduc
 const entityIndexRef = ref()
 const exportCSVLoading = ref(false)
 const api = ref(productionAPI.endpoints.summary)
-const label = ref('گزارش تولیدات')
+const label = ref('گزارش تولیدات کلی')
 const itemIdentifyKey = ref('id')
 
 const tableKeys = ref({
-  data: '',
+  data: 'data',
   total: 'total',
   currentPage: 'current_page',
   perPage: 'per_page',
@@ -108,14 +108,6 @@ const table = ref({
 })
 const inputs = ref([
   {
-    type: 'select',
-    name: 'role',
-    label: 'نقش',
-    placeholder: ' ',
-    options: userRoleOptions.filter((item)=>item.value !== 'Manager' && item.value !== 'Accountant'),
-    col: 'col-md-3 col-12'
-  },
-  {
     type: 'date',
     name: 'production_date_from',
     outsideLabel: 'تاریخ تولید از',
@@ -130,13 +122,21 @@ const inputs = ref([
     col: 'col-md-3 col-12'
   },
   {
-    type: formBuilderSelectProductPartComponent,
-    name: 'product_part_id',
+    type: 'select',
+    name: 'role',
+    label: 'نقش',
+    placeholder: ' ',
+    options: userRoleOptions.filter((item)=>item.value !== 'Manager' && item.value !== 'Accountant'),
     col: 'col-md-3 col-12'
   },
   {
     type: formBuilderSelectUserComponent,
     name: 'user_id',
+    col: 'col-md-3 col-12'
+  },
+  {
+    type: formBuilderSelectProductPartComponent,
+    name: 'product_part_id',
     col: 'col-md-3 col-12'
   },
   {

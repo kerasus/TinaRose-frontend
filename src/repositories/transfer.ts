@@ -11,10 +11,13 @@ export type TransferType = {
   from_user: UserType | null;
   to_user_id: number | null;
   to_user: UserType | null;
+  creator_user_id: number | null;
+  creator: UserType | null;
   from_inventory_id: number | null;
   to_inventory_id: number | null;
   items: TransferItemType[];
   transfer_date: string | null;
+  formatted_transfer_date: string | null;
   status: TransferStatusType | null;
   status_label: string | null;
   description: string | null;
@@ -70,10 +73,13 @@ export default class TransferAPI extends BaseAPI<TransferType> {
       from_user: null,
       to_user_id: null,
       to_user: null,
+      creator_user_id: null,
+      creator: null,
       from_inventory_id: null,
       to_inventory_id: null,
       items: [],
       transfer_date: null,
+      formatted_transfer_date: null,
       status: null,
       status_label: null,
       description: null,

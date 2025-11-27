@@ -176,6 +176,9 @@ const formattedValue = computed({
 })
 // Convert numbers to Persian words
 const valueInWords = computed(() => {
+  if (!rawValue.value) {
+    return ''
+  }
   const rawValueInNumber =
     typeof rawValue.value === 'number'
       ? rawValue.value
@@ -184,7 +187,7 @@ const valueInWords = computed(() => {
   const absoluteValue = Math.abs(rawValueInNumber)
   const words = NumberToPersianWord.convert(absoluteValue)
 
-  return `${isNegative ? 'منفی ' : ''}${words} ${appConfig.currencyUnit}`
+  return `${isNegative ? 'منفی ' : ''}${words}`
 })
 
 /**

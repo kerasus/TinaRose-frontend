@@ -44,19 +44,19 @@ const routes: RouteRecordRaw[] = [
           ]
         },
         component: () => import('src/pages/panel/transfer/show.vue')
+      },
+      {
+        path: ':id/edit',
+        name: 'Panel.Transfer.Edit',
+        meta: {
+          breadCrumbs: [
+            {
+              label: 'ویرایش'
+            }
+          ]
+        },
+        component: () => import('src/pages/panel/transfer/edit.vue')
       }
-      // {
-      //   path: ':id/edit',
-      //   name: 'Panel.Transfer.Edit',
-      //   meta: {
-      //     breadCrumbs: [
-      //       {
-      //         label: 'ویرایش',
-      //       },
-      //     ],
-      //   },
-      //   component: () => import('src/pages/panel/transfer/edit.vue'),
-      // }
     ]
   },
 

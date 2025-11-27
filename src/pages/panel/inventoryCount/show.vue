@@ -42,11 +42,10 @@
         <div
           v-if="!entityData?.is_locked"
           class="q-mb-md">
-          <q-input
-            v-model="inputData.props.row.actual_quantity"
+          <currency-input
+            v-model:value="inputData.props.row.actual_quantity"
             :loading="updateItemLoading"
-            :error="!inputData.props.row.actual_quantity"
-            type="number" />
+            :error="!inputData.props.row.actual_quantity" />
         </div>
         <template v-else>
           {{ inputData.col.value }}
@@ -201,6 +200,7 @@ import type { RawMaterialType } from 'src/repositories/rawMaterial'
 import ConfirmationButton from 'src/components/controls/confirmationButton.vue'
 import SelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue'
 import SelectProduct from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProduct.vue'
+import CurrencyInput from 'src/components/controls/formBuilderCustomInput/FormBuilderCurrencyInput.vue'
 import SelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue'
 import SelectRawMaterial from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectRawMaterial.vue'
 import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue'

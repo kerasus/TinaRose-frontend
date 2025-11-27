@@ -7,9 +7,9 @@
     :entity-id-key="entityIdKey"
     :entity-param-key="entityParamKey"
     :index-route-name="(userManager.isManager || userManager.isAccountant || userManager.isWarehouseKeeper) ? indexRouteName : undefined"
-    :show-route-name="showRouteName"
+    :edit-route-name="editRouteName"
     :show-expand-button="false"
-    :show-edit-button="false"
+    :show-edit-button="canEdit"
     :show-index-button="userManager.isManager || userManager.isAccountant || userManager.isWarehouseKeeper"
     :after-load-input-data="afterLoadInputData" />
   <q-separator class="q-my-md" />
@@ -81,7 +81,6 @@
       </q-banner>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -104,6 +103,17 @@ const userManager = useUser()
 const transferAPI = new TransferAPI()
 
 const entityId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0))
+const canEdit = computed(() => {
+  if (!entityData.value){
+    return false
+  }
+
+  if (entityData.value.status !== 'pending'){
+    return false
+  }
+
+  return userManager.me?.id === entityData.value.to_user_id || userManager.me?.id === entityData.value.from_user_id
+})
 const canApproveOrRejectTransfer = computed(() => userManager.me?.id === entityData.value?.to_user_id)
 
 const selectedTransferItemToApprove = ref<number | null>(null)
@@ -117,7 +127,7 @@ const entityShowRef = ref()
 const api = ref(transferAPI.endpoints.byId(entityId.value))
 const label = ref('مشاهده حواله')
 const indexRouteName = ref('Panel.Transfer.Create')
-const showRouteName = ref('Panel.Transfer.Show')
+const editRouteName = ref('Panel.Transfer.Edit')
 const entityIdKey = ref('id')
 const entityParamKey = ref('id')
 

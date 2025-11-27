@@ -188,8 +188,8 @@ const filteredOptions = ref<UserType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('label')
 
-async function getUsers (firstname: string | null) {
-  const usersList = await userAPI.index({ firstname })
+async function getUsers (fullName: string | null) {
+  const usersList = await userAPI.index({ full_name: fullName })
   return usersList.data
 }
 

@@ -27,20 +27,26 @@ const managerFilters = [
     type: FormBuilderSelectUserComponent,
     name: 'from_user_id',
     label: 'از',
-    col: 'col-md-4 col-12'
+    col: 'col-md-3 col-12'
   },
   {
     type: FormBuilderSelectUserComponent,
     name: 'to_user_id',
     label: 'به',
-    col: 'col-md-4 col-12'
+    col: 'col-md-3 col-12'
+  },
+  {
+    type: FormBuilderSelectUserComponent,
+    name: 'creator_user_id',
+    label: 'سازنده',
+    col: 'col-md-3 col-12'
   },
   {
     type: 'date',
     name: 'transfer_date',
     outsideLabel: 'تاریخ حواله',
     clearable: true,
-    col: 'col-md-4 col-12'
+    col: 'col-md-3 col-12'
   }
 ]
 // const workerFilters = [
@@ -99,6 +105,12 @@ const table = ref({
       label: 'وضعیت',
       align: 'left',
       field: (row: TransferType) => row.status_label
+    },
+    {
+      name: 'creator',
+      label: 'سازنده',
+      align: 'left',
+      field: (row: TransferType) => row.creator ? row.creator?.firstname + ' ' + row.creator?.lastname : '-'
     },
     {
       name: 'actions',
