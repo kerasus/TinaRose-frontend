@@ -169,7 +169,7 @@ async function exportCSV () {
   exportCSVLoading.value = true
   const filter = FormBuilderAssist.getFormData(inputs.value)
   try {
-    const exportResult = await productionAPI.summaryExport(filter)
+    const exportResult = await productionAPI.userSummaryExport(filter)
     const url = window.URL.createObjectURL(exportResult.blob)
     const link = document.createElement('a')
     link.href = url

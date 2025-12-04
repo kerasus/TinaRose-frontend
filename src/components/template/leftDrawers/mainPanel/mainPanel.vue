@@ -7,12 +7,14 @@ import { useAppLayout } from 'stores/appLayout'
 import ListItem from './components/listItem.vue'
 import { computed, ref, type Ref, watch } from 'vue'
 import { UserRolesType } from 'src/repositories/user'
+import { useAppConfig } from 'stores/appConfig'
 
 const $q = useQuasar()
 const route = useRoute()
 const i18nManager = useI18n()
 const userManager = useUser()
 const appLayoutStore = useAppLayout()
+const appConfigManager = useAppConfig()
 
 const searchValue = ref('')
 
@@ -265,12 +267,13 @@ watch(currentRouteName, () => {
         </q-list>
       </q-scroll-area>
       <div class="left-drawer__copyright-section">
-
-        <!-- <span class="app-version">
-          {{ ('app.version') }}: {{ appConfig.version }}
-        </span> -->
-        <span> Copyright TinaRose co. </span>
-        <span class="copy-right"> &copy; {{ new Date().getFullYear() }} </span>
+        <div class="app-version">
+          v: {{ appConfigManager.version }}
+        </div>
+        <div class="copy-right">
+          <span> Copyright TinaRose co. </span>
+          <span> &copy; {{ new Date().getFullYear() }} </span>
+        </div>
       </div>
     </div>
   </div>
@@ -337,7 +340,7 @@ watch(currentRouteName, () => {
     .left-drawer__copyright-section {
       padding-left: $space-4;
       color: #67748e;
-      font-size: 12px;
+      font-size: 11px;
       direction: rtl;
       text-align: left;
       .app-version {
