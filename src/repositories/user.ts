@@ -3,10 +3,11 @@ import type { AxiosResponse } from 'axios'
 
 export type WorkerRoleType = 'molding' | 'coloring' | 'fabric-cutter' | 'assembler'
 export type UserRolesForPathType = 'manager' | 'accountant' | 'molding' | 'coloring' | 'fabric-cutter' | 'middle' | 'assembler' | 'warehouse-keeper'
-export type UserRolesType = 'Manager' | 'Accountant' | 'MoldingWorker' | 'ColoringWorker' | 'FabricCutter' | 'MiddleWorker' | 'Assembler' | 'WarehouseKeeper'
+export type UserRolesType = 'Manager' | 'ProductManager' | 'Accountant' | 'MoldingWorker' | 'ColoringWorker' | 'FabricCutter' | 'MiddleWorker' | 'Assembler' | 'WarehouseKeeper'
 
 export const userRoleOptions = [
   { label: 'مدیر', value: 'Manager' },
+  { label: 'مدیر محصول', value: 'ProductManager' },
   { label: 'حسابدار', value: 'Accountant' },
   { label: 'وسط کار', value: 'MiddleWorker' },
   { label: 'انباردار', value: 'WarehouseKeeper' },
