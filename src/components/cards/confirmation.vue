@@ -14,7 +14,9 @@
       </div>
     </q-card-section>
     <q-card-section class="confirmation-content">
-      {{ $t(message ? message : '') }}
+      <slot>
+        {{ $t(message ? message : '') }}
+      </slot>
     </q-card-section>
     <q-card-section class="confirmation-buttons">
       <q-btn

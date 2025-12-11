@@ -17,9 +17,12 @@ export type ProductionType = {
   fabric_id: number | null;
   color: ColorType | null;
   color_id: number | null;
+  approved_by: number | null;
+  approver: UserType | null;
   production_date: string | null;
   bunch_count: number | null;
   description: string | null;
+  approved_at: string | null;
   created_at: string | null;
   updated_at: string | null;
 };
@@ -60,19 +63,30 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
       fabric_id: null,
       color: null,
       color_id: null,
+      approved_by: null,
+      approver: null,
       production_date: null,
       bunch_count: null,
       description: null,
+      approved_at: null,
       created_at: null,
       updated_at: null
     }
     this.endpoints = {
       ...this.endpoints,
+      approve: (productionId: number) => `${this.baseEndpoint}/${productionId}/approve`,
       summary: `${this.baseEndpoint}/summary`,
       userSummary: `${this.baseEndpoint}/user-summary`,
       summaryExport: `${this.baseEndpoint}/summary-export`,
       userSummaryExport: `${this.baseEndpoint}/user-summary-export`
     }
+  }
+
+  async approve (productionId: number): Promise<{ message: string }> {
+    const response = await this.getAxiosInstanceWithToken()
+      .post(this.endpoints.approve(productionId))
+
+    return response.data
   }
 
   async summary (filter: ProductionSummaryFilter): Promise<ListType<SummaryType>> {

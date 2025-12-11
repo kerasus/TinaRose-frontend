@@ -32,6 +32,13 @@
     <template #entity-index-table-cell="{ inputData }">
       <template v-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
+          <q-btn
+            v-if="!inputData.props.row.approved_at"
+            color="success"
+            class="q-mr-md"
+            @click="confirmApproveProductionItem(inputData.props.row)">
+            تایید
+          </q-btn>
           <delete-btn
             :row="inputData.props.row"
             :api="productionAPI"
@@ -52,6 +59,58 @@
       </template>
     </template>
   </entity-index>
+  <q-dialog
+    v-model="approveDialog"
+    :persistent="approveLoading">
+    <confirmation
+      title="تایید تولید"
+      message="آیا از تایید تولید اطمینان دارید؟"
+      submit-label="بله"
+      cancel-label="انصراف"
+      icon="dangerous"
+      title-color="warning"
+      :loading="approveLoading"
+      @submit="approveProductionItem"
+      @cancel="onCancelApproveProductionItem">
+      <div
+        v-if="selectedProductionItemToApprove"
+        class="row">
+        <div class="col-md-6 col-xs-6">
+          پرسنل:
+          {{ selectedProductionItemToApprove.user.firstname }}
+          {{ selectedProductionItemToApprove.user.lastname }}
+        </div>
+        <div class="col-md-6 col-xs-6">
+          زیر محصول:
+          {{ selectedProductionItemToApprove.product_part?.name }}
+        </div>
+        <div class="col-md-6 col-xs-6">
+          پارچه:
+          {{ selectedProductionItemToApprove.fabric?.name }}
+        </div>
+        <div class="col-md-6 col-xs-6">
+          رنگ:
+          {{ selectedProductionItemToApprove.color?.name }}
+        </div>
+        <div class="col-md-6 col-xs-6">
+          تعداد دسته:
+          {{ parseFloat(selectedProductionItemToApprove.bunch_count.toString() ?? '0').toLocaleString('fa') }}
+        </div>
+        <div class="col-md-6 col-xs-6">
+          تعداد گلبرگ:
+          {{ ((selectedProductionItemToApprove.product_part?.count_per_bunch ?? 0) * (selectedProductionItemToApprove.bunch_count ?? 0)).toLocaleString('fa') }}
+        </div>
+        <div class="col-md-6 col-xs-6">
+          تاریخ تولید:
+          {{ selectedProductionItemToApprove.production_date ? dateManager.miladiToShamsi(selectedProductionItemToApprove.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-' }}
+        </div>
+        <div class="col-md-6 col-xs-6">
+          زمان ایجاد:
+          {{ selectedProductionItemToApprove.created_at ? dateManager.miladiToShamsi(selectedProductionItemToApprove.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-' }}
+        </div>
+      </div>
+    </confirmation>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -62,6 +121,7 @@ import { EntityIndex } from 'quasar-crud'
 import { useDate } from 'src/composables/Date'
 import { userRoleOptions } from 'src/repositories/user'
 import DeleteBtn from 'src/components/controls/deleteBtn.vue'
+import Confirmation from 'src/components/cards/confirmation.vue'
 import ProductionAPI, { type ProductionType } from 'src/repositories/production'
 import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
 import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue'
@@ -78,6 +138,9 @@ const formBuilderSelectColorComponent = shallowRef(FormBuilderSelectColor)
 const formBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric)
 const formBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProductPart)
 
+const approveDialog = ref(false)
+const approveLoading = ref(false)
+const selectedProductionItemToApprove = ref<ProductionType | null>(null)
 const api = ref(productionAPI.endpoints.base)
 const label = ref('تولید ها')
 const showRouteName = ref('Panel.Production.Show')
@@ -249,6 +312,21 @@ const managerColumns = {
         row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
     },
     {
+      name: 'approver',
+      required: true,
+      label: 'تایید کننده',
+      align: 'left',
+      field: (row: ProductionType) => row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
+    },
+    {
+      name: 'created_at',
+      required: true,
+      label: 'زمان تایید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approved_at ? dateManager.miladiToShamsi(row.approved_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
+    },
+    {
       name: 'created_at',
       required: true,
       label: 'زمان ایجاد',
@@ -417,10 +495,39 @@ function getTableColumns () {
 }
 
 function afterRemove () {
-  entityIndexRef.value.reload()
+  reloadList()
   $q.notify({
     message: 'حذف با موفقیت انجام شد.',
     type: 'positive'
   })
+}
+
+function confirmApproveProductionItem (production: ProductionType) {
+  approveDialog.value = true
+  selectedProductionItemToApprove.value = production
+}
+
+async function approveProductionItem () {
+  try {
+    approveLoading.value = true
+    const result = await productionAPI.approve(selectedProductionItemToApprove.value.id)
+    $q.notify({
+      message: result.message,
+      type: 'positive'
+    })
+    approveDialog.value = false
+    reloadList()
+  } finally {
+    approveLoading.value = false
+  }
+}
+
+function onCancelApproveProductionItem () {
+  selectedProductionItemToApprove.value = null
+  approveDialog.value = false
+}
+
+function reloadList () {
+  entityIndexRef.value.getData()
 }
 </script>
