@@ -28,14 +28,5 @@ export default () => [
     placeholder: ' ',
     inputType: 'number',
     col: 'col-md-6 col-12'
-  },
-  {
-    type: 'input',
-    name: 'initial_stock',
-    responseKey: 'initial_stock',
-    label: 'موجودی اولیه',
-    placeholder: ' ',
-    inputType: 'number',
-    col: 'col-md-6 col-12'
   }
 ]
