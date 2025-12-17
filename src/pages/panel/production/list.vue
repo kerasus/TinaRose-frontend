@@ -28,7 +28,8 @@
     :show-expand-button="false"
     :show-reload-button="false"
     :show-search-button="true"
-    :row-key="itemIdentifyKey">
+    :row-key="itemIdentifyKey"
+    @on-page-changed="onPageChanged">
     <template #entity-index-table-cell="{ inputData }">
       <template v-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
@@ -116,6 +117,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
 import { ref, shallowRef } from 'vue'
+import { AxiosResponse } from 'axios'
 import { useUser } from 'src/stores/user'
 import { EntityIndex } from 'quasar-crud'
 import { useDate } from 'src/composables/Date'
@@ -139,6 +141,7 @@ const formBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric)
 const formBuilderSelectProductPartComponent = shallowRef(FormBuilderSelectProductPart)
 
 const approveDialog = ref(false)
+const currentPage = ref<number>(1)
 const approveLoading = ref(false)
 const selectedProductionItemToApprove = ref<ProductionType | null>(null)
 const api = ref(productionAPI.endpoints.base)
@@ -528,6 +531,10 @@ function onCancelApproveProductionItem () {
 }
 
 function reloadList () {
-  entityIndexRef.value.getData()
+  entityIndexRef.value.getData(undefined, currentPage.value)
+}
+
+function onPageChanged (response: AxiosResponse) {
+  currentPage.value = response.data.current_page
 }
 </script>

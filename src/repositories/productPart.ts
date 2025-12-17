@@ -70,6 +70,9 @@ export default class ProductPartAPI extends BaseAPI<ProductPartType> {
   }
 
   override getNormalizedItem (item: ProductPartType) {
+    if (!item.requirements) {
+      return item
+    }
     item.requirements.forEach((r)=>{
       r.required_item_type_label = this.getRequiredItemTypeLabel(r.required_item_type)
     })

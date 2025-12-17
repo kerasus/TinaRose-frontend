@@ -34,10 +34,8 @@
         <q-item
           clickable
           @click="toggleOption(opt)">
-          <q-item-section avatar>
-            <span :style="{ backgroundColor: opt.color_hex, width: '10px', height:'10px', display: 'inline-block', marginLeft: '5px' }" />
-          </q-item-section>
           <q-item-section>
+            ({{ opt.code ? opt.code : '-' }})
             {{ opt.name }}
           </q-item-section>
         </q-item>
