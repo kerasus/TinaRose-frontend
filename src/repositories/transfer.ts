@@ -13,6 +13,10 @@ export type TransferType = {
   to_user: UserType | null;
   creator_user_id: number | null;
   creator: UserType | null;
+  approver_id: number | null;
+  approved_by: UserType | null;
+  rejecter_id: number | null;
+  rejected_by: UserType | null;
   from_inventory_id: number | null;
   to_inventory_id: number | null;
   items: TransferItemType[];
@@ -51,7 +55,7 @@ export type TransferItemType = {
   color_id: number | null;
   color: ColorType | null;
   item_id: number | null;
-  item_type: 'App\\Models\\Product' | 'App\\Models\\ProductPart' | 'App\\Models\\RawMaterial' | null;
+  item_type: 'App\\Models\\Product' | 'App\\Models\\ProductPart' | 'App\\Models\\RawMaterial' | 'App\\Models\\Fabric' | null;
   quantity: number | null;
   notes: string | null;
   created_at: string | null;
@@ -75,6 +79,10 @@ export default class TransferAPI extends BaseAPI<TransferType> {
       to_user: null,
       creator_user_id: null,
       creator: null,
+      approver_id: null,
+      approved_by: null,
+      rejecter_id: null,
+      rejected_by: null,
       from_inventory_id: null,
       to_inventory_id: null,
       items: [],

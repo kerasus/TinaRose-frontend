@@ -12,6 +12,7 @@ export type InventoryType = {
   user: UserType | null;
   user_id: number | null;
   type: inventoryTypeType | null;
+  type_label: inventoryTypeType | null;
   items: InventoryItemType[];
   name: string | null;
   is_locked: boolean | null;
@@ -80,6 +81,7 @@ export default class InventoryAPI extends BaseAPI<InventoryType> {
       user_id: null,
       user: null,
       type: null,
+      type_label: null,
       name: null,
       items: [],
       is_locked: null,

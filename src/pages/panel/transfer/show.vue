@@ -70,6 +70,13 @@
         class="bg-success text-white">
         این حواله در
         {{ getDateTime(entityData.approved_at) }}
+        <span v-if="entityData.approved_by">
+          توسط
+          (
+          {{ entityData.approved_by?.firstname }}
+          {{ entityData.approved_by?.lastname }}
+          )
+        </span>
         تایید شده است.
       </q-banner>
       <q-banner
@@ -77,6 +84,13 @@
         class="bg-error text-white">
         این حواله در
         {{ getDateTime(entityData.rejected_at) }}
+        <span v-if="entityData.rejected_by">
+          توسط
+          (
+          {{ entityData.rejected_by?.firstname }}
+          {{ entityData.rejected_by?.lastname }}
+          )
+        </span>
         لغو شده است.
       </q-banner>
     </div>

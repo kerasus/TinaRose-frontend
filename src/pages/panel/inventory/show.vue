@@ -119,6 +119,8 @@ const table = ref({
           return 'مواد اولیه'
         } else if (row.item_type === 'App\\Models\\Product') {
           return 'محصول'
+        } else if (row.item_type === 'App\\Models\\Fabric') {
+          return 'پارچه'
         }
       }
     },

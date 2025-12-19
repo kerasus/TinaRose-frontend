@@ -96,15 +96,7 @@ const table = ref({
       required: true,
       label: 'نوع',
       align: 'left',
-      field: (row: InventoryType) => {
-        if (!row.type) {
-          return '-'
-        }
-
-        const target = inventoryTypeOptions.find((item)=>item.value===row.type)
-
-        return target?.label
-      }
+      field: (row: InventoryType) => row.type_label
     },
     {
       name: 'status',

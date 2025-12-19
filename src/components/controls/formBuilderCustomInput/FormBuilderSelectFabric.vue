@@ -1,6 +1,6 @@
 <template>
   <div class="form-builder-select-fabric">
-    <div class="outsideLabel">پارچه</div>
+    <div class="outsideLabel">{{ label }}</div>
     <q-select
       ref="input"
       v-model="localValue"
@@ -24,10 +24,10 @@
       input-debounce="500"
       :disable="disable"
       :readonly="readonly"
-      emit-value
+      :emit-value="emitValue"
+      :map-options="mapOptions"
       :hide-dropdown-icon="hideDropdownIcon"
       :dropdown-icon="dropdownIcon"
-      map-options
       :clearable="clearable"
       @filter="filterFn">
       <template #option="{opt, toggleOption}">
@@ -60,6 +60,10 @@ defineOptions({
 })
 
 const props = defineProps({
+  label: {
+    default: 'پارچه',
+    type: String
+  },
   name: {
     default: '',
     type: String
@@ -118,6 +122,14 @@ const props = defineProps({
   },
   disable: {
     default: false,
+    type: Boolean
+  },
+  emitValue: {
+    default: true,
+    type: Boolean
+  },
+  mapOptions: {
+    default: true,
     type: Boolean
   },
   readonly: {

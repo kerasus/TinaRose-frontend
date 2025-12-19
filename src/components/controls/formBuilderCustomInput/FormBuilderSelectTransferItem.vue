@@ -72,7 +72,7 @@
                   label="" />
               </div>
               <div
-                v-if="transferItemType === 'App\\Models\\ProductPart'"
+                v-else-if="transferItemType === 'App\\Models\\ProductPart'"
                 class="col-md-3">
                 <select-product-part
                   v-model:value="selectedProductPart"
@@ -81,10 +81,19 @@
                   label="" />
               </div>
               <div
-                v-if="transferItemType === 'App\\Models\\RawMaterial'"
+                v-else-if="transferItemType === 'App\\Models\\RawMaterial'"
                 class="col-md-3">
                 <select-raw-material
                   v-model:value="selectedRawMaterial"
+                  :emit-value="false"
+                  :map-options="false"
+                  label="" />
+              </div>
+              <div
+                v-else-if="transferItemType === 'App\\Models\\Fabric'"
+                class="col-md-3">
+                <select-fabric
+                  v-model:value="selectedFabric"
                   :emit-value="false"
                   :map-options="false"
                   label="" />
@@ -247,6 +256,7 @@ import { computed, defineProps, ref, watch } from 'vue'
 import { type TransferItemType } from 'src/repositories/transfer'
 import { TransferPackageType } from 'src/repositories/transferPackage'
 import SelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue'
+import SelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue'
 import SelectProduct from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProduct.vue'
 import SelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue'
 import SelectRawMaterial from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectRawMaterial.vue'
@@ -298,6 +308,8 @@ const columns = ref<{
             return 'مواد اولیه'
           } else if (row.item_type === 'App\\Models\\Product') {
             return 'محصول'
+          } else if (row.item_type === 'App\\Models\\Fabric') {
+            return 'پارچه'
           }
         }
       },
@@ -342,7 +354,7 @@ const rows = ref<TransferItemType[]>([])
 const transferPackage = ref<TransferPackageType | null>(null)
 const packageCount = ref<number | null>(null)
 const packageColor = ref<ColorType | null>(null)
-const transferItemType = ref<'App\\Models\\Product' | 'App\\Models\\ProductPart' | 'App\\Models\\RawMaterial'>('App\\Models\\Product')
+const transferItemType = ref<'App\\Models\\Product' | 'App\\Models\\ProductPart' | 'App\\Models\\RawMaterial' | 'App\\Models\\Fabric'>('App\\Models\\Product')
 const transferItemTypeOptions = ref([
   {
     label: 'محصول',
@@ -355,9 +367,14 @@ const transferItemTypeOptions = ref([
   {
     label: 'مواد اولیه',
     value: 'App\\Models\\RawMaterial'
+  },
+  {
+    label: 'پارچه',
+    value: 'App\\Models\\Fabric'
   }
 ])
 const selectedColor = ref(undefined)
+const selectedFabric = ref(undefined)
 const selectedProduct = ref(undefined)
 const selectedProductPart = ref(undefined)
 const selectedRawMaterial = ref(undefined)
@@ -378,6 +395,10 @@ const isValidForm = computed(() => {
     return false
   }
 
+  if (transferItemType.value === 'App\\Models\\Fabric' && !selectedFabric.value) {
+    return false
+  }
+
   if (!transferItemType.value) {
     return false
   }
@@ -395,6 +416,10 @@ const selectedTransfer = computed(() => {
 
   if (transferItemType.value === 'App\\Models\\RawMaterial') {
     return selectedRawMaterial.value
+  }
+
+  if (transferItemType.value === 'App\\Models\\Fabric') {
+    return selectedFabric.value
   }
 
   return null
