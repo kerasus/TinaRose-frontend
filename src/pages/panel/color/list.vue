@@ -82,6 +82,13 @@ const table = ref({
       field: (row: ColorType) => row.name
     },
     {
+      name: 'fabric',
+      required: true,
+      label: 'پارچه',
+      align: 'left',
+      field: (row: ColorType) => row.fabric ? row.fabric.name : '-'
+    },
+    {
       name: 'created_at',
       required: true,
       label: 'زمان ایجاد',

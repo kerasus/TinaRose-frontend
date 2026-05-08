@@ -1,13 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useQuasar } from 'quasar'
-import { ref, shallowRef } from 'vue'
 import { useUser } from 'src/stores/user'
 import { EntityIndex } from 'quasar-crud'
 import { useDate } from 'src/composables/Date'
 import { type UserRolesType } from 'src/repositories/user'
 import DeleteBtn from 'src/components/controls/deleteBtn.vue'
 import TransferPackageAPI, { type TransferPackageType } from 'src/repositories/transferPackage'
-import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
 
 defineProps<{
   userId?: number,
@@ -18,8 +17,6 @@ const $q = useQuasar()
 const dateManager = useDate()
 const userManager = useUser()
 const transferPackageAPI = new TransferPackageAPI()
-
-const FormBuilderSelectUserComponent = shallowRef(FormBuilderSelectUser)
 
 const entityIndexRef = ref()
 // const workerFilters = [

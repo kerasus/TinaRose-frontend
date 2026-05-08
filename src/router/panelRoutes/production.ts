@@ -22,8 +22,20 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/panel/production/list.vue')
       },
       {
-        path: ':worker_role/create',
-        name: 'Panel.Production.Create',
+        path: '',
+        name: 'Panel.Production.List',
+        meta: {
+          breadCrumbs: [
+            {
+              label: 'لیست'
+            }
+          ]
+        },
+        component: () => import('src/pages/panel/production/list.vue')
+      },
+      {
+        path: 'create',
+        name: 'Panel.Production.CreateByOther',
         meta: {
           breadCrumbs: [
             {
@@ -31,7 +43,7 @@ const routes: RouteRecordRaw[] = [
             }
           ]
         },
-        component: () => import('src/pages/panel/production/create.vue')
+        component: () => import('src/pages/panel/production/createByOther.vue')
       },
       {
         path: ':worker_role/:id',

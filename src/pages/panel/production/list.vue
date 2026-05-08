@@ -1,20 +1,25 @@
 <template>
   <div class="q-mb-md">
     <q-btn
+      v-if="userManager.canCreateProduction"
+      color="primary"
+      label="ثبت تولید جدید"
+      :to="{ name: 'Panel.Production.CreateByOther' }" />
+    <q-btn
       v-if="userManager.isFabricCutter"
       color="primary"
       label="ثبت برش کاری جدید"
-      :to="{ name: 'Panel.Production.Create', params: { worker_role: 'fabric-cutter' }}" />
+      :to="{ name: 'Panel.Production.Create', params: { worker_role: 'fabric-cutter' } }" />
     <q-btn
       v-if="userManager.isColoringWorker"
       color="primary"
       label="ثبت رنگ کاری جدید"
-      :to="{ name: 'Panel.Production.Create', params: { worker_role: 'coloring' }}" />
+      :to="{ name: 'Panel.Production.Create', params: { worker_role: 'coloring' } }" />
     <q-btn
       v-if="userManager.isMoldingWorker"
       color="primary"
       label="ثبت اتوکاری جدید"
-      :to="{ name: 'Panel.Production.Create', params: { worker_role: 'molding' }}" />
+      :to="{ name: 'Panel.Production.Create', params: { worker_role: 'molding' } }" />
   </div>
   <entity-index
     ref="entityIndexRef"
@@ -95,19 +100,44 @@
         </div>
         <div class="col-md-6 col-xs-6">
           تعداد دسته:
-          {{ parseFloat(selectedProductionItemToApprove.bunch_count.toString() ?? '0').toLocaleString('fa') }}
+          {{
+            parseFloat(
+              selectedProductionItemToApprove.bunch_count.toString() ?? '0',
+            ).toLocaleString('fa')
+          }}
         </div>
         <div class="col-md-6 col-xs-6">
           تعداد گلبرگ:
-          {{ ((selectedProductionItemToApprove.product_part?.count_per_bunch ?? 0) * (selectedProductionItemToApprove.bunch_count ?? 0)).toLocaleString('fa') }}
+          {{
+            (
+              (selectedProductionItemToApprove.product_part?.count_per_bunch ?? 0) *
+              (selectedProductionItemToApprove.bunch_count ?? 0)
+            ).toLocaleString('fa')
+          }}
         </div>
         <div class="col-md-6 col-xs-6">
           تاریخ تولید:
-          {{ selectedProductionItemToApprove.production_date ? dateManager.miladiToShamsi(selectedProductionItemToApprove.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-' }}
+          {{
+            selectedProductionItemToApprove.production_date
+              ? dateManager.miladiToShamsi(
+                selectedProductionItemToApprove.production_date,
+                'YYYY-MM-DD',
+                'jYYYY/jMM/jDD',
+              )
+              : '-'
+          }}
         </div>
         <div class="col-md-6 col-xs-6">
           زمان ایجاد:
-          {{ selectedProductionItemToApprove.created_at ? dateManager.miladiToShamsi(selectedProductionItemToApprove.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-' }}
+          {{
+            selectedProductionItemToApprove.created_at
+              ? dateManager.miladiToShamsi(
+                selectedProductionItemToApprove.created_at,
+                'YYYY-MM-DDThh:mm:ss',
+                'hh:mm:ss jYYYY/jMM/jDD',
+              )
+              : '-'
+          }}
         </div>
       </div>
     </confirmation>
@@ -124,7 +154,7 @@ import { useDate } from 'src/composables/Date'
 import { userRoleOptions } from 'src/repositories/user'
 import DeleteBtn from 'src/components/controls/deleteBtn.vue'
 import Confirmation from 'src/components/cards/confirmation.vue'
-import ProductionAPI, { type ProductionType } from 'src/repositories/production'
+import ProductionAPI, { getProductionTypeLabel, productionTypeOptions, type ProductionType } from 'src/repositories/production'
 import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
 import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue'
 import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue'
@@ -160,38 +190,55 @@ const tableKeys = ref({
 const managerInputs = [
   {
     type: formBuilderSelectUserComponent,
+    label: 'پرسنل',
     name: 'user_id',
-    col: 'col-md-4 col-12'
+    col: 'col-md-3 col-12'
+  },
+  {
+    type: formBuilderSelectUserComponent,
+    label: 'ثبت کننده',
+    name: 'recorded_by',
+    col: 'col-md-3 col-12'
+  },
+  {
+    type: 'select',
+    name: 'type',
+    label: 'نوع تولید',
+    placeholder: ' ',
+    options: productionTypeOptions,
+    col: 'col-md-3 col-12'
   },
   {
     type: formBuilderSelectProductPartComponent,
     name: 'product_part_id',
-    col: 'col-md-4 col-12'
+    col: 'col-md-3 col-12'
   },
   {
     type: formBuilderSelectFabricComponent,
     name: 'fabric_id',
-    col: 'col-md-4 col-12'
+    col: 'col-md-3 col-12'
   },
   {
     type: formBuilderSelectColorComponent,
     name: 'color_id',
-    col: 'col-md-4 col-12'
+    col: 'col-md-3 col-12'
   },
   {
     type: 'select',
     name: 'role',
     label: 'نقش',
     placeholder: ' ',
-    options: userRoleOptions.filter((item)=>item.value !== 'Manager' && item.value !== 'Accountant'),
-    col: 'col-md-4 col-12'
+    options: userRoleOptions.filter(
+      (item) => item.value !== 'Manager' && item.value !== 'Accountant'
+    ),
+    col: 'col-md-3 col-12'
   },
   {
     type: 'date',
     name: 'production_date',
     outsideLabel: 'تاریخ تولید',
     clearable: true,
-    col: 'col-md-4 col-12'
+    col: 'col-md-3 col-12'
   }
 ]
 const moldingWorkerInputs = [
@@ -265,11 +312,25 @@ const coloringWorkerInputs = [
 const managerColumns = {
   columns: [
     {
-      name: 'user',
+      name: 'recorder',
+      required: true,
+      label: 'ثبت کننده',
+      align: 'left',
+      field: (row: ProductionType) => row.recorder?.firstname + ' ' + row.recorder?.lastname
+    },
+    {
+      name: 'operator',
       required: true,
       label: 'پرسنل',
       align: 'left',
-      field: (row: ProductionType) => row.user?.firstname + ' ' + row.user?.lastname
+      field: (row: ProductionType) => row.operator?.firstname + ' ' + row.operator?.lastname
+    },
+    {
+      name: 'type',
+      required: true,
+      label: 'نوع تولید',
+      align: 'left',
+      field: (row: ProductionType) => getProductionTypeLabel(row.type)
     },
     {
       name: 'product_part',
@@ -277,6 +338,14 @@ const managerColumns = {
       label: 'زیر محصول',
       align: 'left',
       field: (row: ProductionType) => row.product_part?.name
+    },
+    {
+      name: 'equipment',
+      required: true,
+      label: 'تجهیز',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.equipment ? `${row.equipment.title}(${row.equipment.code})` : '-'
     },
     {
       name: 'fabric_id',
@@ -297,14 +366,16 @@ const managerColumns = {
       required: true,
       label: 'تعداد دسته',
       align: 'left',
-      field: (row: ProductionType) => parseFloat(row.bunch_count.toString() ?? '0').toLocaleString('fa')
+      field: (row: ProductionType) =>
+        parseFloat(row.bunch_count.toString() ?? '0').toLocaleString('fa')
     },
     {
       name: 'total_bunchss',
       required: true,
       label: 'تعداد گلبرگ',
       align: 'left',
-      field: (row: ProductionType) => ((row.product_part?.count_per_bunch ?? 0) * (row.bunch_count ?? 0)).toLocaleString('fa')
+      field: (row: ProductionType) =>
+        ((row.product_part?.count_per_bunch ?? 0) * (row.bunch_count ?? 0)).toLocaleString('fa')
     },
     {
       name: 'production_date',
@@ -312,14 +383,31 @@ const managerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
+        row.production_date
+          ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD')
+          : '-'
+    },
+    {
+      name: 'downtime_reason',
+      required: true,
+      label: 'دلیل توقف',
+      align: 'left',
+      field: (row: ProductionType) => (row.downtime_reason ? row.downtime_reason.name : '-')
+    },
+    {
+      name: 'downtime_duration',
+      required: true,
+      label: 'مدت توقف',
+      align: 'left',
+      field: (row: ProductionType) => (row.downtime_duration ? row.downtime_duration : '-')
     },
     {
       name: 'approver',
       required: true,
       label: 'تایید کننده',
       align: 'left',
-      field: (row: ProductionType) => row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
+      field: (row: ProductionType) =>
+        row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
     },
     {
       name: 'created_at',
@@ -327,7 +415,13 @@ const managerColumns = {
       label: 'زمان تایید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.approved_at ? dateManager.miladiToShamsi(row.approved_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
+        row.approved_at
+          ? dateManager.miladiToShamsi(
+            row.approved_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
     },
     {
       name: 'created_at',
@@ -335,7 +429,13 @@ const managerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
+        row.created_at
+          ? dateManager.miladiToShamsi(
+            row.created_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
     },
     {
       name: 'actions',
@@ -356,11 +456,20 @@ const moldingWorkerColumns = {
       field: (row: ProductionType) => row.product_part?.name
     },
     {
+      name: 'equipment',
+      required: true,
+      label: 'تجهیز',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.equipment ? `${row.equipment.title}(${row.equipment.code})` : '-'
+    },
+    {
       name: 'bunch_count',
       required: true,
       label: 'تعداد',
       align: 'left',
-      field: (row: ProductionType) => parseFloat(row.bunch_count.toString() ?? '0').toLocaleString('fa')
+      field: (row: ProductionType) =>
+        parseFloat(row.bunch_count.toString() ?? '0').toLocaleString('fa')
     },
     {
       name: 'production_date',
@@ -368,7 +477,23 @@ const moldingWorkerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
+        row.production_date
+          ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD')
+          : '-'
+    },
+    {
+      name: 'downtime_reason',
+      required: true,
+      label: 'دلیل توقف',
+      align: 'left',
+      field: (row: ProductionType) => (row.downtime_reason ? row.downtime_reason.name : '-')
+    },
+    {
+      name: 'downtime_duration',
+      required: true,
+      label: 'مدت توقف',
+      align: 'left',
+      field: (row: ProductionType) => (row.downtime_duration ? row.downtime_duration : '-')
     },
     {
       name: 'created_at',
@@ -376,7 +501,13 @@ const moldingWorkerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
+        row.created_at
+          ? dateManager.miladiToShamsi(
+            row.created_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
     }
   ]
 }
@@ -390,6 +521,14 @@ const fabricCutterWorkerColumns = {
       field: (row: ProductionType) => row.product_part?.name
     },
     {
+      name: 'equipment',
+      required: true,
+      label: 'تجهیز',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.equipment ? `${row.equipment.title}(${row.equipment.code})` : '-'
+    },
+    {
       name: 'fabric_id',
       required: true,
       label: 'پارچه',
@@ -401,7 +540,8 @@ const fabricCutterWorkerColumns = {
       required: true,
       label: 'تعداد',
       align: 'left',
-      field: (row: ProductionType) => parseFloat(row.bunch_count.toString() ?? '0').toLocaleString('fa')
+      field: (row: ProductionType) =>
+        parseFloat(row.bunch_count.toString() ?? '0').toLocaleString('fa')
     },
     {
       name: 'production_date',
@@ -409,7 +549,23 @@ const fabricCutterWorkerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
+        row.production_date
+          ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD')
+          : '-'
+    },
+    {
+      name: 'downtime_reason',
+      required: true,
+      label: 'دلیل توقف',
+      align: 'left',
+      field: (row: ProductionType) => (row.downtime_reason ? row.downtime_reason.name : '-')
+    },
+    {
+      name: 'downtime_duration',
+      required: true,
+      label: 'مدت توقف',
+      align: 'left',
+      field: (row: ProductionType) => (row.downtime_duration ? row.downtime_duration : '-')
     },
     {
       name: 'created_at',
@@ -417,7 +573,13 @@ const fabricCutterWorkerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
+        row.created_at
+          ? dateManager.miladiToShamsi(
+            row.created_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
     }
   ]
 }
@@ -450,7 +612,23 @@ const coloringWorkerColumns = {
       label: 'تاریخ تولید',
       align: 'left',
       field: (row: ProductionType) =>
-        row.production_date ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD') : '-'
+        row.production_date
+          ? dateManager.miladiToShamsi(row.production_date, 'YYYY-MM-DD', 'jYYYY/jMM/jDD')
+          : '-'
+    },
+    {
+      name: 'downtime_reason',
+      required: true,
+      label: 'دلیل توقف',
+      align: 'left',
+      field: (row: ProductionType) => (row.downtime_reason ? row.downtime_reason.name : '-')
+    },
+    {
+      name: 'downtime_duration',
+      required: true,
+      label: 'مدت توقف',
+      align: 'left',
+      field: (row: ProductionType) => (row.downtime_duration ? row.downtime_duration : '-')
     },
     {
       name: 'created_at',
@@ -458,7 +636,13 @@ const coloringWorkerColumns = {
       label: 'زمان ایجاد',
       align: 'left',
       field: (row: ProductionType) =>
-        row.created_at ? dateManager.miladiToShamsi(row.created_at, 'YYYY-MM-DDThh:mm:ss', 'hh:mm:ss jYYYY/jMM/jDD') : '-'
+        row.created_at
+          ? dateManager.miladiToShamsi(
+            row.created_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
     }
   ]
 }
@@ -466,6 +650,7 @@ const coloringWorkerColumns = {
 const table = ref(getTableColumns())
 const inputs = ref(getFilterInputs())
 const entityIndexRef = ref()
+
 
 function getFilterInputs () {
   if (userManager.isManager || userManager.isAccountant) {

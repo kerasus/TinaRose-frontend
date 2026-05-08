@@ -13,12 +13,13 @@
 </template>
 
 <script setup lang="ts">
+import getInputs from './inputs'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUser } from 'stores/user'
 import { EntityShow } from 'quasar-crud'
 import ProductionAPI from 'src/repositories/production'
-import getInputs, { type WorkerRoleType } from './inputs'
+import { type WorkerRoleType } from 'src/repositories/user'
 
 const route = useRoute()
 const userManager = useUser()

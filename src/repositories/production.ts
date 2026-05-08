@@ -5,11 +5,17 @@ import { type FabricType } from './fabric'
 import { type ProductType } from './product'
 import { type ProductPartType } from './productPart'
 import type { AxiosResponse } from 'axios'
+import type { EquipmentType } from 'src/repositories/equipment'
+import type { DowntimeReasonType } from 'src/repositories/downtimeReason'
 
 export type ProductionType = {
   id: number | null;
-  user: UserType | null;
+  type: ProductionTypeType | null;
+  user: UserType | null; // depricated
+  operator: UserType | null; // اپراتور واقعی تولید
   user_id: number | null;
+  recorder: UserType | null; // کسی که رکورد را ثبت کرده
+  recorded_by: number | null; // آی دی کسی که رکورد را ثبت کرده
   product: ProductType | null;
   product_part: ProductPartType | null;
   product_part_id: number | null;
@@ -22,10 +28,33 @@ export type ProductionType = {
   production_date: string | null;
   bunch_count: number | null;
   description: string | null;
+  downtime_reason_id: number | null;
+  downtime_reason: DowntimeReasonType | null;
+  downtime_duration: number | null;
+  equipment_id: number | null;
+  equipment: EquipmentType | null;
   approved_at: string | null;
   created_at: string | null;
   updated_at: string | null;
 };
+
+type ProductionTypeType = 'cutting' | 'coloring' | 'molding' | 'assembling'
+
+export const productionTypeOptions = [
+  { label: 'برش کاری', value: 'cutting' },
+  { label: 'رنگ‌آمیزی', value: 'coloring' },
+  { label: 'اتو کاری', value: 'molding' },
+  { label: 'مونتاژ کاری', value: 'assembling' }
+]
+
+export function getProductionTypeLabel (productionType: ProductionTypeType): string {
+  const targetType = productionTypeOptions.find((item)=>item.value === productionType)
+  if (targetType) {
+    return targetType.label
+  }
+
+  return productionType
+}
 
 export type ProductionSummaryFilter = {
   role?: string;
@@ -54,7 +83,11 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
     super('/productions')
     this.defaultObject = {
       id: null,
+      type: null,
       user: null,
+      operator: null,
+      recorder: null,
+      recorded_by: null,
       user_id: null,
       product: null,
       product_part: null,
@@ -68,6 +101,11 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
       production_date: null,
       bunch_count: null,
       description: null,
+      downtime_reason_id: null,
+      downtime_reason: null,
+      downtime_duration: null,
+      equipment_id: null,
+      equipment: null,
       approved_at: null,
       created_at: null,
       updated_at: null

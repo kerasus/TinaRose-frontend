@@ -28,63 +28,7 @@
 }
 
 body , .q-btn-group{
-  .q-btn {
-    padding: $space-3 $space-6;
-    @include radius-3();
-    @include typo-label-button;
-    .on-left {
-      margin-right: $space-1;
-    }
-    .q-icon {
-      font-size: 20px;
-    }
-    &:before {
-      box-shadow: none;
-    }
-    &.icon-button {
-      min-width: $space-10;
-      @include icon-button;
-    }
-    &.text-icon-button {
-      @include text-icon-button;
-    }
-    &.q-btn--round{
-      width: $space-10;
-      height: $space-10;
-      @include radius-round;
-      &:not(.q-btn--flat){
-        box-shadow: $shadow-2;
-      }
-    }
-    .q-btn__content{
-      display: flex;
-      flex-wrap: nowrap;
-      gap: $space-2;
-    }
-    &.q-btn--dense{
-      padding: $space-1 $space-6;
-      min-height: $space-4;
-      @include radius-2;
-      .q-btn__content{
-        .q-icon {
-          font-size: $space-4;
-        }
-        &.icon-button {
-          padding: $space-1;
-          min-height: unset;
-      }
-     }
-     &.icon-button {
-      padding: $space-1;
-      min-height: unset;
-      min-width: $space-6;
-      }
-      &.q-btn--outline:before{
-        border-color: currentColor;
-      }
-     }
-  
-  }
+  box-shadow: none;
   &.desktop {
     .q-btn{
       .q-focus-helper {
@@ -110,8 +54,8 @@ body , .q-btn-group{
             border: unset;
           }
         }
-          &::before {
-            box-shadow: $shadow-2;
+        &::before {
+          box-shadow: $shadow-2;
         }
       }
       &:disabled , .disabled {
@@ -183,6 +127,66 @@ body , .q-btn-group{
         }
       }
     }
+  }
+  .q-btn {
+    padding: $space-3 $space-6;
+    @include radius-3();
+    @include typo-label-button;
+    .on-left {
+      margin-right: $space-1;
+    }
+    .q-icon {
+      font-size: 20px;
+    }
+    &:before {
+      box-shadow: none;
+    }
+    &.icon-button {
+      min-width: $space-10;
+      @include icon-button;
+    }
+    &.text-icon-button {
+      @include text-icon-button;
+    }
+    &.q-btn--round{
+      width: $space-10;
+      height: $space-10;
+      @include radius-round;
+      &:not(.q-btn--flat){
+        box-shadow: $shadow-2;
+      }
+    }
+    .q-btn__content{
+      display: flex;
+      flex-wrap: nowrap;
+      gap: $space-2;
+    }
+    &.q-btn--dense{
+      padding: $space-1 $space-6;
+      min-height: $space-4;
+      @include radius-2;
+      .q-btn__content{
+        .q-icon {
+          font-size: $space-4;
+        }
+        &.icon-button {
+          padding: $space-1;
+          min-height: unset;
+      }
+     }
+     &.icon-button {
+      padding: $space-1;
+      min-height: unset;
+      min-width: $space-6;
+      }
+      &.q-btn--outline:before{
+        border-color: currentColor;
+      }
+     }
+  
+  }
+  .q-btn-dropdown__arrow-container {
+    padding: $space-2;
   }
 }
 

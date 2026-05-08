@@ -2,19 +2,20 @@ import BaseAPI from './BaseAPI'
 import type { AxiosResponse } from 'axios'
 
 export type WorkerRoleType = 'molding' | 'coloring' | 'fabric-cutter' | 'assembler'
-export type UserRolesForPathType = 'manager' | 'accountant' | 'molding' | 'coloring' | 'fabric-cutter' | 'middle' | 'assembler' | 'warehouse-keeper'
-export type UserRolesType = 'Manager' | 'ProductManager' | 'Accountant' | 'MoldingWorker' | 'ColoringWorker' | 'FabricCutter' | 'MiddleWorker' | 'Assembler' | 'WarehouseKeeper'
+export type UserRolesForPathType = 'manager' | 'product-manager' | 'accountant' | 'molding' | 'coloring' | 'fabric-cutter' | 'middle' | 'assembler' | 'warehouse-keeper'
+export type UserRolesType = 'Manager' | 'SalesManager' | 'ProductManager' | 'Accountant' | 'MoldingWorker' | 'ColoringWorker' | 'FabricCutter' | 'MiddleWorker' | 'Assembler' | 'WarehouseKeeper'
 
 export const userRoleOptions = [
-  { label: 'مدیر', value: 'Manager' },
-  { label: 'مدیر محصول', value: 'ProductManager' },
-  { label: 'حسابدار', value: 'Accountant' },
-  { label: 'وسط کار', value: 'MiddleWorker' },
-  { label: 'انباردار', value: 'WarehouseKeeper' },
-  { label: 'برش کار', value: 'FabricCutter' },
-  { label: 'رنگ کار', value: 'ColoringWorker' },
-  { label: 'اتو کار', value: 'MoldingWorker' },
-  { label: 'مونتاژ کار', value: 'Assembler' }
+  { label: 'مدیر', value: 'Manager', roleForPath: 'manager' },
+  { label: 'مدیر فروش', value: 'SalesManager', roleForPath: 'Sales-manager' },
+  { label: 'مدیر محصول', value: 'ProductManager', roleForPath: 'product-manager' },
+  { label: 'حسابدار', value: 'Accountant', roleForPath: 'accountant' },
+  { label: 'وسط کار', value: 'MiddleWorker', roleForPath: 'middle' },
+  { label: 'انباردار', value: 'WarehouseKeeper', roleForPath: 'warehouse-keeper' },
+  { label: 'برش کار', value: 'FabricCutter', roleForPath: 'fabric-cutter' },
+  { label: 'رنگ کار', value: 'ColoringWorker', roleForPath: 'coloring' },
+  { label: 'اتو کار', value: 'MoldingWorker', roleForPath: 'molding' },
+  { label: 'مونتاژ کار', value: 'Assembler', roleForPath: 'assembler' }
 ]
 
 export type RoleType = {
@@ -49,6 +50,24 @@ export function getUserRoleLabel (roleName: string): string {
   }
 
   return roleName
+}
+
+export function getUserRolesForPathLabel (roleName: UserRolesForPathType): string {
+  const targetRole = userRoleOptions.find((item)=>item.roleForPath === roleName)
+  if (targetRole) {
+    return targetRole.label
+  }
+
+  return roleName
+}
+
+export function userRolesToUserRolesForPath (roleName: UserRolesType): UserRolesForPathType | null {
+  const targetRole = userRoleOptions.find((item)=>item.value === roleName)
+  if (targetRole) {
+    return targetRole.roleForPath as UserRolesForPathType
+  }
+
+  return null
 }
 
 export default class UserAPI extends BaseAPI<UserType> {

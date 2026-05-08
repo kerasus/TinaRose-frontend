@@ -1,3 +1,8 @@
+import { shallowRef } from 'vue'
+import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue'
+
+const FormBuilderSelectFabricComponent = shallowRef(FormBuilderSelectFabric)
+
 export default () => [
   {
     type: 'hidden',
@@ -10,7 +15,7 @@ export default () => [
     responseKey: 'name',
     label: 'نام',
     placeholder: ' ',
-    col: 'col-md-4 col-12'
+    col: 'col-md-6 col-12'
   },
   {
     type: 'input',
@@ -18,7 +23,7 @@ export default () => [
     responseKey: 'code',
     label: 'کد',
     placeholder: ' ',
-    col: 'col-md-4 col-12'
+    col: 'col-md-6 col-12'
   },
   {
     type: 'color',
@@ -26,6 +31,12 @@ export default () => [
     responseKey: 'color_hex',
     label: 'رنگ',
     placeholder: ' ',
-    col: 'col-md-4 col-12'
+    col: 'col-md-6 col-12'
+  },
+  {
+    type: FormBuilderSelectFabricComponent,
+    name: 'fabric_id',
+    responseKey: 'fabric',
+    col: 'col-md-6 col-12'
   }
 ]

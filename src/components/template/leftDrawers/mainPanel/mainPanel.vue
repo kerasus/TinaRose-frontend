@@ -175,6 +175,18 @@ const topLinks = ref<ListItemType[]>([
         title: 'پک حواله ها',
         forRoles: [ 'Manager', 'Accountant' ],
         route: { name: 'Panel.TransferPackage.List' }
+      },
+      {
+        icon: 'remove',
+        title: 'تجهیزات',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.Equipment.List' }
+      },
+      {
+        icon: 'remove',
+        title: 'دلایل توقف کار',
+        forRoles: [ 'Manager', 'Accountant' ],
+        route: { name: 'Panel.DowntimeReason.List' }
       }
     ]
   }

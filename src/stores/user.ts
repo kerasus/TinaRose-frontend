@@ -92,6 +92,16 @@ export const useUser = defineStore('user', () => {
 
     return null
   })
+  const canCreateProduction = computed<boolean>(() => {
+    const rolesCanCreateProduction: UserRolesType[] = [
+      'Manager',
+      'SalesManager',
+      'ProductManager'
+    ]
+    return me.value.roles_list.some((role: UserRolesType) =>
+      rolesCanCreateProduction.includes(role)
+    )
+  })
 
   function hasRole (user: UserType | null, role: string): boolean {
     if (!user) {
@@ -147,6 +157,7 @@ export const useUser = defineStore('user', () => {
     isColoringWorker,
     isWarehouseKeeper,
     refreshTokenValue,
+    canCreateProduction,
 
     // Mutations
     logout,

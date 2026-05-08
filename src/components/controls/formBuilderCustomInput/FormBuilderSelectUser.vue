@@ -24,8 +24,8 @@
       input-debounce="500"
       :disable="disable"
       :readonly="readonly"
-      emit-value
-      map-options
+      :emit-value="emitValue"
+      :map-options="mapOptions"
       :hide-dropdown-icon="hideDropdownIcon"
       :dropdown-icon="dropdownIcon"
       :clearable="clearable"
@@ -142,6 +142,14 @@ const props = defineProps({
   },
   disable: {
     default: false,
+    type: Boolean
+  },
+  emitValue: {
+    default: true,
+    type: Boolean
+  },
+  mapOptions: {
+    default: true,
     type: Boolean
   },
   readonly: {
