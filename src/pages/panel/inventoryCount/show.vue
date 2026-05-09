@@ -108,24 +108,24 @@
       <div class="col-md-2 col-12">
         <select-product
           v-if="transferItemType === 'App\\Models\\Product'"
-          v-model:value="selectedProduct"
+          v-model="selectedProduct"
           :emit-value="false"
           :map-options="false" />
         <select-product-part
           v-else-if="transferItemType === 'App\\Models\\ProductPart'"
-          v-model:value="selectedProductPart"
+          v-model="selectedProductPart"
           :emit-value="false"
           :map-options="false" />
         <select-raw-material
           v-else-if="transferItemType === 'App\\Models\\RawMaterial'"
-          v-model:value="selectedRawMaterial"
+          v-model="selectedRawMaterial"
           :emit-value="false"
           :map-options="false" />
       </div>
       <div class="col-md-2 col-12">
         <select-color
           v-if="transferItemType"
-          v-model:value="selectedColor"
+          v-model="selectedColor"
           :emit-value="false"
           :map-options="false" />
       </div>

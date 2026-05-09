@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref } from 'vue'
+import { watch, computed, defineProps, defineEmits, ref } from 'vue'
 import EquipmentAPI, { type EquipmentType } from 'src/repositories/equipment'
 
 defineOptions({
@@ -57,8 +57,8 @@ const props = defineProps({
     type: String
   },
   value: {
-    default: () => [],
-    type: [Array, Object, String, Number, Boolean]
+    default: null,
+    type: Number
   },
   useChips: {
     default: false,
@@ -164,8 +164,8 @@ const filteredOptions = ref<EquipmentType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('title')
 
-async function getEquipments (title: string | null) {
-  const equipmentsList = await equipmentAPI.index({ title })
+async function getEquipments (title: string | null, id: number | undefined = undefined) {
+  const equipmentsList = await equipmentAPI.index({ title, id })
   return equipmentsList.data
 }
 
@@ -182,6 +182,10 @@ function filterFn (val: string, update: (cb: ()=>Promise<void>)=>void) {
   })
 }
 
-</script>
+watch(() => props.value, async (newValue) => {
+  if (newValue && filteredOptions.value.length === 0) {
+    filteredOptions.value = await getEquipments(null, newValue)
+  }
+})
 
-<style scoped></style>
+</script>

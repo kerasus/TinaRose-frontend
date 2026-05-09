@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref } from 'vue'
+import { computed, defineProps, defineEmits, ref, watch } from 'vue'
 import TransferPackageAPI, { type TransferPackageType } from 'src/repositories/transferPackage'
 
 defineOptions({
@@ -57,8 +57,8 @@ const props = defineProps({
     type: String
   },
   value: {
-    default: () => [],
-    type: [Array, Object, String, Number, Boolean]
+    default: null,
+    type: Number
   },
   useChips: {
     default: false,
@@ -164,8 +164,8 @@ const filteredOptions = ref<TransferPackageType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('name')
 
-async function getTransferPackages (name: string | null) {
-  const transferPackagesList = await transferPackageAPI.index({ name })
+async function getTransferPackages (name: string | null, id: number | undefined = undefined) {
+  const transferPackagesList = await transferPackageAPI.index({ name, id })
   return transferPackagesList.data
 }
 
@@ -182,6 +182,10 @@ function filterFn (val: string, update: (cb: ()=>Promise<void>)=>void) {
   })
 }
 
-</script>
+watch(() => props.value, async (newValue) => {
+  if (newValue && filteredOptions.value.length === 0) {
+    filteredOptions.value = await getTransferPackages(null, newValue)
+  }
+})
 
-<style scoped></style>
+</script>

@@ -7,13 +7,13 @@
         <div class="transfer-pack-selector">
           <div class="q-mr-md">
             <select-transfer-pack
-              v-model:value="transferPackage"
+              v-model="transferPackage"
               :emit-value="false"
               :map-options="false" />
           </div>
           <div class="q-mr-md">
             <select-color
-              v-model:value="packageColor"
+              v-model="packageColor"
               :emit-value="false"
               :map-options="false" />
           </div>

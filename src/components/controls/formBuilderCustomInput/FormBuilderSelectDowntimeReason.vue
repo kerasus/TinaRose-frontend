@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref } from 'vue'
+import { computed, defineProps, defineEmits, ref, watch } from 'vue'
 import DowntimeReasonAPI, { type DowntimeReasonType } from 'src/repositories/downtimeReason'
 
 defineOptions({
@@ -57,8 +57,8 @@ const props = defineProps({
     type: String
   },
   value: {
-    default: () => [],
-    type: [Array, Object, String, Number, Boolean]
+    default: null,
+    type: Number
   },
   useChips: {
     default: false,
@@ -164,8 +164,8 @@ const filteredOptions = ref<DowntimeReasonType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('name')
 
-async function getDowntimeReasons (name: string | null) {
-  const downtimeReasonsList = await downtimeReasonAPI.index({ name })
+async function getDowntimeReasons (name: string | null, id: number | undefined = undefined) {
+  const downtimeReasonsList = await downtimeReasonAPI.index({ name, id })
   return downtimeReasonsList.data
 }
 
@@ -182,6 +182,10 @@ function filterFn (val: string, update: (cb: ()=>Promise<void>)=>void) {
   })
 }
 
-</script>
+watch(() => props.value, async (newValue) => {
+  if (newValue && filteredOptions.value.length === 0) {
+    filteredOptions.value = await getDowntimeReasons(null, newValue)
+  }
+})
 
-<style scoped></style>
+</script>

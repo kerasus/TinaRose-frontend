@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref } from 'vue'
+import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import InventoryAPI, { type InventoryType } from 'src/repositories/inventory'
 
 defineOptions({
@@ -57,8 +57,8 @@ const props = defineProps({
     type: String
   },
   value: {
-    default: () => [],
-    type: [Array, Object, String, Number, Boolean]
+    default: null,
+    type: Number
   },
   useChips: {
     default: false,
@@ -164,8 +164,8 @@ const filteredOptions = ref<InventoryType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('name')
 
-async function getEntity (name: string | null) {
-  const productPartsList = await inventoryAPI.index({ name })
+async function getEntity (name: string | null, id: number | undefined = undefined) {
+  const productPartsList = await inventoryAPI.index({ name, id })
   return productPartsList.data
 }
 
@@ -182,6 +182,10 @@ function filterFn (val: string, update: (cb: ()=>Promise<void>)=>void) {
   })
 }
 
-</script>
+watch(() => props.value, async (newValue) => {
+  if (newValue && filteredOptions.value.length === 0) {
+    filteredOptions.value = await getEntity(null, newValue)
+  }
+})
 
-<style scoped></style>
+</script>

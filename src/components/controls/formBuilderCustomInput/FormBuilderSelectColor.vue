@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref } from 'vue'
+import { computed, defineProps, defineEmits, ref, watch } from 'vue'
 import ColorAPI, { type ColorType } from 'src/repositories/color'
 
 defineOptions({
@@ -69,8 +69,8 @@ const props = defineProps({
     type: String
   },
   value: {
-    default: () => [],
-    type: [Array, Object, String, Number, Boolean]
+    default: null,
+    type: Number
   },
   useChips: {
     default: false,
@@ -176,8 +176,8 @@ const filteredOptions = ref<ColorType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('name')
 
-async function getColors (name: string | null) {
-  const colorsList = await colorAPI.index({ name })
+async function getColors (name: string | null, id: number | undefined = undefined) {
+  const colorsList = await colorAPI.index({ name, id })
   return colorsList.data
 }
 
@@ -194,6 +194,10 @@ function filterFn (val: string, update: (cb: ()=>Promise<void>)=>void) {
   })
 }
 
-</script>
+watch(() => props.value, async (newValue) => {
+  if (newValue && filteredOptions.value.length === 0) {
+    filteredOptions.value = await getColors(null, newValue)
+  }
+})
 
-<style scoped></style>
+</script>

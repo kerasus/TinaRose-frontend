@@ -39,12 +39,19 @@
       <template v-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
           <q-btn
-            v-if="!inputData.props.row.approved_at"
             color="success"
             class="q-mr-md"
+            :disable="!!inputData.props.row.approved_at"
+            dense
             @click="confirmApproveProductionItem(inputData.props.row)">
             تایید
           </q-btn>
+          <q-btn
+            color="primary"
+            icon="edit"
+            dense
+            :disable="!!inputData.props.row.approved_at"
+            :to="{ name: showRouteName, params: { worker_role: getRoleForProductionType(inputData.props.row.type), id: inputData.props.row.id } }" />
           <delete-btn
             :row="inputData.props.row"
             :api="productionAPI"
@@ -151,14 +158,19 @@ import { AxiosResponse } from 'axios'
 import { useUser } from 'src/stores/user'
 import { EntityIndex } from 'quasar-crud'
 import { useDate } from 'src/composables/Date'
-import { userRoleOptions } from 'src/repositories/user'
 import DeleteBtn from 'src/components/controls/deleteBtn.vue'
 import Confirmation from 'src/components/cards/confirmation.vue'
-import ProductionAPI, { getProductionTypeLabel, productionTypeOptions, type ProductionType } from 'src/repositories/production'
+import { userRoleOptions, UserRolesForPathType } from 'src/repositories/user'
 import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
 import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectColor.vue'
 import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue'
 import FormBuilderSelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue'
+import ProductionAPI, {
+  getProductionTypeLabel,
+  productionTypeOptions,
+  type ProductionType,
+  ProductionTypeType
+} from 'src/repositories/production'
 
 const $q = useQuasar()
 const dateManager = useDate()
@@ -410,7 +422,7 @@ const managerColumns = {
         row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
     },
     {
-      name: 'created_at',
+      name: 'approved_at',
       required: true,
       label: 'زمان تایید',
       align: 'left',
@@ -651,7 +663,6 @@ const table = ref(getTableColumns())
 const inputs = ref(getFilterInputs())
 const entityIndexRef = ref()
 
-
 function getFilterInputs () {
   if (userManager.isManager || userManager.isAccountant) {
     return managerInputs
@@ -722,4 +733,21 @@ function reloadList () {
 function onPageChanged (response: AxiosResponse) {
   currentPage.value = response.data.current_page
 }
+
+function getRoleForProductionType (type: ProductionTypeType): UserRolesForPathType {
+  const map: Record<ProductionTypeType, UserRolesForPathType> = {
+    cutting: 'fabric-cutter',
+    coloring: 'coloring',
+    molding: 'molding',
+    assembling: 'assembler'
+  }
+
+  return map[type]
+}
 </script>
+
+<style lang="scss" scoped>
+.action-column-entity-index {
+  display: flex;
+}
+</style>

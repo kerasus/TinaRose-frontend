@@ -364,5 +364,3 @@ watch(value, ()=>{
 })
 
 </script>
-
-<style scoped></style>

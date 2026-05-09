@@ -38,6 +38,12 @@
       <template v-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
           <q-btn
+            v-if="!inputData.props.row.approved_at"
+            color="primary"
+            icon="edit"
+            dense
+            :to="{ name: showRouteName, params: { id: inputData.props.row.id } }" />
+          <q-btn
             v-if="inputData.props.row.description"
             color="primary"
             flat>
@@ -71,6 +77,7 @@ import FormBuilderSelectColor from 'src/components/controls/formBuilderCustomInp
 import FormBuilderSelectFabric from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectFabric.vue'
 import FormBuilderSelectProduct from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProduct.vue'
 import FormBuilderSelectProductPart from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectProductPart.vue'
+import DeleteBtn from 'components/controls/deleteBtn.vue'
 
 const $q = useQuasar()
 const route = useRoute()
@@ -147,6 +154,28 @@ const managerColumns = {
           : '-'
     },
     {
+      name: 'approver',
+      required: true,
+      label: 'تایید کننده',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
+    },
+    {
+      name: 'approved_at',
+      required: true,
+      label: 'زمان تایید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approved_at
+          ? dateManager.miladiToShamsi(
+            row.approved_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
+    },
+    {
       name: 'actions',
       required: true,
       label: 'عملیات',
@@ -212,6 +241,28 @@ const moldingWorkerColumns = {
         row.created_at
           ? dateManager.miladiToShamsi(
             row.created_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
+    },
+    {
+      name: 'approver',
+      required: true,
+      label: 'تایید کننده',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
+    },
+    {
+      name: 'approved_at',
+      required: true,
+      label: 'زمان تایید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approved_at
+          ? dateManager.miladiToShamsi(
+            row.approved_at,
             'YYYY-MM-DDThh:mm:ss',
             'hh:mm:ss jYYYY/jMM/jDD'
           )
@@ -296,6 +347,28 @@ const fabricCutterWorkerColumns = {
           : '-'
     },
     {
+      name: 'approver',
+      required: true,
+      label: 'تایید کننده',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
+    },
+    {
+      name: 'approved_at',
+      required: true,
+      label: 'زمان تایید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approved_at
+          ? dateManager.miladiToShamsi(
+            row.approved_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
+    },
+    {
       name: 'actions',
       required: true,
       label: 'عملیات',
@@ -366,6 +439,28 @@ const coloringWorkerColumns = {
           : '-'
     },
     {
+      name: 'approver',
+      required: true,
+      label: 'تایید کننده',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
+    },
+    {
+      name: 'approved_at',
+      required: true,
+      label: 'زمان تایید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approved_at
+          ? dateManager.miladiToShamsi(
+            row.approved_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
+    },
+    {
       name: 'actions',
       required: true,
       label: 'عملیات',
@@ -423,6 +518,28 @@ const assemblerColumns = {
         row.created_at
           ? dateManager.miladiToShamsi(
             row.created_at,
+            'YYYY-MM-DDThh:mm:ss',
+            'hh:mm:ss jYYYY/jMM/jDD'
+          )
+          : '-'
+    },
+    {
+      name: 'approver',
+      required: true,
+      label: 'تایید کننده',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approver ? row.approver?.firstname + ' ' + row.approver?.lastname : '-'
+    },
+    {
+      name: 'approved_at',
+      required: true,
+      label: 'زمان تایید',
+      align: 'left',
+      field: (row: ProductionType) =>
+        row.approved_at
+          ? dateManager.miladiToShamsi(
+            row.approved_at,
             'YYYY-MM-DDThh:mm:ss',
             'hh:mm:ss jYYYY/jMM/jDD'
           )

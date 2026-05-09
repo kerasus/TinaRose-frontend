@@ -38,7 +38,7 @@ export type ProductionType = {
   updated_at: string | null;
 };
 
-type ProductionTypeType = 'cutting' | 'coloring' | 'molding' | 'assembling'
+export type ProductionTypeType = 'cutting' | 'coloring' | 'molding' | 'assembling'
 
 export const productionTypeOptions = [
   { label: 'برش کاری', value: 'cutting' },
@@ -203,5 +203,36 @@ export default class ProductionAPI extends BaseAPI<ProductionType> {
         throw new Error('An unknown error occurred on updateBalance')
       }
     }
+  }
+
+  override getNormalizedItem (item: ProductionType) {
+    const formatDate = (dateStr: string | null, withTime = false) => {
+      if (!dateStr) return null
+
+      const d = new Date(dateStr)
+
+      if (isNaN(d.getTime())) return dateStr // اگر تاریخ خراب بود، دست نزنیم
+
+      const yyyy = d.getFullYear()
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      const dd = String(d.getDate()).padStart(2, '0')
+
+      if (!withTime) {
+        return `${yyyy}-${mm}-${dd}`
+      }
+
+      const hh = String(d.getHours()).padStart(2, '0')
+      const mi = String(d.getMinutes()).padStart(2, '0')
+
+      return `${yyyy}-${mm}-${dd} ${hh}:${mi}`
+    }
+
+    // Normalize dates
+    item.production_date = formatDate(item.production_date)
+    item.approved_at = formatDate(item.approved_at, true)
+    item.created_at = formatDate(item.created_at, true)
+    item.updated_at = formatDate(item.updated_at, true)
+
+    return item
   }
 }

@@ -7,6 +7,7 @@
     :entity-param-key="entityParamKey"
     :index-route-name="indexRouteName"
     :show-route-name="showRouteName"
+    :before-load-input-data="beforeLoadInputData"
     :show-expand-button="false" />
 </template>
 
@@ -15,11 +16,13 @@ import getInputs from './inputs'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { EntityEdit } from 'quasar-crud'
-import ProductionAPI from 'src/repositories/production'
 import { type WorkerRoleType } from 'src/repositories/user'
+import ProductionAPI, { type ProductionType } from 'src/repositories/production'
 
 const route = useRoute()
 const productionAPI = new ProductionAPI()
+
+const entityData = ref<ProductionType | null>(null)
 
 const entityId = computed(() => (route.params.id ? parseInt(route.params.id?.toString()) : 0))
 const api = ref(productionAPI.endpoints.byId(entityId.value))
@@ -37,4 +40,9 @@ const inputs = ref([
   },
   ...getInputs(route.params.worker_role as WorkerRoleType)
 ])
+
+function beforeLoadInputData (data: ProductionType) {
+  entityData.value = productionAPI.getNormalizedItem(data)
+  data = entityData.value
+}
 </script>

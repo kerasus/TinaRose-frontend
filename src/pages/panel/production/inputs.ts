@@ -41,13 +41,15 @@ export default (workerType: UserRolesForPathType) => {
   const downtimeReasonInput = {
     type: FormBuilderSelectDowntimeReasonComponent,
     name: 'downtime_reason_id',
-    responseKey: 'downtimeReason',
+    responseKey: 'downtime_reason_id',
     col: 'col-md-6 col-12'
   }
   const equipmentInput = {
     type: FormBuilderSelectEquipmentComponent,
     name: 'equipment_id',
-    responseKey: 'equipment',
+    responseKey: 'equipment_id',
+    emitValue: true,
+    mapOptions: true,
     col: 'col-md-6 col-12'
   }
   const fabricCutterInputs = [
@@ -55,7 +57,7 @@ export default (workerType: UserRolesForPathType) => {
     {
       type: FormBuilderSelectFabricComponent,
       name: 'fabric_id',
-      responseKey: 'fabric',
+      responseKey: 'fabric_id',
       col: 'col-md-6 col-12'
     }
   ]

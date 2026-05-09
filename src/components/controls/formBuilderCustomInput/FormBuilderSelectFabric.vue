@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref } from 'vue'
+import { computed, defineProps, defineEmits, ref, watch } from 'vue'
 import FabricAPI, { type FabricType } from 'src/repositories/fabric'
 
 defineOptions({
@@ -69,8 +69,8 @@ const props = defineProps({
     type: String
   },
   value: {
-    default: () => [],
-    type: [Array, Object, String, Number, Boolean]
+    default: null,
+    type: Number
   },
   useChips: {
     default: false,
@@ -176,8 +176,8 @@ const filteredOptions = ref<FabricType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('name')
 
-async function getFabrics (name: string | null) {
-  const fabricsList = await fabricAPI.index({ name })
+async function getFabrics (name: string | null, id: number | undefined = undefined) {
+  const fabricsList = await fabricAPI.index({ name, id })
   return fabricsList.data
 }
 
@@ -194,6 +194,10 @@ function filterFn (val: string, update: (cb: ()=>Promise<void>)=>void) {
   })
 }
 
-</script>
+watch(() => props.value, async (newValue) => {
+  if (newValue && filteredOptions.value.length === 0) {
+    filteredOptions.value = await getFabrics(null, newValue)
+  }
+})
 
-<style scoped></style>
+</script>

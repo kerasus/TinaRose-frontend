@@ -241,7 +241,7 @@ function getAxiosInstanceManager (apiServer: string) {
         const { status, data } = error.response
 
         // Handle 422 Unprocessable Entity (validation errors)
-        if ((status === 422 || status === 400) && (data as ErrorResponse).errors) {
+        if ((status === 422 || status === 400 || status === 403) && (data as ErrorResponse).errors) {
           const validationErrors = Object.entries((data as ErrorResponse).errors).flatMap(([_, messages]) => {
             return messages // Only include the error messages, not the field names
           })
