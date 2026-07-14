@@ -5,6 +5,8 @@ import archiver from 'archiver';
 import { config } from 'dotenv';
 import { Client } from 'basic-ftp';
 import { exec } from 'child_process';
+import chalk from 'chalk';
+import ProgressBar from 'progress';
 
 // Load environment variables
 config();
@@ -19,16 +21,30 @@ const REMOTE_PATH = process.env.REMOTE_PATH || '/'; // Destination path on the s
 const LOCAL_PATH = path.join(process.cwd(), 'dist', 'spa');
 const ARCHIVE_PATH = path.join(process.cwd(), 'dist', 'spa.zip');
 
-// Build the project using Quasar CLI
+function logStep(title) {
+  console.log(chalk.cyanBright.bold(`\n🚀 ${title} ...`));
+}
+
+function logDone(message) {
+  console.log(chalk.green.bold(`✔️ ${message}`));
+}
+
+function logError(message) {
+  console.error(chalk.red.bold(`❌ ${message}`));
+}
+
+// Build project using Quasar CLI
 async function buildProject() {
+  logStep('Building project using Quasar CLI');
   return new Promise((resolve, reject) => {
-    console.log('Building the project using Quasar CLI...');
+    const buildStart = Date.now();
     exec('quasar build', (error, stdout, stderr) => {
       if (error) {
-        console.error('Error during build:', stderr || error.message);
+        logError(`Error during build: ${stderr || error.message}`);
         return reject(error);
       }
-      console.log('Build completed successfully.');
+      const duration = ((Date.now() - buildStart) / 1000).toFixed(1);
+      logDone(`Build completed successfully in ${duration}s`);
       resolve();
     });
   });
@@ -36,19 +52,19 @@ async function buildProject() {
 
 // Compress the spa folder into a zip file
 async function compressFolder() {
+  logStep(`Compressing folder ${chalk.yellow(LOCAL_PATH)} → ${chalk.yellow(ARCHIVE_PATH)}`);
   return new Promise((resolve, reject) => {
-    console.log(`Compressing folder ${LOCAL_PATH} into ${ARCHIVE_PATH}...`);
-
     const output = fs.createWriteStream(ARCHIVE_PATH);
     const archive = archiver('zip', { zlib: { level: 9 } }); // Use maximum compression level
 
     output.on('close', () => {
-      console.log(`Compression completed. Archive size: ${(archive.pointer() / 1024 / 1024).toFixed(2)} MB`);
+      const sizeMB = (archive.pointer() / 1024 / 1024).toFixed(2);
+      logDone(`Compression finished — archive size: ${chalk.magentaBright(sizeMB + ' MB')}`);
       resolve();
     });
 
     archive.on('error', (err) => {
-      console.error('Error during compression:', err.message);
+      logError(`Error during compression: ${err.message}`);
       reject(err);
     });
 
@@ -60,28 +76,61 @@ async function compressFolder() {
 
 // Upload the compressed file to the server
 async function uploadFile(client, localFilePath, remoteFilePath) {
+  logStep(`Uploading ${chalk.yellow(localFilePath)} → ${chalk.yellow(remoteFilePath)}`);
+
+  const fileSize = fs.statSync(localFilePath).size;
+  const progressBar = new ProgressBar('Uploading [:bar] :percent :etas', {
+    width: 40,
+    complete: chalk.green('█'),
+    incomplete: chalk.gray('░'),
+    total: fileSize,
+    clear: true, // prevents extra newline output
+  });
+
+  let uploadedBytes = 0;
+
+  // prevent multiple newlines and color escape misalignment
+  const cleanBar = () => process.stdout.write('\r\x1b[K');
+
+  client.trackProgress(info => {
+    uploadedBytes += info.bytes;
+    progressBar.tick(info.bytes);
+  });
+
   try {
-    console.log(`Uploading file: ${localFilePath} -> ${remoteFilePath}`);
     await client.uploadFrom(localFilePath, remoteFilePath);
-    console.log('File upload completed successfully.');
+
+    // stop tracking and clean the bar
+    client.trackProgress();
+    cleanBar();
+    progressBar.interrupt(chalk.green('✔ Upload complete!'));
+    logDone(`File upload completed — total uploaded: ${(uploadedBytes / 1024 / 1024).toFixed(2)} MB`);
   } catch (error) {
-    console.error('Error during file upload:', error.message);
+    cleanBar();
+    logError(`Error during file upload: ${error.message}`);
     throw error;
+  } finally {
+    cleanBar();
   }
 }
 
+// Trigger remote deployment
 async function triggerDeployment() {
+  logStep('Triggering remote deployment...');
   try {
     const response = await axios.get('https://tinaroseflower.com/panel/deploy.php');
-    console.log(response.data.message || 'Deployment triggered successfully.');
+    logDone(response.data.message || 'Deployment triggered successfully.');
   } catch (error) {
-    console.error('Error triggering deployment:', error.response?.data?.error || error.message);
+    logError(error.response?.data?.error || error.message);
   }
 }
 
-// Main function
+// Main process
 async function main() {
   const client = new Client();
+
+  console.log(chalk.bold.bgMagentaBright('\n🌸 TinaRose Frontend Publish Workflow 🌸\n'));
+
   try {
     // Step 1: Build the project
     await buildProject();
@@ -90,14 +139,14 @@ async function main() {
     await compressFolder();
 
     // Step 3: Connect to the FTP server
-    console.log(`Connecting to FTP server at ${FTP_HOST}:${FTP_PORT}...`);
+    logStep(`Connecting to FTP server ${chalk.yellow(`${FTP_HOST}:${FTP_PORT}`)}`);
     await client.access({
       host: FTP_HOST,
       port: parseInt(FTP_PORT, 10),
       user: FTP_USERNAME,
       password: FTP_PASSWORD,
     });
-    console.log('Connected successfully.');
+    logDone('Connected successfully.');
 
     // Step 4: Ensure the remote directory exists
     await client.ensureDir(REMOTE_PATH);
@@ -109,19 +158,20 @@ async function main() {
     // Call the function at the end of your publish process
     await triggerDeployment();
 
-    console.log('Upload and extraction completed successfully.');
+    logDone('All steps completed successfully 💐');
   } catch (error) {
-    console.error('Error during process:', error.message);
+    logError(`Process failed: ${error.message}`);
   } finally {
     // Clean up: Delete the local archive file
     if (fs.existsSync(ARCHIVE_PATH)) {
       fs.unlinkSync(ARCHIVE_PATH);
-      console.log('Local archive deleted.');
+      logDone('Local archive deleted.');
     }
 
     // Close the FTP connection
     await client.close();
-    console.log('Disconnected from FTP server.');
+    logDone('FTP connection closed.');
+    console.log(chalk.blueBright('\n✨ Publish process finished.\n'));
   }
 }
 
