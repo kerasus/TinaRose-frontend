@@ -8,6 +8,7 @@ import inventoryRoutes from './inventory'
 import productionRoutes from './production'
 import rawMaterialRoutes from './rawMaterial'
 import productPartRoutes from './productPart'
+import correspondenceRoutes from './correspondence'
 import type { RouteRecordRaw } from 'vue-router'
 import equipmentRoutes from './equipment'
 import downtimeReasonRoutes from './downtimeReason'
@@ -77,7 +78,8 @@ export const index: RouteRecordRaw[] = [
       ...inventoryCountRoutes,
       ...TransferPackageRoutes,
       ...equipmentRoutes,
-      ...downtimeReasonRoutes
+      ...downtimeReasonRoutes,
+      ...correspondenceRoutes
     ]
   },
 

@@ -1,4 +1,4 @@
-import BaseAPI from './BaseAPI'
+import BaseAPI, { type ListType } from './BaseAPI'
 import type { AxiosResponse } from 'axios'
 
 export type WorkerRoleType = 'molding' | 'coloring' | 'fabric-cutter' | 'assembler'
@@ -25,6 +25,19 @@ export type RoleType = {
   guard_name: string | null;
   created_at: string | null;
   updated_at: string | null;
+}
+
+export type UserOptionRoleType = {
+  id: number
+  name: string
+}
+
+export type UserOptionType = {
+  id: number
+  firstname: string | null
+  lastname: string | null
+  employee_code: string | null
+  roles: UserOptionRoleType[]
 }
 
 export type UserType = {
@@ -90,10 +103,22 @@ export default class UserAPI extends BaseAPI<UserType> {
     }
     this.endpoints = {
       ...this.endpoints,
+      options: `${this.baseEndpoint}/light`,
+      basic: (id: number) => `${this.baseEndpoint}/${id}/basic`,
       assignRole: (userId: number) => `${this.baseEndpoint}/${userId}/assign-role`,
       removeRole: (userId: number) => `${this.baseEndpoint}/${userId}/remove-role`,
       resetPassword: (userId: number) => `${this.baseEndpoint}/${userId}/reset-password`
     }
+  }
+
+  async lightIndex (filters: any = { length: 10 }): Promise<ListType<UserOptionType>> {
+    const response = await this.getAxiosInstanceWithToken().get(this.endpoints.options, { params: filters })
+    return response.data as ListType<UserOptionType>
+  }
+
+  async getBasic (id: number): Promise<UserOptionType> {
+    const response = await this.getAxiosInstanceWithToken().get(this.endpoints.basic(id))
+    return response.data as UserOptionType
   }
 
   async assignRole (userId: number, role: string): Promise<{ message: string, data: { user: UserType }}> {

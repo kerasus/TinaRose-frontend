@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { computed, defineProps, defineEmits, ref, watch } from 'vue'
-import UserAPI, { getUserRoleLabel, type UserType } from 'src/repositories/user'
+import UserAPI, { getUserRoleLabel, type UserOptionType } from 'src/repositories/user'
 
 defineOptions({
   name: 'FormBuilderSelectUser'
@@ -192,12 +192,12 @@ const placeholderSetter = computed(() => {
 })
 
 const errorMessage = ref<string | undefined>(undefined)
-const filteredOptions = ref<UserType[]>([])
+const filteredOptions = ref<UserOptionType[]>([])
 const optionValue = ref('id')
 const optionLabel = ref('label')
 
 async function getUsers (fullName: string | null, id: number | undefined = undefined) {
-  const usersList = await userAPI.index({ full_name: fullName })
+  const usersList = await userAPI.lightIndex({ full_name: fullName })
   return usersList.data
 }
 

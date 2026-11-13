@@ -1,6 +1,38 @@
 import jalaliMoment, { from as jalaliFrom } from 'jalali-moment'
 
+let serverClockOffset: number | null = null
+
+export function syncServerTime (serverTime: string | undefined) {
+  if (typeof window === 'undefined' || !serverTime) return
+
+  const timestamp = Date.parse(serverTime)
+  if (Number.isFinite(timestamp)) {
+    serverClockOffset = timestamp - Date.now()
+  }
+}
+
 export const useDate = () => {
+  function now (): number {
+    return Date.now() + (serverClockOffset ?? 0)
+  }
+
+  function getTehranNow (): string {
+    const currentTime = new Date(now())
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Tehran',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23'
+    }).formatToParts(currentTime)
+    const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]))
+
+    return `${values.year}-${values.month}-${values.day} ${values.hour}:${values.minute}:${values.second}`
+  }
+
   function shamsiToMiladi (
     date: string | undefined,
     shamsiFormat: string = 'jYYYY/jMM/jDD',
@@ -25,8 +57,8 @@ export const useDate = () => {
     return jalaliFrom(date, 'en', miladiFormat).format(shamsiFormat)
   }
 
-  function now (format: string = 'YYYY-MM-DD') {
-    return jalaliFrom(new Date().toISOString(), 'en').format(format)
+  function formatTehranNow (format: string = 'YYYY-MM-DD') {
+    return jalaliFrom(getTehranNow(), 'en', 'YYYY-MM-DD HH:mm:ss').format(format)
   }
 
   function validationShamsiDate (date: string | undefined) {
@@ -178,12 +210,109 @@ export const useDate = () => {
     }
   }
 
+  function isoToLocalShamsi (
+    isoDate: string | undefined,
+    format: string = 'HH:mm:ss jYYYY/jMM/jDD'
+  ) {
+    if (!isoDate) {
+      console.error('iso date is not valid')
+      return ''
+    }
+
+    const date = new Date(isoDate)
+
+    if (Number.isNaN(date.getTime())) {
+      console.error('iso date is not valid', isoDate)
+      return ''
+    }
+
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+
+    const hour = String(date.getHours()).padStart(2, '0')
+    const minute = String(date.getMinutes()).padStart(2, '0')
+    const second = String(date.getSeconds()).padStart(2, '0')
+
+    const localDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`
+
+    return jalaliFrom(localDateTime, 'en', 'YYYY-MM-DD HH:mm:ss').format(format)
+  }
+
+  function isoToLocalShamsiDate (isoDate: string | undefined) {
+    return isoToLocalShamsi(isoDate, 'jYYYY/jMM/jDD')
+  }
+
+  function isoToLocalShamsiDateTime (isoDate: string | undefined) {
+    return isoToLocalShamsi(isoDate, 'HH:mm:ss jYYYY/jMM/jDD')
+  }
+
+  function formatSeconds (totalSeconds: number) {
+    const minutes = Math.floor(totalSeconds / 60)
+    const seconds = totalSeconds % 60
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+  }
+
+  /**
+   * تبدیل رشته زمان ISO به ساعت محلی کاربر (فقط زمان)
+   * پشتیبانی هم از Full ISO مثل 2026-10-08T08:30:00Z
+   * و هم رشته‌های زمان UTC مثل 08:30:00Z یا 08:30
+   */
+  function isoToLocalTime (
+    isoDate: string | undefined,
+    format: string = 'HH:mm:ss'
+  ) {
+    if (!isoDate) {
+      console.error('iso time is not valid')
+      return ''
+    }
+
+    // اگر فقط زمان مثل "08:30:00" یا "08:30:00Z" پاس داده شده باشد، تاریخ امروز را به آن اضافه می‌کنیم تا به درستی parse شود
+    let normalizedIso = isoDate.trim()
+    if (!normalizedIso.includes('T') && !normalizedIso.includes('-')) {
+      const today = new Date().toISOString().split('T')[0]
+      normalizedIso = `${today}T${normalizedIso}`
+    }
+
+    if (!normalizedIso.endsWith('Z') && !normalizedIso.includes('+')) {
+      normalizedIso += 'Z'
+    }
+
+    const date = new Date(normalizedIso)
+
+    if (Number.isNaN(date.getTime())) {
+      console.error('iso time is not valid', isoDate)
+      return ''
+    }
+
+    const hour = String(date.getHours()).padStart(2, '0')
+    const minute = String(date.getMinutes()).padStart(2, '0')
+    const second = String(date.getSeconds()).padStart(2, '0')
+
+    const localDateTime = `2000-01-01 ${hour}:${minute}:${second}`
+
+    return jalaliFrom(localDateTime, 'en', 'YYYY-MM-DD HH:mm:ss').format(format)
+  }
+
+  function isoToLocalTimeWithoutSeconds (isoDate: string | undefined) {
+    return isoToLocalTime(isoDate, 'HH:mm')
+  }
+
+
   return {
     now,
+    formatTehranNow,
+    getTehranNow,
     parseTime,
+    formatSeconds,
     shamsiToMiladi,
     miladiToShamsi,
     validationTime,
+    isoToLocalShamsi,
+    isoToLocalTime,
+    isoToLocalTimeWithoutSeconds,
+    isoToLocalShamsiDate,
+    isoToLocalShamsiDateTime,
     validationShamsiDate,
     getDateTimeFromIso8601DateString
   }

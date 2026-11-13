@@ -81,6 +81,32 @@ const topLinks = ref<ListItemType[]>([
     route: { name: 'Panel.Production.Create', params: { worker_role: userManager.mainRoleForPath } }
   },
   {
+    icon: 'mail',
+    title: 'اتوماسیون اداری',
+    child: [
+      {
+        icon: 'description',
+        title: 'نامه‌ها',
+        route: { name: 'Panel.Correspondence.List' }
+      },
+      {
+        icon: 'inbox',
+        title: 'صندوق ورودی',
+        route: { name: 'Panel.Correspondence.Inbox' }
+      },
+      {
+        icon: 'assignment',
+        title: 'کارتابل ارجاع‌ها',
+        route: { name: 'Panel.Correspondence.Assignments' }
+      },
+      {
+        icon: 'edit_note',
+        title: 'ایجاد پیش‌نویس',
+        route: { name: 'Panel.Correspondence.Create' }
+      }
+    ]
+  },
+  {
     icon: 'dashboard',
     title: 'گزارش تولیدات',
     forRoles: [ 'MoldingWorker', 'ColoringWorker', 'FabricCutter' ],

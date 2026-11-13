@@ -40,26 +40,37 @@
         <div class="action-column-entity-index">
           <q-btn
             color="success"
-            class="q-mr-md"
-            :disable="!!inputData.props.row.approved_at"
+            unelevated
             dense
+            :disable="!!inputData.props.row.approved_at"
             @click="confirmApproveProductionItem(inputData.props.row)">
+            <q-icon
+              name="check"
+              class="q-mr-xs" />
             تایید
           </q-btn>
+
           <q-btn
             color="primary"
             icon="edit"
+            unelevated
             dense
             :disable="!!inputData.props.row.approved_at"
             :to="{ name: showRouteName, params: { worker_role: getRoleForProductionType(inputData.props.row.type), id: inputData.props.row.id } }" />
+
           <delete-btn
             :row="inputData.props.row"
             :api="productionAPI"
             @change="afterRemove" />
+
           <q-btn
             v-if="inputData.props.row.description"
             color="primary"
-            flat>
+            flat
+            dense>
+            <q-icon
+              name="info"
+              class="q-mr-xs" />
             توضیحات
             <q-tooltip>
               {{ inputData.props.row.description }}
@@ -74,8 +85,7 @@
   </entity-index>
   <q-dialog
     v-model="approveDialog"
-    :persistent="approveLoading">
-    <confirmation
+    :persistent="approveLoading">    <confirmation
       title="تایید تولید"
       message="آیا از تایید تولید اطمینان دارید؟"
       submit-label="بله"
@@ -87,67 +97,126 @@
       @cancel="onCancelApproveProductionItem">
       <div
         v-if="selectedProductionItemToApprove"
-        class="row">
-        <div class="col-md-6 col-xs-6">
-          پرسنل:
-          {{ selectedProductionItemToApprove.user.firstname }}
-          {{ selectedProductionItemToApprove.user.lastname }}
+        class="approve-summary">
+        <div class="approve-summary__banner">
+          <q-icon
+            name="warning_amber"
+            size="20px" />
+          <span>
+            با تایید این ردیف، امکان ویرایش و حذف آن وجود نخواهد داشت.
+          </span>
         </div>
-        <div class="col-md-6 col-xs-6">
-          زیر محصول:
-          {{ selectedProductionItemToApprove.product_part?.name }}
-        </div>
-        <div class="col-md-6 col-xs-6">
-          پارچه:
-          {{ selectedProductionItemToApprove.fabric?.name }}
-        </div>
-        <div class="col-md-6 col-xs-6">
-          رنگ:
-          {{ selectedProductionItemToApprove.color?.name }}
-        </div>
-        <div class="col-md-6 col-xs-6">
-          تعداد دسته:
-          {{
-            parseFloat(
-              selectedProductionItemToApprove.bunch_count.toString() ?? '0',
-            ).toLocaleString('fa')
-          }}
-        </div>
-        <div class="col-md-6 col-xs-6">
-          تعداد گلبرگ:
-          {{
-            (
-              (selectedProductionItemToApprove.product_part?.count_per_bunch ?? 0) *
-              (selectedProductionItemToApprove.bunch_count ?? 0)
-            ).toLocaleString('fa')
-          }}
-        </div>
-        <div class="col-md-6 col-xs-6">
-          تاریخ تولید:
-          {{
-            selectedProductionItemToApprove.production_date
-              ? dateManager.miladiToShamsi(
-                selectedProductionItemToApprove.production_date,
-                'YYYY-MM-DD',
-                'jYYYY/jMM/jDD',
-              )
-              : '-'
-          }}
-        </div>
-        <div class="col-md-6 col-xs-6">
-          زمان ایجاد:
-          {{
-            selectedProductionItemToApprove.created_at
-              ? dateManager.miladiToShamsi(
-                selectedProductionItemToApprove.created_at,
-                'YYYY-MM-DDThh:mm:ss',
-                'hh:mm:ss jYYYY/jMM/jDD',
-              )
-              : '-'
-          }}
+
+        <div class="approve-summary__grid">
+          <div class="approve-summary__item">
+            <span class="approve-summary__label">
+              <q-icon name="person" />
+              پرسنل
+            </span>
+            <span class="approve-summary__value">
+              {{ selectedProductionItemToApprove.user.firstname }}
+              {{ selectedProductionItemToApprove.user.lastname }}
+            </span>
+          </div>
+
+          <div class="approve-summary__item">
+            <span class="approve-summary__label">
+              <q-icon name="category" />
+              زیر محصول
+            </span>
+            <span class="approve-summary__value">
+              {{ selectedProductionItemToApprove.product_part?.name ?? '-' }}
+            </span>
+          </div>
+
+          <div class="approve-summary__item">
+            <span class="approve-summary__label">
+              <q-icon name="texture" />
+              پارچه
+            </span>
+            <span class="approve-summary__value">
+              {{ selectedProductionItemToApprove.fabric?.name ?? '-' }}
+            </span>
+          </div>
+
+          <div class="approve-summary__item">
+            <span class="approve-summary__label">
+              <q-icon name="palette" />
+              رنگ
+            </span>
+            <span class="approve-summary__value">
+              {{ selectedProductionItemToApprove.color?.name ?? '-' }}
+            </span>
+          </div>
+
+          <div class="approve-summary__item">
+            <span class="approve-summary__label">
+              <q-icon name="inventory_2" />
+              تعداد دسته
+            </span>
+            <span class="approve-summary__value">
+              {{
+                parseFloat(
+                  selectedProductionItemToApprove.bunch_count?.toString() ?? '0',
+                ).toLocaleString('fa')
+              }}
+            </span>
+          </div>
+
+          <div class="approve-summary__item">
+            <span class="approve-summary__label">
+              <q-icon name="local_florist" />
+              تعداد گلبرگ
+            </span>
+            <span class="approve-summary__value">
+              {{
+                (
+                  (selectedProductionItemToApprove.product_part?.count_per_bunch ?? 0) *
+                  (selectedProductionItemToApprove.bunch_count ?? 0)
+                ).toLocaleString('fa')
+              }}
+            </span>
+          </div>
+
+          <div class="approve-summary__item">
+            <span class="approve-summary__label">
+              <q-icon name="event" />
+              تاریخ تولید
+            </span>
+            <span class="approve-summary__value">
+              {{
+                selectedProductionItemToApprove.production_date
+                  ? dateManager.miladiToShamsi(
+                    selectedProductionItemToApprove.production_date,
+                    'YYYY-MM-DD',
+                    'jYYYY/jMM/jDD',
+                  )
+                  : '-'
+              }}
+            </span>
+          </div>
+
+          <div class="approve-summary__item">
+            <span class="approve-summary__label">
+              <q-icon name="schedule" />
+              زمان ایجاد
+            </span>
+            <span class="approve-summary__value">
+              {{
+                selectedProductionItemToApprove.created_at
+                  ? dateManager.miladiToShamsi(
+                    selectedProductionItemToApprove.created_at,
+                    'YYYY-MM-DDThh:mm:ss',
+                    'hh:mm:ss jYYYY/jMM/jDD',
+                  )
+                  : '-'
+              }}
+            </span>
+          </div>
         </div>
       </div>
     </confirmation>
+
   </q-dialog>
 </template>
 
@@ -749,5 +818,76 @@ function getRoleForProductionType (type: ProductionTypeType): UserRolesForPathTy
 <style lang="scss" scoped>
 .action-column-entity-index {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
+
+.approve-summary {
+  width: 100%;
+
+  &__banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    margin-bottom: 0.9rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: #8a5a00;
+    background: rgba(255, 193, 7, 0.12);
+    border: 1px solid rgba(255, 193, 7, 0.35);
+
+    .q-icon {
+      flex-shrink: 0;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    min-width: 0;
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    opacity: 0.65;
+
+    .q-icon {
+      font-size: 0.95rem;
+    }
+  }
+
+  &__value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 599px) {
+  .approve-summary {
+    &__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
 </style>
+

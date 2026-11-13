@@ -94,7 +94,7 @@ $q-field__label_margin_bottom: $space-1;
           padding: $spacing-none $field-container-padding-x;
 
           span {
-            position: absolute;
+            //position: absolute;
           }
 
           &[type='number']::-webkit-outer-spin-button,
