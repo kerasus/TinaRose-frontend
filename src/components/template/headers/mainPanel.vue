@@ -6,6 +6,7 @@ import { useAppLayout } from 'stores/appLayout'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useHeaderBreadCrumbs } from 'src/stores/headerBreadCrumbs'
 import UserMenu from './UserMenu.vue'
+import NotificationMenu from './NotificationMenu.vue'
 
 withDefaults(defineProps<{ floated?: boolean }>(), {
   floated: false
@@ -95,6 +96,7 @@ function toggleLeftDrawerVisible () {
           <!-- <q-btn icon="notifications" class="icon-button" @click="toggleRightDrawer">
             <q-badge floating rounded color="red"> 2 </q-badge>
           </q-btn> -->
+          <notification-menu />
           <user-menu v-if="userManager.me" />
           <q-btn
             v-else
