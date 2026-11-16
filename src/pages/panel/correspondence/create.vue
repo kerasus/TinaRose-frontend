@@ -255,68 +255,9 @@
                   <div class="row items-start no-wrap q-col-gutter-sm">
 
                     <div class="col">
-                      <div class="text-caption text-weight-medium text-grey-7 q-mb-xs">
-                        شخص یا واحد گیرنده
-                      </div>
-
-                      <q-select
-                        v-model="r.user_id"
-                        :options="filteredUserOptions"
-                        emit-value
-                        map-options
-                        use-input
-                        fill-input
-                        hide-selected
-                        clearable
-                        outlined
-                        dense
-                        input-debounce="250"
-                        :loading="usersLoading"
-                        placeholder="نام گیرنده را جست‌وجو کنید..."
-                        class="recipient-user-select"
-                        @filter="filterUsers">
-
-                        <template #prepend>
-                          <q-icon
-                            name="person"
-                            color="grey-6" />
-                        </template>
-
-                        <template #no-option>
-                          <q-item>
-                            <q-item-section class="text-grey-6">
-                              کاربری با این مشخصات پیدا نشد.
-                            </q-item-section>
-                          </q-item>
-                        </template>
-
-                        <template #option="scope">
-                          <q-item
-                            v-bind="scope.itemProps"
-                            class="recipient-option">
-                            <q-item-section avatar>
-                              <q-avatar
-                                size="30px"
-                                color="primary-1"
-                                text-color="primary">
-                                <q-icon name="person" />
-                              </q-avatar>
-                            </q-item-section>
-
-                            <q-item-section>
-                              <q-item-label>
-                                {{ scope.opt.label }}
-                              </q-item-label>
-                            </q-item-section>
-                          </q-item>
-                        </template>
-
-                        <template #selected-item="scope">
-                          <span class="selected-recipient-name">
-                            {{ scope.opt.label }}
-                          </span>
-                        </template>
-                      </q-select>
+                      <form-builder-select-user
+                        v-model:value="r.user_id"
+                        label="شخص یا واحد گیرنده" />
                     </div>
 
                     <q-btn
@@ -458,19 +399,15 @@
 import { computed, ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
-import UserAPI from 'src/repositories/user'
 import CorrespondenceAPI from 'src/repositories/correspondence'
 import FormBuilderDateTime from 'src/components/controls/formBuilderCustomInput/FormBuilderDateTime.vue'
+import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
 
 const $q = useQuasar()
 const router = useRouter()
 const correspondenceAPI = new CorrespondenceAPI()
-const userAPI = new UserAPI()
 
 const loading = ref(false)
-const usersLoading = ref(false)
-const userOptions = ref<{ label: string; value: number }[]>([])
-const filteredUserOptions = ref<{ label: string; value: number }[]>([])
 const errors = ref<Record<string, string>>({})
 
 const form = ref({
@@ -556,21 +493,6 @@ function getPriorityColor (val: string) {
   }
 }
 
-function filterUsers (val: string, update: Function) {
-  update(() => {
-    const needle = (val || '').trim().toLowerCase()
-
-    if (!needle) {
-      filteredUserOptions.value = userOptions.value
-      return
-    }
-
-    filteredUserOptions.value = userOptions.value.filter((user) =>
-      user.label.toLowerCase().includes(needle)
-    )
-  })
-}
-
 function setErrors (e: any) {
   errors.value = {}
   if (e?.response?.status === 422 && e.response.data?.errors) {
@@ -597,23 +519,6 @@ function showRequestError (e: any) {
     return
   }
   $q.notify({ type: 'negative', message: e?.response?.data?.message || 'خطا در انجام عملیات.' })
-}
-
-async function loadUsers () {
-  usersLoading.value = true
-  try {
-    const result = await userAPI.index({ length: 100, page: 1 })
-    userOptions.value = (result.data || []).map((u: any) => {
-      const name = [u.firstname, u.lastname].filter(Boolean).join(' ').trim()
-      return { label: name || u.username || `کاربر ${u.id}`, value: u.id }
-    })
-    filteredUserOptions.value = userOptions.value
-  } catch {
-    userOptions.value = []
-    filteredUserOptions.value = []
-  } finally {
-    usersLoading.value = false
-  }
 }
 
 async function submit () {
@@ -663,10 +568,6 @@ async function submit () {
     loading.value = false
   }
 }
-
-onMounted(() => {
-  loadUsers()
-})
 </script>
 
 <style scoped lang="scss">

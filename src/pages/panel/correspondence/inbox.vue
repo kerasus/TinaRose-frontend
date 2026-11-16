@@ -24,6 +24,12 @@
       <template v-else-if="inputData.col.name === 'sender'">
         {{ senderName(inputData.props.row.correspondence?.sender) }}
       </template>
+      <template v-else-if="inputData.col.name === 'read_at'">
+        <span
+          v-if="!inputData.props.row.read_at"
+          class="row-unread-marker" />
+        {{ inputData.col.value }}
+      </template>
       <template v-else-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
           <q-btn
@@ -99,6 +105,14 @@ const table = ref({
       align: 'left'
     },
     {
+      name: 'read_at',
+      required: true,
+      label: 'زمان مشاهده',
+      align: 'left',
+      field: (row: CorrespondenceRecipient) =>
+        (row as any).read_at ? dateManager.miladiToShamsi((row as any).read_at, 'YYYY-MM-DDTHH:mm:ss', 'HH:mm jYYYY/jMM/jDD') : '-'
+    },
+    {
       name: 'created_at',
       required: true,
       label: 'زمان دریافت',
@@ -167,3 +181,23 @@ function senderName (sender: any) {
   return name || sender.username || '-'
 }
 </script>
+
+<style scoped lang="scss">
+.row-unread-marker {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background-color: #1976d2;
+  vertical-align: middle;
+}
+
+:deep(.q-table tbody tr:has(.row-unread-marker)) {
+  background-color: #e8f1fd !important;
+}
+
+:deep(.q-table tbody tr:has(.row-unread-marker):hover) {
+  background-color: #d6e7fb !important;
+}
+</style>

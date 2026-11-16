@@ -3,7 +3,7 @@
     <!-- Hero / Welcome Banner -->
     <div class="hero-banner q-pa-lg q-mb-xl rounded-2xl relative-position overflow-hidden">
       <div class="hero-backdrop-glow" />
-      <div class="row items-center justify-between relative-position z-top">
+      <div class="row items-center justify-between relative-position">
         <div class="col-12 col-md-8">
           <div class="row items-center q-gutter-x-sm q-mb-xs">
             <span class="live-pulse" />

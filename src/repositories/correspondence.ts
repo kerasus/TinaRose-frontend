@@ -1,5 +1,6 @@
 import BaseAPI, { type ListType } from './BaseAPI'
 import type { AxiosResponse } from 'axios'
+import { UserRolesType } from 'src/repositories/user'
 
 export type CorrespondenceStatus = 'draft' | 'sent' | 'cancelled'
 export type CorrespondencePriority = 'low' | 'normal' | 'high' | 'urgent'
@@ -14,6 +15,7 @@ export type CorrespondenceUser = {
   lastname?: string | null
   employee_code?: string | null
   username?: string | null
+  roles_list?: UserRolesType[]
   email?: string | null
   mobile?: string | null
 }
@@ -132,6 +134,14 @@ export type ResolveAssignmentPayload = {
   resolution_note?: string | null
 }
 
+export const assignmentStatusOptions: {label: string, value: AssignmentStatus}[] = [
+  { label: 'در انتظار', value: 'pending' },
+  { label: 'در انجام', value: 'in_progress' },
+  { label: 'انجام‌شده', value: 'completed' },
+  { label: 'ردشده', value: 'rejected' },
+  { label: 'لغوشده', value: 'cancelled' }
+]
+
 export function getCorrespondenceStatusLabel (status: CorrespondenceStatus | string | null): string {
   const map: Record<string, string> = {
     draft: 'پیش‌نویس',
@@ -160,14 +170,11 @@ export function getCorrespondenceConfidentialityLabel (c: CorrespondenceConfiden
 }
 
 export function getAssignmentStatusLabel (status: AssignmentStatus | string | null): string {
-  const map: Record<string, string> = {
-    pending: 'در انتظار',
-    in_progress: 'در حال انجام',
-    completed: 'انجام‌شده',
-    rejected: 'ردشده',
-    cancelled: 'لغوشده'
+  const target = assignmentStatusOptions.find((i) => i.value === status)
+  if (target) {
+    return target.label
   }
-  return status ? (map[status] ?? status) : '-'
+  return '-'
 }
 
 export function getRecipientTypeLabel (type: RecipientType | string | null): string {

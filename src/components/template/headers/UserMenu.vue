@@ -35,7 +35,8 @@ function logout () {
     flat
     color="primary"
     class="icon-button user-menu-trigger"
-    aria-label="منوی کاربر">
+    aria-label="منوی کاربر"
+    style="padding: 0">
     <q-avatar class="user-menu-trigger__avatar">
       <span>{{ initial }}</span>
     </q-avatar>

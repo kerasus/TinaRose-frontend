@@ -274,7 +274,15 @@
                       <div class="q-py-sm">
                         <div class="row items-center text-body2 q-mb-xs">
                           <span class="text-grey-7 q-mr-xs">مسئول اقدام:</span>
-                          <strong class="text-primary">{{ userLabel(root.assigned_to, root.assigned_to_id) }}</strong>
+                          <strong class="text-primary">
+                            {{ userLabel(root.assigned_to, root.assigned_to_id) }}
+                          </strong>
+                          <q-badge
+                            color="info"
+                            rounded
+                            class="q-px-sm q-py-xs text-weight-bold q-ml-sm">
+                            {{ getFirstUserRoleLabel(root.assigned_to) }}
+                          </q-badge>
                         </div>
 
                         <div
@@ -442,7 +450,15 @@
                                 size="18px" />
                               <span class="text-caption text-weight-bolder text-grey-9 font-mono">ارجاع فرزند #{{ child.id }}</span>
                               <span class="text-caption text-grey-7">
-                                (مسئول: <strong class="text-secondary">{{ userLabel(child.assigned_to, child.assigned_to_id) }}</strong>)
+                                (مسئول:
+                                <strong class="text-secondary">{{ userLabel(child.assigned_to, child.assigned_to_id) }}</strong>
+                                <q-badge
+                                  color="info"
+                                  rounded
+                                  class="q-px-sm q-py-xs text-weight-bold q-ml-sm">
+                                  {{ getFirstUserRoleLabel(child.assigned_to) }}
+                                </q-badge>
+                                )
                               </span>
                             </div>
                             <q-badge
@@ -750,6 +766,12 @@
                   </span>
                   <span class="text-caption text-weight-bold text-grey-9">
                     {{ userLabel(r.user, r.user_id) }}
+                    <q-badge
+                      color="info"
+                      rounded
+                      class="q-px-sm q-py-xs text-weight-bold q-ml-sm">
+                      {{ getFirstUserRoleLabel(r.user) }}
+                    </q-badge>
                   </span>
                 </div>
                 <div class="column items-end">
@@ -855,24 +877,9 @@
         </q-card-section>
 
         <q-card-section class="child-dialog-form">
-          <q-select
-            v-model="childForm.assigned_to_id"
-            :options="userOptions"
-            label="ارجاع به کارشناس / مدیر"
-            outlined
-            dense
-            emit-value
-            map-options
-            options-dense
-            :loading="usersLoading"
-            :error="!!childErrors.assigned_to_id"
-            :error-message="childErrors.assigned_to_id">
-            <template #prepend>
-              <q-icon
-                name="person_outline"
-                color="primary" />
-            </template>
-          </q-select>
+          <form-builder-select-user
+            v-model:value="childForm.assigned_to_id"
+            label="ارجاع به کارشناس / مدیر" />
 
           <q-input
             v-model="childForm.note"
@@ -981,17 +988,9 @@
             dense />
         </q-card-section>
         <q-card-section class="q-gutter-y-md">
-          <q-select
-            v-model="recipientForm.user_id"
-            :options="userOptions"
-            label="گیرنده"
-            outlined
-            dense
-            emit-value
-            map-options
-            :loading="usersLoading"
-            :error="!!recipientErrors.user_id"
-            :error-message="recipientErrors.user_id" />
+          <form-builder-select-user
+            v-model:value="recipientForm.user_id"
+            label="گیرنده" />
           <q-select
             v-model="recipientForm.type"
             :options="recipientTypeOptions"
@@ -1051,25 +1050,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useDate } from 'src/composables/Date'
 import { useUser } from 'src/stores/user'
-import UserAPI from 'src/repositories/user'
+import UserAPI, { getUserRoleLabel } from 'src/repositories/user'
 import FormBuilderDateTime from 'src/components/controls/formBuilderCustomInput/FormBuilderDateTime.vue'
+import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
 import CorrespondenceAPI, {
   type Correspondence,
   type CorrespondenceAssignment,
   type CorrespondenceAttachment,
   type CorrespondenceEvent,
   type CorrespondenceUser,
-  getCorrespondenceStatusLabel,
-  getCorrespondencePriorityLabel,
-  getCorrespondenceConfidentialityLabel,
   getAssignmentStatusLabel,
-  getCorrespondenceEventTypeLabel
+  getCorrespondenceConfidentialityLabel,
+  getCorrespondenceEventTypeLabel,
+  getCorrespondencePriorityLabel,
+  getCorrespondenceStatusLabel
 } from 'src/repositories/correspondence'
+
 
 defineOptions({
   name: 'CorrespondenceShowPage'
@@ -1085,11 +1086,9 @@ const userAPI = new UserAPI()
 const loading = ref(false)
 const actionLoading = ref(false)
 const attachLoading = ref(false)
-const usersLoading = ref(false)
 const correspondence = ref<Correspondence | null>(null)
 const attachFile = ref<File | null>(null)
 const attachError = ref('')
-const userOptions = ref<{ label: string; value: number }[]>([])
 const eventUsers = ref<Record<number, CorrespondenceUser>>({})
 
 const activeTab = ref<'content' | 'workflow' | 'attachments'>('content')
@@ -1137,13 +1136,13 @@ function printLetter () {
 }
 
 const correspondenceId = computed(() => Number(route.params.id))
-const isSender = computed(() => correspondence.value?.sender_id === userStore.me?.id)
+const isSender = computed(() => correspondence.value?.sender_id.toString() === userStore.me?.id.toString())
 const isDraft = computed(() => correspondence.value?.status === 'draft')
 const canSend = computed(() => isSender.value && isDraft.value)
 const canAttach = computed(() => isSender.value && isDraft.value)
 
-const allAssignments = computed(() => correspondence.value?.assignments || [])
-const rootAssignments = computed(() => allAssignments.value.filter((a) => !a.parent_assignment_id))
+const allAssignments = computed<CorrespondenceAssignment[]>(() => correspondence.value?.assignments || [])
+const rootAssignments = computed<CorrespondenceAssignment[]>(() => allAssignments.value.filter((a) => !a.parent_assignment_id))
 
 function childrenOf (id: number) {
   return allAssignments.value.filter((a) => a.parent_assignment_id === id)
@@ -1189,6 +1188,12 @@ function replyToLabel () {
   return `${refNum}${subj}`
 }
 
+function getFirstUserRoleLabel (user?: CorrespondenceUser | null) {
+  if (!user || user.roles_list.length === 0) return ''
+
+  return getUserRoleLabel(user.roles_list[0])
+}
+
 function userLabel (user?: CorrespondenceUser | null, id?: number | null) {
   if (user) {
     const name = [user.firstname, user.lastname].filter(Boolean).join(' ').trim()
@@ -1203,7 +1208,7 @@ function priorityLabel (v: any) { return getCorrespondencePriorityLabel(v) }
 function confidentialityLabel (v: any) { return getCorrespondenceConfidentialityLabel(v) }
 function assignmentStatusLabel (v: any) { return getAssignmentStatusLabel(v) }
 function eventTypeLabel (v: any) { return getCorrespondenceEventTypeLabel(v) }
-function isMyAssignment (a: CorrespondenceAssignment) { return a.assigned_to_id === userStore.me?.id }
+function isMyAssignment (a: CorrespondenceAssignment) { return a.assigned_to_id.toString() === userStore.me?.id.toString() }
 
 function statusBadgeColor (status: string | undefined) {
   switch (status) {
@@ -1291,35 +1296,17 @@ async function loadEventUsers () {
 
   await Promise.all(ids.map(async (id) => {
     try {
-      const user = await userAPI.getBasic(id)
-      eventUsers.value[id] = user
+      eventUsers.value[id] = await userAPI.getBasic(id)
     } catch {
       // در صورت خطا، فقط شناسه نمایش داده می‌شود
     }
   }))
 }
 
-function userOptionLabel (u: any) {
-  const name = [u.firstname, u.lastname].filter(Boolean).join(' ').trim()
-  const base = name || u.username || `کاربر ${u.id}`
-  return u.employee_code ? `${base} (${u.employee_code})` : base
-}
-
-async function loadUsers () {
-  usersLoading.value = true
-  try {
-    const result = await userAPI.lightIndex()
-    userOptions.value = result.data.map((u) => ({ label: userOptionLabel(u), value: u.id }))
-  } finally {
-    usersLoading.value = false
-  }
-}
-
 function openRecipientDialog () {
   recipientForm.value = { user_id: null, type: 'to', due_at: null }
   recipientErrors.value = {}
   recipientDialog.value = true
-  if (!userOptions.value.length) loadUsers()
 }
 
 function onRecipientTypeChange (type: 'to' | 'cc') {
@@ -1425,7 +1412,6 @@ function openChild (a: CorrespondenceAssignment) {
   childTarget.value = a
   childForm.value = { assigned_to_id: null, note: '', due_at: null }
   childErrors.value = {}
-  if (!userOptions.value.length) loadUsers()
   childDialog.value = true
 }
 
@@ -1453,7 +1439,6 @@ async function submitChild () {
 
 onMounted(() => {
   load()
-  loadUsers()
 })
 </script>
 
