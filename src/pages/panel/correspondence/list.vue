@@ -18,6 +18,9 @@
       </template>
       <template v-else-if="inputData.col.name === 'sender'">
         {{ senderName(inputData.props.row?.sender) }}
+        <q-badge>
+          {{ getUserMainRoleLabel(inputData.props.row?.sender) }}
+        </q-badge>
       </template>
       <template v-else-if="inputData.col.name === 'priority'">
         {{ priorityLabel(inputData.props.row.priority) }}
@@ -27,6 +30,15 @@
       </template>
       <template v-else-if="inputData.col.name === 'actions'">
         <div class="action-column-entity-index">
+          <q-btn
+            v-if="inputData.props.row.has_been_seen === false"
+            color="negative"
+            flat
+            icon="delete"
+            :loading="deletingId === inputData.props.row.id"
+            @click="confirmDelete(inputData.props.row)">
+            <q-tooltip>حذف نامه (هنوز مشاهده نشده است)</q-tooltip>
+          </q-btn>
           <q-btn
             color="primary"
             flat
@@ -43,8 +55,10 @@
 
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue'
+import { useQuasar } from 'quasar'
 import { EntityIndex } from 'quasar-crud'
 import { useDate } from 'src/composables/Date'
+import { getFirstUserRoleLabel, UserType } from 'src/repositories/user'
 import CorrespondenceAPI, {
   type Correspondence,
   getCorrespondenceStatusLabel,
@@ -54,6 +68,7 @@ import CorrespondenceAPI, {
 import FormBuilderDate from 'src/components/controls/formBuilderCustomInput/FormBuilderDate.vue'
 import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
 
+const $q = useQuasar()
 const dateManager = useDate()
 const correspondenceAPI = new CorrespondenceAPI()
 
@@ -66,6 +81,7 @@ const createRouteName = ref('Panel.Correspondence.Create')
 const showRouteName = ref('Panel.Correspondence.Show')
 const itemIdentifyKey = ref('id')
 const entityIndexRef = ref()
+const deletingId = ref<number | null>(null)
 
 const tableKeys = ref({
   data: 'data',
@@ -191,6 +207,11 @@ function senderName (sender: any) {
   const name = [sender.firstname, sender.lastname].filter(Boolean).join(' ')
   return name || sender.username || '-'
 }
+
+function getUserMainRoleLabel (sender: Partial<UserType>) {
+  if (!sender) return '-'
+  return getFirstUserRoleLabel(sender)
+}
 function statusLabel (v: any) {
   return getCorrespondenceStatusLabel(v)
 }
@@ -199,5 +220,45 @@ function priorityLabel (v: any) {
 }
 function confidentialityLabel (v: any) {
   return getCorrespondenceConfidentialityLabel(v)
+}
+
+function confirmDelete (row: Correspondence) {
+  const targetId = Number(row.id)
+
+  if (!targetId || row.has_been_seen !== false) {
+    return
+  }
+
+  $q.dialog({
+    title: 'حذف نامه',
+    message: `آیا از حذف نامه «${row.subject || '-'}» اطمینان دارید؟ این عمل قابل بازگشت نیست.`,
+    cancel: { label: 'انصراف', flat: true, color: 'grey-8' },
+    ok: { label: 'حذف نامه', color: 'negative', unelevated: true },
+    persistent: true
+  }).onOk(async () => {
+    deletingId.value = targetId
+    try {
+      await correspondenceAPI.delete(targetId)
+      $q.notify({ type: 'positive', message: 'نامه با موفقیت حذف شد.' })
+      entityIndexRef.value?.reload()
+    } catch (e: any) {
+      const status = e?.response?.status
+      if (status === 403) {
+        $q.notify({ type: 'negative', message: 'دسترسی غیرمجاز برای حذف این نامه.' })
+      } else if (status === 422) {
+        $q.notify({
+          type: 'negative',
+          message: e?.response?.data?.message || 'این نامه قابل حذف نیست.'
+        })
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: e?.response?.data?.message || 'خطا در حذف نامه.'
+        })
+      }
+    } finally {
+      deletingId.value = null
+    }
+  })
 }
 </script>

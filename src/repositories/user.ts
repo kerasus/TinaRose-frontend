@@ -1,5 +1,6 @@
 import BaseAPI, { type ListType } from './BaseAPI'
 import type { AxiosResponse } from 'axios'
+import type { CorrespondenceUser } from 'src/repositories/correspondence'
 
 export type WorkerRoleType = 'molding' | 'coloring' | 'fabric-cutter' | 'assembler'
 export type UserRolesForPathType = 'manager' | 'product-manager' | 'accountant' | 'molding' | 'coloring' | 'fabric-cutter' | 'middle' | 'assembler' | 'warehouse-keeper'
@@ -63,6 +64,12 @@ export function getUserRoleLabel (roleName: string): string {
   }
 
   return roleName
+}
+
+export function getFirstUserRoleLabel (user?: Partial<UserType> | null) {
+  if (!user || user.roles_list.length === 0) return ''
+
+  return getUserRoleLabel(user.roles_list[0])
 }
 
 export function getUserRolesForPathLabel (roleName: UserRolesForPathType): string {

@@ -84,6 +84,18 @@
           <!--          </q-btn>-->
 
           <q-btn
+            v-if="canDelete"
+            flat
+            color="negative"
+            icon="delete"
+            label="حذف نامه"
+            class="modern-action-btn"
+            :loading="deleteLoading"
+            @click="confirmDelete">
+            <q-tooltip>این نامه هنوز مشاهده نشده و قابل حذف است</q-tooltip>
+          </q-btn>
+
+          <q-btn
             v-if="canSend"
             unelevated
             color="primary"
@@ -1051,7 +1063,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useDate } from 'src/composables/Date'
 import { useUser } from 'src/stores/user'
@@ -1078,6 +1090,7 @@ defineOptions({
 
 const $q = useQuasar()
 const route = useRoute()
+const router = useRouter()
 const dateManager = useDate()
 const userStore = useUser()
 const correspondenceAPI = new CorrespondenceAPI()
@@ -1086,6 +1099,7 @@ const userAPI = new UserAPI()
 const loading = ref(false)
 const actionLoading = ref(false)
 const attachLoading = ref(false)
+const deleteLoading = ref(false)
 const correspondence = ref<Correspondence | null>(null)
 const attachFile = ref<File | null>(null)
 const attachError = ref('')
@@ -1140,6 +1154,9 @@ const isSender = computed(() => correspondence.value?.sender_id.toString() === u
 const isDraft = computed(() => correspondence.value?.status === 'draft')
 const canSend = computed(() => isSender.value && isDraft.value)
 const canAttach = computed(() => isSender.value && isDraft.value)
+const canDelete = computed(
+  () => isSender.value && correspondence.value?.has_been_seen === false
+)
 
 const allAssignments = computed<CorrespondenceAssignment[]>(() => correspondence.value?.assignments || [])
 const rootAssignments = computed<CorrespondenceAssignment[]>(() => allAssignments.value.filter((a) => !a.parent_assignment_id))
@@ -1353,6 +1370,33 @@ async function sendCorrespondence () {
   } finally {
     actionLoading.value = false
   }
+}
+
+function confirmDelete () {
+  if (!canDelete.value || !correspondence.value) {
+    return
+  }
+
+  const subject = correspondence.value.subject || '-'
+
+  $q.dialog({
+    title: 'حذف نامه',
+    message: `آیا از حذف نامه «${subject}» اطمینان دارید؟ این عمل قابل بازگشت نیست.`,
+    cancel: { label: 'انصراف', flat: true, color: 'grey-8' },
+    ok: { label: 'حذف نامه', color: 'negative', unelevated: true },
+    persistent: true
+  }).onOk(async () => {
+    deleteLoading.value = true
+    try {
+      await correspondenceAPI.delete(correspondenceId.value)
+      $q.notify({ type: 'positive', message: 'نامه با موفقیت حذف شد.' })
+      router.push({ name: 'Panel.Correspondence.List' })
+    } catch (e) {
+      handleError(e)
+    } finally {
+      deleteLoading.value = false
+    }
+  })
 }
 
 async function uploadAttachment () {

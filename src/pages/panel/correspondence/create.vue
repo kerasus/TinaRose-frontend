@@ -18,7 +18,7 @@
               name="note_add"
               color="primary"
               size="28px" />
-            <span>ایجاد پیش‌نویس نامه اداری</span>
+            <span>ایجاد نامه اداری</span>
           </div>
           <div class="text-caption text-grey-6 q-mt-xs">
             اطلاعات نامه، گیرندگان و طبقه‌بندی سند را تکمیل و پیش‌نویس را ثبت کنید.
@@ -40,8 +40,18 @@
           icon="save"
           label="ثبت پیش‌نویس"
           :loading="loading"
+          :disable="sending"
           class="q-px-md rounded-borders"
           @click="submit" />
+        <q-btn
+          unelevated
+          color="positive"
+          icon="send"
+          label="ارسال نامه"
+          :loading="sending"
+          :disable="loading"
+          class="q-px-md rounded-borders"
+          @click="submitAndSend" />
       </div>
     </div>
 
@@ -389,8 +399,18 @@
         icon="check"
         label="ایجاد و ذخیره پیش‌نویس"
         :loading="loading"
+        :disable="sending"
         class="q-px-lg"
         @click="submit" />
+      <q-btn
+        unelevated
+        color="positive"
+        icon="send"
+        label="ایجاد و ارسال نامه"
+        :loading="sending"
+        :disable="loading"
+        class="q-px-lg"
+        @click="submitAndSend" />
     </div>
   </div>
 </template>
@@ -408,6 +428,7 @@ const router = useRouter()
 const correspondenceAPI = new CorrespondenceAPI()
 
 const loading = ref(false)
+const sending = ref(false)
 const errors = ref<Record<string, string>>({})
 
 const form = ref({
@@ -522,6 +543,18 @@ function showRequestError (e: any) {
 }
 
 async function submit () {
+  await persistCorrespondence(false)
+}
+
+async function submitAndSend () {
+  await persistCorrespondence(true)
+}
+
+async function persistCorrespondence (sendImmediately: boolean) {
+  if (loading.value || sending.value) {
+    return
+  }
+
   errors.value = {}
 
   const validRecipients = form.value.recipients.filter(
@@ -541,7 +574,12 @@ async function submit () {
     return
   }
 
-  loading.value = true
+  if (sendImmediately) {
+    sending.value = true
+  } else {
+    loading.value = true
+  }
+
   try {
     const payload: any = {
       subject: form.value.subject,
@@ -555,8 +593,20 @@ async function submit () {
         due_at: r.type === 'cc' ? null : (r.due_at || null)
       }))
     }
+
+    if (sendImmediately) {
+      payload.send = true
+    }
+
     const created = await correspondenceAPI.createDraft(payload)
-    $q.notify({ type: 'positive', message: 'پیش‌نویس با موفقیت ایجاد شد.' })
+
+    $q.notify({
+      type: 'positive',
+      message: sendImmediately
+        ? 'نامه با موفقیت ارسال شد.'
+        : 'پیش‌نویس با موفقیت ایجاد شد.'
+    })
+
     if (created && (created as any).id) {
       router.push({ name: 'Panel.Correspondence.Show', params: { id: (created as any).id } })
     } else {
@@ -566,6 +616,7 @@ async function submit () {
     showRequestError(e)
   } finally {
     loading.value = false
+    sending.value = false
   }
 }
 </script>

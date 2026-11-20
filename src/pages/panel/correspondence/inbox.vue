@@ -23,6 +23,9 @@
       </template>
       <template v-else-if="inputData.col.name === 'sender'">
         {{ senderName(inputData.props.row.correspondence?.sender) }}
+        <q-badge>
+          {{ getUserMainRoleLabel(inputData.props.row.correspondence?.sender) }}
+        </q-badge>
       </template>
       <template v-else-if="inputData.col.name === 'read_at'">
         <span
@@ -54,6 +57,7 @@ import { useDate } from 'src/composables/Date'
 import CorrespondenceAPI, { getRecipientTypeLabel, type CorrespondenceRecipient } from 'src/repositories/correspondence'
 import FormBuilderDate from 'src/components/controls/formBuilderCustomInput/FormBuilderDate.vue'
 import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
+import { getFirstUserRoleLabel, UserType } from 'src/repositories/user'
 
 const dateManager = useDate()
 const correspondenceAPI = new CorrespondenceAPI()
@@ -175,10 +179,15 @@ function recipientTypeLabel (v: any) {
   return getRecipientTypeLabel(v)
 }
 
-function senderName (sender: any) {
+function senderName (sender: Partial<UserType>) {
   if (!sender) return '-'
   const name = [sender.firstname, sender.lastname].filter(Boolean).join(' ')
   return name || sender.username || '-'
+}
+
+function getUserMainRoleLabel (sender: Partial<UserType>) {
+  if (!sender) return '-'
+  return getFirstUserRoleLabel(sender)
 }
 </script>
 
@@ -189,15 +198,15 @@ function senderName (sender: any) {
   height: 8px;
   margin-left: 6px;
   border-radius: 50%;
-  background-color: #1976d2;
+  background-color: #d21919;
   vertical-align: middle;
 }
 
 :deep(.q-table tbody tr:has(.row-unread-marker)) {
-  background-color: #e8f1fd !important;
+  background-color: #ffc075 !important;
 }
 
 :deep(.q-table tbody tr:has(.row-unread-marker):hover) {
-  background-color: #d6e7fb !important;
+  background-color: #ffc075 !important;
 }
 </style>

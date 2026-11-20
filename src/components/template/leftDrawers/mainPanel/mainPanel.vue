@@ -101,7 +101,7 @@ const topLinks = ref<ListItemType[]>([
       },
       {
         icon: 'edit_note',
-        title: 'ایجاد پیش‌نویس',
+        title: 'نامه جدید',
         route: { name: 'Panel.Correspondence.Create' }
       }
     ]

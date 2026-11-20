@@ -22,6 +22,9 @@
       </template>
       <template v-else-if="inputData.col.name === 'assigned_by'">
         {{ userLabel(inputData.props.row.assigned_by, inputData.props.row.assigned_by_id) }}
+        <q-badge>
+          {{ getUserMainRoleLabel(inputData.props.row.assigned_by) }}
+        </q-badge>
       </template>
       <template v-else-if="inputData.col.name === 'reference_number'">
         {{ inputData.props.row.correspondence?.reference_number || '-' }}
@@ -63,6 +66,7 @@ import CorrespondenceAPI, {
 import FormBuilderDate from 'src/components/controls/formBuilderCustomInput/FormBuilderDate.vue'
 import FormBuilderSelectUser from 'src/components/controls/formBuilderCustomInput/FormBuilderSelectUser.vue'
 import { inventoryTypeOptions } from 'src/repositories/inventory'
+import { getFirstUserRoleLabel, UserType } from 'src/repositories/user'
 
 const dateManager = useDate()
 const correspondenceAPI = new CorrespondenceAPI()
@@ -210,13 +214,18 @@ function statusLabel (v: any) {
   return getAssignmentStatusLabel(v)
 }
 
-function userLabel (user: any, id: number | null) {
+function userLabel (user: Partial<UserType>, id: number | null) {
   if (user) {
     const name = [user.firstname, user.lastname].filter(Boolean).join(' ').trim()
     const code = user.employee_code ? ` (کد پرسنلی: ${user.employee_code})` : ''
     return (name || user.username || `کاربر #${user.id}`) + code
   }
   return id ? `کاربر #${id}` : '-'
+}
+
+function getUserMainRoleLabel (sender: Partial<UserType>) {
+  if (!sender) return '-'
+  return getFirstUserRoleLabel(sender)
 }
 </script>
 

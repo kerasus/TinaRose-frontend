@@ -91,6 +91,7 @@ export type Correspondence = {
   due_at: string | null
   sent_at: string | null
   closed_at: string | null
+  has_been_seen?: boolean
   created_at: string | null
   updated_at: string | null
   sender?: CorrespondenceUser | null
@@ -115,6 +116,7 @@ export type StoreCorrespondencePayload = {
   due_at?: string | null
   thread_root_id?: number | null
   reply_to_id?: number | null
+  send?: boolean
   recipients?: CorrespondenceRecipientInput[]
   to?: number[]
   cc?: number[]
@@ -222,6 +224,7 @@ export default class CorrespondenceAPI extends BaseAPI<Correspondence> {
       due_at: null,
       sent_at: null,
       closed_at: null,
+      has_been_seen: false,
       created_at: null,
       updated_at: null
     }
