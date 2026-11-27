@@ -234,6 +234,7 @@ export default class CorrespondenceAPI extends BaseAPI<Correspondence> {
       assignments: `${this.baseEndpoint}/assignments`,
       send: (id: number) => `${this.baseEndpoint}/${id}/send`,
       attach: (id: number) => `${this.baseEndpoint}/${id}/attachments`,
+      attachmentById: (correspondenceId: number, attachmentId: number) => `${this.baseEndpoint}/${correspondenceId}/attachments/${attachmentId}`,
       addRecipients: (id: number) => `${this.baseEndpoint}/${id}/recipients`,
       assignmentChildren: (assignmentId: number) => `${this.baseEndpoint}/assignments/${assignmentId}/children`,
       assignmentStart: (assignmentId: number) => `${this.baseEndpoint}/assignments/${assignmentId}/start`,
@@ -265,6 +266,12 @@ export default class CorrespondenceAPI extends BaseAPI<Correspondence> {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
     return response.data as CorrespondenceAttachment
+  }
+
+  async deleteAttachment (correspondenceId: number, attachmentId: number): Promise<void> {
+    await this.getAxiosInstanceWithToken().delete(
+      this.endpoints.attachmentById(correspondenceId, attachmentId)
+    )
   }
 
   async addRecipients (id: number, payload: AddRecipientsPayload): Promise<Correspondence> {

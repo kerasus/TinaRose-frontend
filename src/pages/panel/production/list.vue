@@ -421,6 +421,13 @@ const managerColumns = {
       field: (row: ProductionType) => row.product_part?.name
     },
     {
+      name: 'product',
+      required: true,
+      label: 'محصول',
+      align: 'left',
+      field: (row: ProductionType) => row.product?.name
+    },
+    {
       name: 'equipment',
       required: true,
       label: 'تجهیز',
